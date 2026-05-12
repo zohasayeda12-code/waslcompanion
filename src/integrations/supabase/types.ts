@@ -159,6 +159,7 @@ export type Database = {
           parent_id: string | null
           reflection_id: string | null
           reminder_at: string | null
+          reminder_sent_at: string | null
           status: Database["public"]["Enums"]["intention_status"]
           surah: number
           text: string
@@ -175,6 +176,7 @@ export type Database = {
           parent_id?: string | null
           reflection_id?: string | null
           reminder_at?: string | null
+          reminder_sent_at?: string | null
           status?: Database["public"]["Enums"]["intention_status"]
           surah: number
           text: string
@@ -191,6 +193,7 @@ export type Database = {
           parent_id?: string | null
           reflection_id?: string | null
           reminder_at?: string | null
+          reminder_sent_at?: string | null
           status?: Database["public"]["Enums"]["intention_status"]
           surah?: number
           text?: string

@@ -1,10 +1,10 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
-import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { z } from "zod";
 import { AppShell } from "@/components/app-shell";
-import { BookOpen, Bookmark, Sparkles, Heart, ChevronDown, Loader2, Check } from "lucide-react";
+import { BookOpen, Bookmark, Sparkles, Heart, ChevronDown, Loader2, Check, Play, Pause } from "lucide-react";
 import { getAyah } from "@/lib/qf-content.functions";
 import { getAyahContext } from "@/lib/ayah-context.functions";
 import { listIntentionsForAyah, getActiveIntention, markLived, carryForward, removeIntention, createIntention } from "@/lib/intentions.functions";
@@ -51,6 +51,8 @@ function AyahDetail() {
   const [sheet, setSheet] = useState<SheetKind>(null);
   const [glowLive, setGlowLive] = useState(false);
   const [confirmation, setConfirmation] = useState<{ when: string } | null>(null);
+  const [audioPlaying, setAudioPlaying] = useState(false);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   // 3-second delayed glow on Live icon
   useEffect(() => {
@@ -123,9 +125,21 @@ function AyahDetail() {
       <section className="mt-6 rounded-3xl border border-border/60 bg-card/60 p-6 shadow-[var(--shadow-soft)] backdrop-blur-sm">
         <div className="flex items-center justify-between">
           <p className="text-xs uppercase tracking-[0.22em] text-[color:var(--gold)]">
-            {ayahData?.surahName ?? `Surah ${s}`}
+            {s}:{a}
           </p>
-          <p className="text-xs tracking-[0.18em] text-[color:var(--emerald)]">{s}:{a}</p>
+          <button
+            onClick={() => setSheet("live")}
+            aria-label="Live this ayah"
+            className="relative inline-flex size-8 items-center justify-center rounded-full border border-border/60 bg-secondary/40 text-[color:var(--rose,oklch(0.72_0.16_15))]"
+          >
+            {glowLive && !activeForThis && (
+              <span
+                className="absolute inset-0 -z-10 animate-ping rounded-full"
+                style={{ background: "color-mix(in oklab, var(--rose, oklch(0.72 0.16 15)) 50%, transparent)" }}
+              />
+            )}
+            <Heart className="size-4" />
+          </button>
         </div>
 
         <p
@@ -154,17 +168,21 @@ function AyahDetail() {
         {/* 4 icons — one row */}
         <div className="mt-6 grid grid-cols-4 gap-1.5">
           <IconPill
-            label="Live"
-            icon={<Heart className="size-3.5" />}
-            color="var(--rose, oklch(0.72 0.16 15))"
-            glow={glowLive && !activeForThis}
-            onClick={() => setSheet("live")}
-          />
-          <IconPill
             label="Tafsir"
             icon={<BookOpen className="size-3.5" />}
             color="var(--gold)"
             onClick={() => setSheet("tafsir")}
+          />
+          <IconPill
+            label={audioPlaying ? "Pause" : "Audio"}
+            icon={audioPlaying ? <Pause className="size-3.5" /> : <Play className="size-3.5" />}
+            color="var(--violet)"
+            active={audioPlaying}
+            onClick={() => {
+              const el = audioRef.current;
+              if (!el || !ayahData?.audioUrl) return;
+              if (el.paused) { el.play(); } else { el.pause(); }
+            }}
           />
           <IconPill
             label={bookmark?.bookmarked ? "Saved" : "Save"}
@@ -183,17 +201,18 @@ function AyahDetail() {
             onClick={() => setSheet("context")}
           />
         </div>
+        {ayahData?.audioUrl && (
+          <audio
+            ref={audioRef}
+            src={ayahData.audioUrl}
+            preload="none"
+            onPlay={() => setAudioPlaying(true)}
+            onPause={() => setAudioPlaying(false)}
+            onEnded={() => setAudioPlaying(false)}
+            className="hidden"
+          />
+        )}
       </section>
-
-      {/* Audio card */}
-      {ayahData?.audioUrl && (
-        <section className="mt-4 rounded-3xl border border-border/60 bg-card/60 p-4 backdrop-blur-sm">
-          <audio controls preload="none" src={ayahData.audioUrl} className="w-full">
-            Your browser does not support audio playback.
-          </audio>
-          <p className="mt-2 text-[11px] uppercase tracking-[0.2em] text-muted-foreground">Mishary Al-Afasy</p>
-        </section>
-      )}
 
       {/* Active intention summary */}
       {activeForThis && (

@@ -21,6 +21,7 @@ import { Route as AuthenticatedIntentionsRouteImport } from './routes/_authentic
 import { Route as AuthenticatedHomeRouteImport } from './routes/_authenticated/home'
 import { Route as ApiAuthLogoutRouteImport } from './routes/api/auth/logout'
 import { Route as ApiAuthLoginRouteImport } from './routes/api/auth/login'
+import { Route as ApiPublicCronRemindersRouteImport } from './routes/api/public/cron/reminders'
 import { Route as AuthenticatedLiveSurahAyahRouteImport } from './routes/_authenticated/live.$surah.$ayah'
 import { Route as AuthenticatedAyahSurahAyahRouteImport } from './routes/_authenticated/ayah.$surah.$ayah'
 
@@ -83,6 +84,11 @@ const ApiAuthLoginRoute = ApiAuthLoginRouteImport.update({
   path: '/api/auth/login',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicCronRemindersRoute = ApiPublicCronRemindersRouteImport.update({
+  id: '/api/public/cron/reminders',
+  path: '/api/public/cron/reminders',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedLiveSurahAyahRoute =
   AuthenticatedLiveSurahAyahRouteImport.update({
     id: '/live/$surah/$ayah',
@@ -110,6 +116,7 @@ export interface FileRoutesByFullPath {
   '/api/auth/logout': typeof ApiAuthLogoutRoute
   '/ayah/$surah/$ayah': typeof AuthenticatedAyahSurahAyahRoute
   '/live/$surah/$ayah': typeof AuthenticatedLiveSurahAyahRoute
+  '/api/public/cron/reminders': typeof ApiPublicCronRemindersRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -125,6 +132,7 @@ export interface FileRoutesByTo {
   '/api/auth/logout': typeof ApiAuthLogoutRoute
   '/ayah/$surah/$ayah': typeof AuthenticatedAyahSurahAyahRoute
   '/live/$surah/$ayah': typeof AuthenticatedLiveSurahAyahRoute
+  '/api/public/cron/reminders': typeof ApiPublicCronRemindersRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -142,6 +150,7 @@ export interface FileRoutesById {
   '/api/auth/logout': typeof ApiAuthLogoutRoute
   '/_authenticated/ayah/$surah/$ayah': typeof AuthenticatedAyahSurahAyahRoute
   '/_authenticated/live/$surah/$ayah': typeof AuthenticatedLiveSurahAyahRoute
+  '/api/public/cron/reminders': typeof ApiPublicCronRemindersRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -159,6 +168,7 @@ export interface FileRouteTypes {
     | '/api/auth/logout'
     | '/ayah/$surah/$ayah'
     | '/live/$surah/$ayah'
+    | '/api/public/cron/reminders'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -174,6 +184,7 @@ export interface FileRouteTypes {
     | '/api/auth/logout'
     | '/ayah/$surah/$ayah'
     | '/live/$surah/$ayah'
+    | '/api/public/cron/reminders'
   id:
     | '__root__'
     | '/'
@@ -190,6 +201,7 @@ export interface FileRouteTypes {
     | '/api/auth/logout'
     | '/_authenticated/ayah/$surah/$ayah'
     | '/_authenticated/live/$surah/$ayah'
+    | '/api/public/cron/reminders'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -199,6 +211,7 @@ export interface RootRouteChildren {
   OauthCallbackRoute: typeof OauthCallbackRoute
   ApiAuthLoginRoute: typeof ApiAuthLoginRoute
   ApiAuthLogoutRoute: typeof ApiAuthLogoutRoute
+  ApiPublicCronRemindersRoute: typeof ApiPublicCronRemindersRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -287,6 +300,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAuthLoginRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/cron/reminders': {
+      id: '/api/public/cron/reminders'
+      path: '/api/public/cron/reminders'
+      fullPath: '/api/public/cron/reminders'
+      preLoaderRoute: typeof ApiPublicCronRemindersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/live/$surah/$ayah': {
       id: '/_authenticated/live/$surah/$ayah'
       path: '/live/$surah/$ayah'
@@ -337,6 +357,7 @@ const rootRouteChildren: RootRouteChildren = {
   OauthCallbackRoute: OauthCallbackRoute,
   ApiAuthLoginRoute: ApiAuthLoginRoute,
   ApiAuthLogoutRoute: ApiAuthLogoutRoute,
+  ApiPublicCronRemindersRoute: ApiPublicCronRemindersRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
