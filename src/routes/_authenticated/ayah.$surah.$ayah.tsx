@@ -138,18 +138,21 @@ function AyahDetail() {
 
         {/* Icon action row */}
         <div className="mt-6 flex flex-wrap items-center gap-2">
-          {ayahData?.tafsir && ayahData.tafsir.text && (
-            <button
-              onClick={() => {
-                const el = document.getElementById("tafsir-panel");
-                if (el) el.toggleAttribute("open");
-              }}
-              className="inline-flex items-center gap-1.5 rounded-full border border-[color:var(--gold)]/40 bg-[oklch(0.82_0.14_82_/_0.10)] px-3 py-1.5 text-xs font-medium text-[color:var(--gold)]"
-              aria-label="Tafsir"
-            >
-              <BookOpen className="size-3.5" /> Tafsir
-            </button>
-          )}
+          <Link
+            to="/live/$surah/$ayah"
+            params={{ surah, ayah }}
+            className="inline-flex items-center gap-1.5 rounded-full border border-[color:var(--rose)]/40 bg-[oklch(0.72_0.16_15_/_0.10)] px-3 py-1.5 text-xs font-medium text-[color:var(--rose,oklch(0.72_0.16_15))]"
+            aria-label="Live this ayah"
+          >
+            <Heart className="size-3.5" /> Live
+          </Link>
+          <button
+            onClick={() => setSheet("tafsir")}
+            className="inline-flex items-center gap-1.5 rounded-full border border-[color:var(--gold)]/40 bg-[oklch(0.82_0.14_82_/_0.10)] px-3 py-1.5 text-xs font-medium text-[color:var(--gold)]"
+            aria-label="Tafsir"
+          >
+            <BookOpen className="size-3.5" /> Tafsir
+          </button>
           <button
             onClick={async () => {
               await toggleBookmarkFn({ data: { surah: s, ayah: a } });
@@ -165,27 +168,12 @@ function AyahDetail() {
             <Bookmark className="size-3.5" /> {bookmark?.bookmarked ? "Bookmarked" : "Bookmark"}
           </button>
           <button
+            onClick={() => setSheet("context")}
             className="inline-flex items-center gap-1.5 rounded-full border border-[color:var(--violet)]/40 bg-[oklch(0.70_0.16_295_/_0.10)] px-3 py-1.5 text-xs font-medium text-[color:var(--violet)]"
-            aria-label="Ask"
+            aria-label="Context (Asbāb al-Nuzūl)"
           >
-            <Sparkles className="size-3.5" /> Ask
+            <Sparkles className="size-3.5" /> Context
           </button>
-
-          <span className="ml-1 hidden h-5 w-px bg-border/60 sm:inline-block" />
-
-          {COLORS.map((c) => (
-            <button
-              key={c}
-              onClick={async () => {
-                const next = highlight?.color === c ? null : c;
-                await setHighlightFn({ data: { surah: s, ayah: a, color: next } });
-                qc.invalidateQueries({ queryKey: ["highlight", s, a] });
-              }}
-              aria-label={`Highlight ${c}`}
-              className={`size-5 rounded-full border-2 ${highlight?.color === c ? "border-foreground" : "border-transparent"}`}
-              style={{ background: c === "gold" ? "var(--gold)" : c === "blue" ? "oklch(0.78 0.08 240)" : c === "green" ? "oklch(0.75 0.10 150)" : "oklch(0.72 0.12 300)" }}
-            />
-          ))}
         </div>
       </section>
 
@@ -199,17 +187,31 @@ function AyahDetail() {
         </section>
       )}
 
-      {/* Tafsir collapsible */}
-      {ayahData?.tafsir && ayahData.tafsir.text && (
-        <details id="tafsir-panel" className="mt-4 rounded-3xl border border-border/60 bg-card/40 p-5 text-sm leading-relaxed backdrop-blur-sm">
-          <summary className="cursor-pointer text-xs uppercase tracking-[0.2em] text-[color:var(--gold)]">
-            Tafsir · {ayahData.tafsir.name}
-          </summary>
-          <div
-            className="mt-3 text-foreground/85 [&_p]:mt-2"
-            dangerouslySetInnerHTML={{ __html: ayahData.tafsir.text }}
-          />
-        </details>
+      {/* Bottom sheet */}
+      {sheet && (
+        <BottomSheet
+          title={sheet === "tafsir" ? `Tafsir · ${ayahData?.tafsir?.name ?? "Ibn Kathir"}` : "Context · Asbāb al-Nuzūl"}
+          onClose={() => setSheet(null)}
+        >
+          {sheet === "tafsir" ? (
+            ayahData?.tafsir?.text ? (
+              <div
+                className="text-sm leading-relaxed text-foreground/85 [&_p]:mt-2"
+                dangerouslySetInnerHTML={{ __html: ayahData.tafsir.text }}
+              />
+            ) : (
+              <p className="text-sm text-muted-foreground">Tafsir unavailable for this ayah.</p>
+            )
+          ) : contextLoading ? (
+            <p className="text-sm text-muted-foreground">Generating context…</p>
+          ) : contextData?.context ? (
+            <div className="whitespace-pre-wrap text-sm leading-relaxed text-foreground/85">
+              {contextData.context}
+            </div>
+          ) : (
+            <p className="text-sm text-muted-foreground">No context available.</p>
+          )}
+        </BottomSheet>
       )}
 
       {/* Journey panel */}
