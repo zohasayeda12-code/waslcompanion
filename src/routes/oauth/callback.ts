@@ -46,7 +46,7 @@ export const Route = createFileRoute("/oauth/callback")({
           // silently drops those cookies.
           setResponseStatus(302);
           setResponseHeader("Location", new URL(path, url.origin).toString());
-          return null;
+          return new Response(null);
         };
 
         const fail = (reason: string) =>
