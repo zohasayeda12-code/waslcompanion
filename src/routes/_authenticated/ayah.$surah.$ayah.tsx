@@ -1,10 +1,10 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
-import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { z } from "zod";
 import { AppShell } from "@/components/app-shell";
-import { BookOpen, Bookmark, Sparkles, Heart, ChevronDown, Loader2, Check } from "lucide-react";
+import { BookOpen, Bookmark, Sparkles, Heart, ChevronDown, Loader2, Check, Play, Pause } from "lucide-react";
 import { getAyah } from "@/lib/qf-content.functions";
 import { getAyahContext } from "@/lib/ayah-context.functions";
 import { listIntentionsForAyah, getActiveIntention, markLived, carryForward, removeIntention, createIntention } from "@/lib/intentions.functions";
