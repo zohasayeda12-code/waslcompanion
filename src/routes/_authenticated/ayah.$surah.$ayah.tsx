@@ -5,7 +5,7 @@ import { useEffect } from "react";
 import { z } from "zod";
 import { AppShell } from "@/components/app-shell";
 import { AmbientLiveGlow } from "@/components/ambient-live-glow";
-import { PrimaryLink } from "@/components/primary-button";
+// PrimaryLink replaced with inline Link to keep TanStack typed-route inference
 import { getAyah } from "@/lib/qf-content.functions";
 import { listIntentionsForAyah, getActiveIntention, markLived, carryForward, removeIntention } from "@/lib/intentions.functions";
 import { getJourneyState, advanceJourney } from "@/lib/journey.functions";
