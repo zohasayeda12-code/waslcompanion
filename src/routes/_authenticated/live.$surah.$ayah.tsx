@@ -1,10 +1,12 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { useState } from "react";
+import { Sparkles, Loader2 } from "lucide-react";
 import { AppShell } from "@/components/app-shell";
 import { PrimaryButton } from "@/components/primary-button";
 import { createIntention, getActiveIntention } from "@/lib/intentions.functions";
+import { generateLiveSuggestion } from "@/lib/live-suggestion.functions";
 
 export const Route = createFileRoute("/_authenticated/live/$surah/$ayah")({
   head: ({ params }) => ({ meta: [{ title: `Live ${params.surah}:${params.ayah} — Wasl` }] }),
