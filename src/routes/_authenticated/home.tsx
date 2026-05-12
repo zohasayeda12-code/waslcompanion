@@ -34,7 +34,7 @@ function HomeScreen() {
   useEffect(() => {
     (async () => {
       try {
-        const mod = await import("@/lib/push.client");
+        const mod = await import("@/lib/push-browser");
         if (!mod.pushSupported()) return;
         const sub = await mod.ensurePushSubscription();
         if (sub) await saveSubFn({ data: { ...sub, userAgent: navigator.userAgent } });
