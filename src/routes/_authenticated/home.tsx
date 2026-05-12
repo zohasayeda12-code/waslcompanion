@@ -2,17 +2,14 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery } from "@tanstack/react-query";
 import { motion } from "motion/react";
-import { useEffect, useState } from "react";
-import { BookmarkPlus, ChevronRight, Feather, LogOut, Sparkles } from "lucide-react";
+import { LogOut } from "lucide-react";
 import { AppShell } from "@/components/app-shell";
 import { GlassCard } from "@/components/glass-card";
 import { GlowChip } from "@/components/glow-chip";
 import { HijriBanner } from "@/components/hijri-banner";
-import { getJourneyState, advanceJourney } from "@/lib/journey.functions";
+import { getJourneyState } from "@/lib/journey.functions";
 import { getAyah } from "@/lib/qf-content.functions";
 import { getActiveIntention } from "@/lib/intentions.functions";
-import { toggleBookmark, isBookmarked } from "@/lib/library.functions";
-import { useQueryClient } from "@tanstack/react-query";
 
 export const Route = createFileRoute("/_authenticated/home")({
   head: () => ({ meta: [{ title: "Home — Wasl" }] }),
@@ -23,11 +20,7 @@ function HomeScreen() {
   const journeyFn = useServerFn(getJourneyState);
   const intentionFn = useServerFn(getActiveIntention);
   const ayahFn = useServerFn(getAyah);
-  const bookmarkedFn = useServerFn(isBookmarked);
-  const toggleBookmarkFn = useServerFn(toggleBookmark);
-  const advanceFn = useServerFn(advanceJourney);
   const navigate = useNavigate();
-  const qc = useQueryClient();
 
   const { data: journey } = useQuery({ queryKey: ["journey"], queryFn: () => journeyFn() });
   const { data: active } = useQuery({ queryKey: ["active-intention"], queryFn: () => intentionFn() });
@@ -40,26 +33,6 @@ function HomeScreen() {
     queryFn: () => ayahFn({ data: { surah, ayah } }),
     enabled: !!journey,
   });
-  const { data: bookmark } = useQuery({
-    queryKey: ["bookmark", surah, ayah],
-    queryFn: () => bookmarkedFn({ data: { surah, ayah } }),
-    enabled: !!journey,
-  });
-
-  // Ambient invitation: subtle one-time glow on Live after inactivity
-  const [inviteLive, setInviteLive] = useState(false);
-  useEffect(() => {
-    setInviteLive(false);
-    const t = setTimeout(() => setInviteLive(true), 6000);
-    const stop = () => setInviteLive(false);
-    window.addEventListener("pointerdown", stop, { once: true });
-    window.addEventListener("keydown", stop, { once: true });
-    return () => {
-      clearTimeout(t);
-      window.removeEventListener("pointerdown", stop);
-      window.removeEventListener("keydown", stop);
-    };
-  }, [surah, ayah]);
 
   const goAyah = () =>
     navigate({
@@ -130,73 +103,34 @@ function HomeScreen() {
             onClick={goAyah}
             className="block w-full text-left"
           >
-            <div className="px-[clamp(1.25rem,5.5vw,1.75rem)] pt-[clamp(1.5rem,6vw,2rem)] pb-5">
-              <p className="text-[10px] uppercase tracking-[0.24em] text-muted-foreground">
-                Surah {surah} · Ayah {ayah}
-              </p>
+            <div className="px-[clamp(1.25rem,5.5vw,1.75rem)] py-[clamp(1.75rem,7vw,2.25rem)]">
+              <div className="flex items-baseline justify-between gap-3">
+                <p className="text-[10px] uppercase tracking-[0.24em] text-muted-foreground">
+                  Surah {surah}
+                  {ayahData?.surahName ? ` · ${ayahData.surahName}` : ""} · Ayah {ayah}
+                </p>
+                {ayahData?.surahNameArabic && (
+                  <p
+                    className="text-sm text-foreground/70"
+                    style={{ fontFamily: "var(--font-display)", direction: "rtl" }}
+                  >
+                    {ayahData.surahNameArabic}
+                  </p>
+                )}
+              </div>
               <p
-                className="mt-6 text-[clamp(1.6rem,7.5vw,2.15rem)] leading-[1.85] font-medium tracking-tight text-foreground"
+                className="mt-7 text-[clamp(1.6rem,7.5vw,2.15rem)] leading-[1.85] font-medium tracking-tight text-foreground"
                 style={{ fontFamily: "var(--font-display)", direction: "rtl" }}
               >
                 {ayahData?.arabic || "···"}
               </p>
               {ayahData?.translation && (
-                <p className="mt-5 text-[clamp(0.95rem,3.6vw,1.05rem)] leading-relaxed text-foreground/75">
+                <p className="mt-6 text-[clamp(0.95rem,3.6vw,1.05rem)] leading-relaxed text-foreground/75">
                   {ayahData.translation}
                 </p>
               )}
             </div>
           </button>
-
-          {/* Subtle divider */}
-          <div
-            aria-hidden
-            className="mx-[clamp(1.25rem,5.5vw,1.75rem)] h-px"
-            style={{
-              background:
-                "linear-gradient(90deg, transparent, oklch(1 0 0 / 0.07), transparent)",
-            }}
-          />
-
-          {/* 3. Quick action row — integrated, not a CTA */}
-          <div className="flex items-stretch gap-1 px-[clamp(0.75rem,3vw,1rem)] py-3">
-            <ActionButton
-              label="Reflect"
-              onClick={() =>
-                navigate({
-                  to: "/ayah/$surah/$ayah",
-                  params: { surah: String(surah), ayah: String(ayah) },
-                  search: { from: "home", reflect: true },
-                })
-              }
-              icon={<Feather className="size-4" />}
-              emphasis="secondary"
-            />
-            <LiveAction surah={surah} ayah={ayah} invite={inviteLive} />
-            <ActionButton
-              label={bookmark?.bookmarked ? "Saved" : "Bookmark"}
-              onClick={async () => {
-                await toggleBookmarkFn({ data: { surah, ayah } });
-                qc.invalidateQueries({ queryKey: ["bookmark", surah, ayah] });
-              }}
-              icon={<BookmarkPlus className={`size-4 ${bookmark?.bookmarked ? "fill-current" : ""}`} />}
-              emphasis="quiet"
-            />
-            <ActionButton
-              label="Next"
-              onClick={async () => {
-                await advanceFn({ data: { surah, ayah: ayah + 1 } });
-                qc.invalidateQueries({ queryKey: ["journey"] });
-                navigate({
-                  to: "/ayah/$surah/$ayah",
-                  params: { surah: String(surah), ayah: String(ayah + 1) },
-                  search: { from: "home" },
-                });
-              }}
-              icon={<ChevronRight className="size-4" />}
-              emphasis="ghost"
-            />
-          </div>
         </article>
       </motion.section>
 
@@ -224,66 +158,5 @@ function HomeScreen() {
         </Link>
       )}
     </AppShell>
-  );
-}
-
-function ActionButton({
-  label,
-  icon,
-  onClick,
-  emphasis,
-}: {
-  label: string;
-  icon: React.ReactNode;
-  onClick: () => void;
-  emphasis: "secondary" | "quiet" | "ghost";
-}) {
-  const tone =
-    emphasis === "secondary"
-      ? "text-foreground/85 hover:text-foreground"
-      : emphasis === "quiet"
-        ? "text-foreground/70 hover:text-foreground/95"
-        : "text-muted-foreground hover:text-foreground/80";
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={`flex flex-1 flex-col items-center justify-center gap-1 rounded-xl px-2 py-2.5 text-[11px] font-medium tracking-wide transition-colors active:scale-[0.97] ${tone}`}
-    >
-      <span className="opacity-90">{icon}</span>
-      <span>{label}</span>
-    </button>
-  );
-}
-
-function LiveAction({
-  surah,
-  ayah,
-  invite,
-}: {
-  surah: number;
-  ayah: number;
-  invite: boolean;
-}) {
-  return (
-    <Link
-      to="/live/$surah/$ayah"
-      params={{ surah: String(surah), ayah: String(ayah) }}
-      className="relative flex flex-1 flex-col items-center justify-center gap-1 rounded-xl px-2 py-2.5 text-[11px] font-medium tracking-wide text-foreground transition-all active:scale-[0.97]"
-      style={{
-        background:
-          "linear-gradient(180deg, oklch(0.42 0.09 165 / 0.55), oklch(0.32 0.07 165 / 0.45))",
-        boxShadow: invite
-          ? "0 0 0 1px oklch(0.82 0.14 82 / 0.25), 0 0 22px oklch(0.82 0.14 82 / 0.18)"
-          : "0 0 0 1px oklch(1 0 0 / 0.06)",
-        transition: "box-shadow 1200ms ease",
-      }}
-    >
-      <Sparkles
-        className="size-4"
-        style={{ color: "var(--gold)", opacity: 0.95 }}
-      />
-      <span>Live</span>
-    </Link>
   );
 }
