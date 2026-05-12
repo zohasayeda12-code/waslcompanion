@@ -123,9 +123,21 @@ function AyahDetail() {
       <section className="mt-6 rounded-3xl border border-border/60 bg-card/60 p-6 shadow-[var(--shadow-soft)] backdrop-blur-sm">
         <div className="flex items-center justify-between">
           <p className="text-xs uppercase tracking-[0.22em] text-[color:var(--gold)]">
-            {ayahData?.surahName ?? `Surah ${s}`}
+            {s}:{a}
           </p>
-          <p className="text-xs tracking-[0.18em] text-[color:var(--emerald)]">{s}:{a}</p>
+          <button
+            onClick={() => setSheet("live")}
+            aria-label="Live this ayah"
+            className="relative inline-flex size-8 items-center justify-center rounded-full border border-border/60 bg-secondary/40 text-[color:var(--rose,oklch(0.72_0.16_15))]"
+          >
+            {glowLive && !activeForThis && (
+              <span
+                className="absolute inset-0 -z-10 animate-ping rounded-full"
+                style={{ background: "color-mix(in oklab, var(--rose, oklch(0.72 0.16 15)) 50%, transparent)" }}
+              />
+            )}
+            <Heart className="size-4" />
+          </button>
         </div>
 
         <p
