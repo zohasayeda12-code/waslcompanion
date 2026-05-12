@@ -32,10 +32,11 @@ function HomeScreen() {
 
   // Auto-register push so reminders arrive on this device
   useEffect(() => {
-    if (!pushSupported()) return;
     (async () => {
       try {
-        const sub = await ensurePushSubscription();
+        const mod = await import("@/lib/push.client");
+        if (!mod.pushSupported()) return;
+        const sub = await mod.ensurePushSubscription();
         if (sub) await saveSubFn({ data: { ...sub, userAgent: navigator.userAgent } });
       } catch (e) { console.warn("push setup", e); }
     })();
