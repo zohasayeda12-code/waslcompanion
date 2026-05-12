@@ -1,6 +1,6 @@
 // Browser-safe push subscription helper
 export const VAPID_PUBLIC_KEY =
-  "BGM9WdbjzdvpMoOIl8cOfKHT6rU8S2dRf_f9nxj765jwYV-sx08k4gQ9em0guh0iPBYz7pzmLkbZRYia4PuyP3g";
+  "BHK40N1_0MBh3aOA4IhbiH9ZGpmtb-r6n5HiUawSxZyYGOZEZG35zzKoucSplwKiMZJbameAHYMEnjQCps2-tb4";
 
 function urlBase64ToUint8Array(base64String: string) {
   const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
