@@ -25,7 +25,7 @@ export const Route = createFileRoute("/_authenticated/ayah/$surah/$ayah")({
   component: AyahDetail,
 });
 
-const COLORS = ["gold", "blue", "green", "purple"] as const;
+type SheetKind = "tafsir" | "context" | null;
 
 function AyahDetail() {
   const { surah, ayah } = Route.useParams();
