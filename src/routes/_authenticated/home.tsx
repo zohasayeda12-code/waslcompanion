@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { motion, type Variants } from "motion/react";
 import { AppShell } from "@/components/app-shell";
 
-export const Route = createFileRoute("/home")({
+export const Route = createFileRoute("/_authenticated/home")({
   head: () => ({
     meta: [
       { title: "Home — Wasl" },
