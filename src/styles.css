@@ -132,3 +132,9 @@
     letter-spacing: -0.01em;
   }
 }
+
+@keyframes pulseSlow {
+  0%, 100% { opacity: 0.55; transform: scale(1); }
+  50% { opacity: 0.95; transform: scale(1.04); }
+}
+.animate-pulse-slow { animation: pulseSlow 5.5s ease-in-out infinite; }
