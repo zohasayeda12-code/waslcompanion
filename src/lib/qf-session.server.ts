@@ -15,9 +15,7 @@ export type WaslSession = {
 export function getWaslSession() {
   const password = process.env.SESSION_SECRET;
   if (!password || password.length < 32) {
-    throw new Error(
-      "SESSION_SECRET must be set to a value of at least 32 characters."
-    );
+    throw new Error("SESSION_SECRET must be set to a value of at least 32 characters.");
   }
   return useSession<WaslSession>({
     password,
@@ -25,7 +23,7 @@ export function getWaslSession() {
     maxAge: 60 * 60 * 24 * 30, // 30 days
     cookie: {
       httpOnly: true,
-      secure: true,
+      secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
       path: "/",
     },
