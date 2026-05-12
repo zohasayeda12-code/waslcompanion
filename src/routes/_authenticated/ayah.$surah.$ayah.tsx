@@ -51,6 +51,8 @@ function AyahDetail() {
   const [sheet, setSheet] = useState<SheetKind>(null);
   const [glowLive, setGlowLive] = useState(false);
   const [confirmation, setConfirmation] = useState<{ when: string } | null>(null);
+  const [audioPlaying, setAudioPlaying] = useState(false);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   // 3-second delayed glow on Live icon
   useEffect(() => {
