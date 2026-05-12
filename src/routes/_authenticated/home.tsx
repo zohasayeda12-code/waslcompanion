@@ -12,7 +12,7 @@ import { getJourneyState } from "@/lib/journey.functions";
 import { getAyah } from "@/lib/qf-content.functions";
 import { getActiveIntention } from "@/lib/intentions.functions";
 import { saveSubscription } from "@/lib/push.functions";
-import { ensurePushSubscription, pushSupported } from "@/lib/push.client";
+
 
 export const Route = createFileRoute("/_authenticated/home")({
   head: () => ({ meta: [{ title: "Home — Wasl" }] }),
@@ -32,10 +32,11 @@ function HomeScreen() {
 
   // Auto-register push so reminders arrive on this device
   useEffect(() => {
-    if (!pushSupported()) return;
     (async () => {
       try {
-        const sub = await ensurePushSubscription();
+        const mod = await import("@/lib/push.client");
+        if (!mod.pushSupported()) return;
+        const sub = await mod.ensurePushSubscription();
         if (sub) await saveSubFn({ data: { ...sub, userAgent: navigator.userAgent } });
       } catch (e) { console.warn("push setup", e); }
     })();
