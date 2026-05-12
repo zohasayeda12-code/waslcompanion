@@ -2,27 +2,49 @@ import { buildPushPayload, type PushSubscription } from "@block65/webcrypto-web-
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 
 const VAPID_PUBLIC =
-  "BGM9WdbjzdvpMoOIl8cOfKHT6rU8S2dRf_f9nxj765jwYV-sx08k4gQ9em0guh0iPBYz7pzmLkbZRYia4PuyP3g";
+  "BHK40N1_0MBh3aOA4IhbiH9ZGpmtb-r6n5HiUawSxZyYGOZEZG35zzKoucSplwKiMZJbameAHYMEnjQCps2-tb4";
 
 export type PushPayload = { title: string; body: string; url?: string; tag?: string };
 
-export async function sendPushToUser(userId: string, payload: PushPayload) {
+export type PushAttempt = {
+  subscriptionId: string;
+  status: "sent" | "removed" | "failed" | "skipped";
+  httpStatus?: number;
+  reason?: string;
+};
+
+export type PushResult = {
+  sent: number;
+  removed: number;
+  failed: number;
+  attempts: PushAttempt[];
+  reason?: string;
+};
+
+export async function sendPushToUser(userId: string, payload: PushPayload): Promise<PushResult> {
   const privateKey = process.env.VAPID_PRIVATE_KEY;
   const subject = process.env.VAPID_SUBJECT || "mailto:reminders@wasl.app";
   if (!privateKey) {
-    console.error("VAPID_PRIVATE_KEY missing");
-    return { sent: 0, removed: 0 };
+    return { sent: 0, removed: 0, failed: 0, attempts: [], reason: "VAPID_PRIVATE_KEY missing" };
   }
 
-  const { data: subs } = await supabaseAdmin
+  const { data: subs, error: subsError } = await supabaseAdmin
     .from("push_subscriptions")
     .select("id, endpoint, p256dh, auth")
     .eq("user_id", userId);
 
-  if (!subs || subs.length === 0) return { sent: 0, removed: 0 };
+  if (subsError) {
+    return { sent: 0, removed: 0, failed: 0, attempts: [], reason: `subscription lookup failed: ${subsError.message}` };
+  }
+  if (!subs || subs.length === 0) {
+    return { sent: 0, removed: 0, failed: 0, attempts: [], reason: "no push subscriptions for user" };
+  }
 
+  const attempts: PushAttempt[] = [];
   let sent = 0;
   let removed = 0;
+  let failed = 0;
+
   for (const s of subs) {
     const sub: PushSubscription = {
       endpoint: s.endpoint,
@@ -43,14 +65,33 @@ export async function sendPushToUser(userId: string, payload: PushPayload) {
       if (res.status === 404 || res.status === 410) {
         await supabaseAdmin.from("push_subscriptions").delete().eq("id", s.id);
         removed++;
+        attempts.push({
+          subscriptionId: s.id,
+          status: "removed",
+          httpStatus: res.status,
+          reason: "subscription expired or unsubscribed (deleted)",
+        });
       } else if (res.ok || res.status === 201) {
         sent++;
+        attempts.push({ subscriptionId: s.id, status: "sent", httpStatus: res.status });
       } else {
-        console.error("push failed", res.status, await res.text().catch(() => ""));
+        const text = await res.text().catch(() => "");
+        failed++;
+        attempts.push({
+          subscriptionId: s.id,
+          status: "failed",
+          httpStatus: res.status,
+          reason: `push provider HTTP ${res.status} ${res.statusText}: ${text.slice(0, 300)}`,
+        });
       }
     } catch (e) {
-      console.error("push error", e);
+      failed++;
+      attempts.push({
+        subscriptionId: s.id,
+        status: "failed",
+        reason: e instanceof Error ? `${e.name}: ${e.message}` : String(e),
+      });
     }
   }
-  return { sent, removed };
+  return { sent, removed, failed, attempts };
 }
