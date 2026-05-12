@@ -1,6 +1,7 @@
 import { generateText } from "ai";
 import { createLovableAiGatewayProvider } from "./ai-gateway.server";
 import { fetchAyah } from "./qf-content.server";
+import { fetchQuranMcpContext } from "./quran-mcp.server";
 
 const cache = new Map<string, { at: number; text: string }>();
 const TTL = 24 * 60 * 60 * 1000;
