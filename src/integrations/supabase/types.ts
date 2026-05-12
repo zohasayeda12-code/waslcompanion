@@ -251,22 +251,37 @@ export type Database = {
       }
       notification_log: {
         Row: {
+          attempted_at: string
+          delivery_details: Json
+          failure_reason: string | null
           id: string
           intention_id: string | null
           opened_at: string | null
-          sent_at: string
+          sent_at: string | null
+          status: string
+          user_id: string | null
         }
         Insert: {
+          attempted_at?: string
+          delivery_details?: Json
+          failure_reason?: string | null
           id?: string
           intention_id?: string | null
           opened_at?: string | null
-          sent_at?: string
+          sent_at?: string | null
+          status?: string
+          user_id?: string | null
         }
         Update: {
+          attempted_at?: string
+          delivery_details?: Json
+          failure_reason?: string | null
           id?: string
           intention_id?: string | null
           opened_at?: string | null
-          sent_at?: string
+          sent_at?: string | null
+          status?: string
+          user_id?: string | null
         }
         Relationships: [
           {
@@ -274,6 +289,13 @@ export type Database = {
             columns: ["intention_id"]
             isOneToOne: false
             referencedRelation: "intentions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notification_log_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
