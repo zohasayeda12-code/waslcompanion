@@ -2,7 +2,12 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { requireUserId } from "./current-user.server";
-import { bookmarksAdapter, dispatchBackground } from "./sync.server";
+import {
+  bookmarksAdapter,
+  collectionsAdapter,
+  dispatchBackground,
+  reflectionsAdapter,
+} from "./sync.server";
 
 const AyahKey = z.object({ surah: z.number().int(), ayah: z.number().int() });
 
