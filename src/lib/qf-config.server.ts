@@ -28,7 +28,17 @@ export const qfConfig = {
     return process.env.QF_TOKEN_URL ?? "https://prelive-oauth2.quran.foundation/oauth2/token";
   },
   get scopes() {
-    return process.env.QF_SCOPES ?? "openid profile";
+    return (
+      process.env.QF_SCOPES ??
+      "openid profile offline_access bookmark collection post"
+    );
+  },
+  /**
+   * Base URL for Quran.Foundation User APIs (bookmarks, collections, posts).
+   * Defaults to prelive to match the default auth URL.
+   */
+  get userApiUrl() {
+    return process.env.QF_USER_API_BASE_URL ?? "https://apis-prelive.quran.foundation";
   },
 };
 
