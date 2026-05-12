@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { motion } from "motion/react";
+import { motion, type Variants } from "motion/react";
 import { AppShell } from "@/components/app-shell";
 
 export const Route = createFileRoute("/home")({
@@ -12,13 +12,15 @@ export const Route = createFileRoute("/home")({
   component: HomeScreen,
 });
 
-const stagger = {
+const ease = [0.22, 1, 0.36, 1] as const;
+
+const stagger: Variants = {
   hidden: {},
   show: { transition: { staggerChildren: 0.08, delayChildren: 0.1 } },
 };
-const item = {
+const item: Variants = {
   hidden: { opacity: 0, y: 12 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.55, ease: [0.22, 1, 0.36, 1] } },
+  show: { opacity: 1, y: 0, transition: { duration: 0.55, ease } },
 };
 
 function HomeScreen() {
