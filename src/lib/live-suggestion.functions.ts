@@ -37,7 +37,7 @@ Examples of the WRONG register — never produce these:
 
 If the ayah text is missing or you cannot anchor a concrete action in it, output exactly: REFUSE.`;
 
-const McpUrl = process.env.QURAN_MCP_URL ?? "";
+// const McpUrl = process.env.QURAN_MCP_URL ?? "";
 
 async function gatherMcpContext(_surah: number, _ayah: number): Promise<string> {
   // MCP client integration deferred — `ai` v6 moved MCP out of the core package.
