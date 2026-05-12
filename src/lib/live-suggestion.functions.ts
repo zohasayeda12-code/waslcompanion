@@ -39,24 +39,11 @@ If the ayah text is missing or you cannot anchor a concrete action in it, output
 
 const McpUrl = process.env.QURAN_MCP_URL ?? "";
 
-async function gatherMcpContext(surah: number, ayah: number): Promise<string> {
-  if (!McpUrl) return "";
-  let client: Awaited<ReturnType<typeof createMCPClient>> | null = null;
-  try {
-    client = await createMCPClient({ transport: { type: "sse", url: McpUrl } });
-    const tools = await client.tools();
-    // Heuristic: try a likely tool name; if not present, skip silently.
-    const toolName = Object.keys(tools).find((n) => /ayah|verse|tafsir|context/i.test(n));
-    if (!toolName) return "";
-    const tool = tools[toolName];
-    const out = await tool.execute?.({ surah, ayah, verseKey: `${surah}:${ayah}` }, { toolCallId: "ctx", messages: [] } as any);
-    return typeof out === "string" ? out : JSON.stringify(out).slice(0, 1500);
-  } catch (e) {
-    console.warn("MCP context skipped", String(e));
-    return "";
-  } finally {
-    try { await client?.close?.(); } catch { /* noop */ }
-  }
+async function gatherMcpContext(_surah: number, _ayah: number): Promise<string> {
+  // MCP client integration deferred — `ai` v6 moved MCP out of the core package.
+  // Suggestions are grounded in the ayah translation directly. When a stable
+  // remote MCP URL + AI SDK MCP client package is wired in, fetch tool output here.
+  return "";
 }
 
 export const generateLiveSuggestion = createServerFn({ method: "POST" })
