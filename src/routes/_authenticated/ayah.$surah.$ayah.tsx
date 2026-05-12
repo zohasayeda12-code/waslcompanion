@@ -48,6 +48,9 @@ function AyahDetail() {
   const carryFn = useServerFn(carryForward);
   const removeFn = useServerFn(removeIntention);
   const revisitFn = useServerFn(recordRevisit);
+  const contextFn = useServerFn(getAyahContext);
+
+  const [sheet, setSheet] = useState<SheetKind>(null);
 
   const { data: ayahData } = useQuery({ queryKey: ["ayah", s, a, "full"], queryFn: () => ayahFn({ data: { surah: s, ayah: a, includeTafsir: true } }) });
   const { data: intentions = [] } = useQuery({ queryKey: ["intentions", s, a], queryFn: () => intentionsFn({ data: { surah: s, ayah: a } }) });
@@ -55,6 +58,12 @@ function AyahDetail() {
   const { data: journey } = useQuery({ queryKey: ["journey"], queryFn: () => journeyFn() });
   const { data: bookmark } = useQuery({ queryKey: ["bookmark", s, a], queryFn: () => bookmarkedFn({ data: { surah: s, ayah: a } }) });
   const { data: highlight } = useQuery({ queryKey: ["highlight", s, a], queryFn: () => getHighlightFn({ data: { surah: s, ayah: a } }) });
+  const { data: contextData, isLoading: contextLoading } = useQuery({
+    queryKey: ["ayah-context", s, a],
+    queryFn: () => contextFn({ data: { surah: s, ayah: a } }),
+    enabled: sheet === "context",
+    staleTime: 24 * 60 * 60 * 1000,
+  });
 
   const isCurrent = journey?.current_surah === s && journey?.current_ayah === a;
   const activeForThis = active?.surah === s && active?.ayah === a ? active : null;
