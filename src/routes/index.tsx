@@ -1,26 +1,100 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { motion } from "motion/react";
+import { AppShell } from "@/components/app-shell";
+import { PrimaryLink } from "@/components/primary-button";
 
 export const Route = createFileRoute("/")({
-  component: Index,
+  head: () => ({
+    meta: [
+      { title: "Wasl — Read. Understand. Live the Ayah." },
+      {
+        name: "description",
+        content:
+          "Begin a calm journey with the Quran. Read, reflect, and live the Ayah.",
+      },
+    ],
+  }),
+  component: OnboardingScreen,
 });
 
-// IMPORTANT: Replace this placeholder. For sites with multiple pages (About, Services, Contact, etc.),
-// create separate route files (about.tsx, services.tsx, contact.tsx) — don't put all pages in this file.
-function PlaceholderIndex() {
-  return (
-    <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: "#fcfbf8" }}
-    >
-      <img
-        data-lovable-blank-page-placeholder="REMOVE_THIS"
-        src="https://cdn.gpteng.co/blank-app-v1.svg"
-        alt="Your app will live here!"
-      />
-    </div>
-  );
-}
+const fade = {
+  initial: { opacity: 0, y: 14 },
+  animate: { opacity: 1, y: 0 },
+};
 
-function Index() {
-  return <PlaceholderIndex />;
+function OnboardingScreen() {
+  return (
+    <AppShell className="justify-between">
+      <header className="flex items-center justify-between pt-2">
+        <span className="text-sm font-medium tracking-[0.18em] text-muted-foreground uppercase">
+          Wasl
+        </span>
+        <span
+          aria-hidden
+          className="inline-block size-2 rounded-full bg-[color:var(--gold)]"
+        />
+      </header>
+
+      <section className="flex flex-1 flex-col items-center justify-center text-center md:py-16">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.96 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
+          className="relative mb-10"
+        >
+          <div
+            aria-hidden
+            className="absolute inset-0 -z-10 blur-2xl"
+            style={{
+              background:
+                "radial-gradient(circle, oklch(0.85 0.08 82 / 0.5), transparent 70%)",
+            }}
+          />
+          <div className="flex size-24 items-center justify-center rounded-3xl bg-[var(--gradient-primary)] shadow-[var(--shadow-elevated)] md:size-28">
+            <svg
+              viewBox="0 0 64 64"
+              className="size-12 md:size-14"
+              fill="none"
+              stroke="oklch(0.88 0.12 82)"
+              strokeWidth="2.2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M48 32a18 18 0 1 1-18-18 14 14 0 0 0 18 18z" />
+            </svg>
+          </div>
+        </motion.div>
+
+        <motion.h1
+          {...fade}
+          transition={{ duration: 0.7, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
+          className="text-4xl leading-[1.1] font-medium tracking-tight text-foreground sm:text-5xl md:text-6xl"
+        >
+          Read. Understand.
+          <br />
+          <span className="italic text-primary">Live the Ayah.</span>
+        </motion.h1>
+
+        <motion.p
+          {...fade}
+          transition={{ duration: 0.7, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
+          className="mt-6 max-w-md text-balance text-base leading-relaxed text-muted-foreground md:text-lg"
+        >
+          A calm companion for your daily journey with the Quran — gentle,
+          focused, and made to feel close.
+        </motion.p>
+      </section>
+
+      <motion.footer
+        {...fade}
+        transition={{ duration: 0.7, delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
+        className="flex flex-col gap-3 pb-[max(env(safe-area-inset-bottom),0.5rem)]"
+      >
+        <PrimaryLink to="/login">Begin your journey</PrimaryLink>
+        <PrimaryLink to="/home" variant="ghost">
+          Continue as guest
+        </PrimaryLink>
+      </motion.footer>
+    </AppShell>
+  );
 }
