@@ -75,8 +75,8 @@
   --popover-foreground: oklch(0.97 0.012 95);
 
   /* Primary — luminous emerald */
-  --primary: oklch(0.74 0.13 168);
-  --primary-foreground: oklch(0.16 0.03 270);
+  --primary: oklch(0.62 0.13 168);
+  --primary-foreground: oklch(0.99 0.01 95);
 
   --secondary: oklch(0.28 0.035 268);
   --secondary-foreground: oklch(0.96 0.012 95);
