@@ -30,21 +30,23 @@ export async function generateAyahContext(surah: number, ayah: number): Promise<
   const translation = ayahData?.translation ?? "";
   const surahName = ayahData?.surahName ?? `Surah ${surah}`;
 
+  const mcpGround = await fetchQuranMcpContext(surah, ayah);
+
   const provider = createLovableAiGatewayProvider(apiKey);
   const model = provider.chatModel("google/gemini-2.5-flash");
 
   const prompt = `You are a careful Quranic scholar assistant. Provide a brief, accessible CONTEXT (Asbāb al-Nuzūl — reasons for revelation, and historical/situational background) for the following ayah.
 
+STRICT SOURCE RULE: Ground every factual claim in the GROUNDED MATERIAL below (from Quran MCP — mcp.quran.ai). Do not invent narrations. If a detail is not in the grounded material, say so plainly or omit it.
+
 Ayah: ${surahName} (${verseKey})
 Arabic: ${arabic}
 Translation: ${translation}
 
-Write 3–5 short paragraphs, plain prose (no headings, no markdown). Cover:
-- The historical setting / occasion of revelation if known (cite classical sources like Ibn Kathir, Wāhidī, Suyūṭī by name when relevant — no links).
-- The immediate context within the surah.
-- The core message and what it teaches.
+GROUNDED MATERIAL (from Quran MCP):
+${mcpGround || "(no MCP material returned — keep the response general and say Asbāb al-Nuzūl is not specifically reported here.)"}
 
-If Asbāb al-Nuzūl is not specifically reported, say so honestly and give the surah-level context instead. Keep it neutral, faithful to mainstream Sunni scholarship, and avoid speculation.`;
+Write 3–5 short paragraphs, plain prose (no headings, no markdown, no links). Cover the occasion of revelation if reported, the immediate context within the surah, and the core message.`;
 
   try {
     const { text } = await generateText({ model, prompt, temperature: 0.4 });
