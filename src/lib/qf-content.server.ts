@@ -137,7 +137,9 @@ export async function fetchAyah(
   let audioUrl: string | undefined;
   if (audioRes && audioRes.ok) {
     const j = (await audioRes.json()) as any;
-    const url = j.audio_file?.audio_url ?? j.audio_files?.[0]?.audio_url;
+    const list = j.audio_files ?? j.audio_file ?? [];
+    const first = Array.isArray(list) ? list[0] : list;
+    const url = first?.url ?? first?.audio_url;
     if (url) audioUrl = url.startsWith("http") ? url : `https://verses.quran.com/${url}`;
   }
 
