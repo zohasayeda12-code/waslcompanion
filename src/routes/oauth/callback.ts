@@ -21,20 +21,21 @@ export const Route = createFileRoute("/oauth/callback")({
   server: {
     handlers: {
       GET: async ({ request }) => {
+        console.log("STEP 1: callback route hit");
+
         const url = new URL(request.url);
         const code = url.searchParams.get("code");
         const state = url.searchParams.get("state");
         const error = url.searchParams.get("error");
         const errorDescription = url.searchParams.get("error_description");
 
+        console.log("STEP 2: query params parsed");
+
         const cookieRaw = getCookie("wasl_oauth");
         deleteCookie("wasl_oauth", { path: "/" });
 
         const fail = (reason: string) =>
-          Response.redirect(
-            new URL(`/login?error=${encodeURIComponent(reason)}`, url.origin),
-            302,
-          );
+          Response.redirect(new URL(`/login?error=${encodeURIComponent(reason)}`, url.origin), 302);
 
         if (error) return fail(errorDescription ?? error);
         if (!code || !state || !cookieRaw) return fail("invalid_callback");
@@ -45,7 +46,10 @@ export const Route = createFileRoute("/oauth/callback")({
         } catch {
           return fail("invalid_state");
         }
+
         if (parsed.state !== state) return fail("state_mismatch");
+
+        console.log("STEP 3: state validated");
 
         const redirectUri = getRedirectUri(url.origin);
         const body = new URLSearchParams({
@@ -57,12 +61,13 @@ export const Route = createFileRoute("/oauth/callback")({
         });
 
         // Confidential client: send secret via HTTP Basic auth.
-        const basic = Buffer.from(
-          `${qfConfig.clientId}:${qfConfig.clientSecret}`,
-        ).toString("base64");
+        const basic = Buffer.from(`${qfConfig.clientId}:${qfConfig.clientSecret}`).toString("base64");
 
         let tokenRes: Response;
+
         try {
+          console.log("STEP 4: token exchange starting");
+
           tokenRes = await fetch(qfConfig.tokenUrl, {
             method: "POST",
             headers: {
@@ -77,32 +82,41 @@ export const Route = createFileRoute("/oauth/callback")({
           return fail("token_endpoint_unreachable");
         }
 
+        console.log("STEP 5: token exchange request completed");
+
         if (!tokenRes.ok) {
           const txt = await tokenRes.text();
-          console.error(
-            "QF token exchange failed",
-            tokenRes.status,
-            txt.slice(0, 400),
-          );
+
+          console.error("QF token exchange failed", tokenRes.status, txt.slice(0, 400));
+
           return fail(`token_exchange_${tokenRes.status}`);
         }
 
         const tok = (await tokenRes.json()) as TokenResponse;
+
+        console.log("STEP 6: token JSON parsed");
+
         if (!tok.access_token) return fail("no_access_token");
 
+        console.log("STEP 7: access token exists");
+
+        console.log("STEP 8: session init starting");
+
         const session = await getWaslSession();
+
         await session.update({
           accessToken: tok.access_token,
           refreshToken: tok.refresh_token,
           tokenType: tok.token_type ?? "Bearer",
-          expiresAt: tok.expires_in
-            ? Date.now() + tok.expires_in * 1000
-            : undefined,
+          expiresAt: tok.expires_in ? Date.now() + tok.expires_in * 1000 : undefined,
         });
 
-        const target = parsed.redirect?.startsWith("/")
-          ? parsed.redirect
-          : "/home";
+        console.log("STEP 9: session update success");
+
+        const target = parsed.redirect?.startsWith("/") ? parsed.redirect : "/home";
+
+        console.log("STEP 10: redirecting to app");
+
         return Response.redirect(new URL(target, url.origin), 302);
       },
     },
