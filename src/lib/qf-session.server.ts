@@ -27,7 +27,6 @@ export function getWaslSession() {
       secure: true,
       sameSite: "lax",
       path: "/",
-      domain: ".lovable.app",
     },
   });
 }
