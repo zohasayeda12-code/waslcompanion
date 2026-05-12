@@ -153,14 +153,18 @@ function HomeScreen() {
 
         {/* Live This Ayah CTA */}
         <div className="mt-5">
-          <PrimaryLink
+          <Link
             to="/live/$surah/$ayah"
             params={{ surah: String(surah), ayah: String(ayah) }}
-            variant="gold"
+            className="group relative isolate inline-flex h-14 w-full items-center justify-center rounded-2xl px-6 text-base font-medium tracking-tight text-[oklch(0.20_0.04_60)] transition-all duration-200 ease-[var(--ease-spring)] active:scale-[0.97] before:pointer-events-none before:absolute before:inset-0 before:-z-10 before:rounded-[inherit] before:[background:linear-gradient(180deg,oklch(1_0_0_/_0.25),transparent_55%)]"
+            style={{
+              background: "var(--gradient-aurora)",
+              boxShadow: "var(--shadow-glow-gold)",
+            }}
           >
             <Sparkles className="mr-2 size-4" />
-            Live This Ayah
-          </PrimaryLink>
+            <span className="relative z-10">Live This Ayah</span>
+          </Link>
         </div>
       </motion.section>
 
