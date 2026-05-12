@@ -278,6 +278,8 @@ export type Database = {
           id: string
           notification_pref: string | null
           onboarded_at: string | null
+          qf_initial_sync_started_at: string | null
+          qf_initial_synced_at: string | null
           qf_user_id: string | null
           updated_at: string
         }
@@ -286,6 +288,8 @@ export type Database = {
           id?: string
           notification_pref?: string | null
           onboarded_at?: string | null
+          qf_initial_sync_started_at?: string | null
+          qf_initial_synced_at?: string | null
           qf_user_id?: string | null
           updated_at?: string
         }
@@ -294,6 +298,8 @@ export type Database = {
           id?: string
           notification_pref?: string | null
           onboarded_at?: string | null
+          qf_initial_sync_started_at?: string | null
+          qf_initial_synced_at?: string | null
           qf_user_id?: string | null
           updated_at?: string
         }
@@ -406,6 +412,36 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      sync_failures: {
+        Row: {
+          created_at: string
+          error: string | null
+          id: string
+          operation: string
+          payload: Json | null
+          resource: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          error?: string | null
+          id?: string
+          operation: string
+          payload?: Json | null
+          resource: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          error?: string | null
+          id?: string
+          operation?: string
+          payload?: Json | null
+          resource?: string
+          user_id?: string
+        }
+        Relationships: []
       }
     }
     Views: {
