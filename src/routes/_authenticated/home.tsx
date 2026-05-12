@@ -38,13 +38,27 @@ function HomeScreen() {
             A moment with the Ayah
           </h1>
         </motion.div>
-        <motion.div
-          variants={item}
-          className="flex size-11 items-center justify-center rounded-full bg-secondary text-sm font-medium text-secondary-foreground"
-          aria-label="Profile"
-        >
-          W
-        </motion.div>
+        <motion.form variants={item} method="post" action="/api/auth/logout">
+          <button
+            type="submit"
+            aria-label="Sign out"
+            className="flex size-11 items-center justify-center rounded-full bg-secondary text-sm font-medium text-secondary-foreground transition-colors hover:bg-accent active:scale-[0.96]"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              className="size-4"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+              <polyline points="16 17 21 12 16 7" />
+              <line x1="21" y1="12" x2="9" y2="12" />
+            </svg>
+          </button>
+        </motion.form>
       </motion.header>
 
       {/* Ayah of the moment */}
