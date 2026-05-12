@@ -98,21 +98,14 @@ function AyahDetail() {
       )}
 
       <section className="mt-8">
-        <div className="flex items-baseline justify-between gap-3">
-          <p className="text-[11px] uppercase tracking-[0.22em] text-muted-foreground">
-            Surah {s}{ayahData?.surahName ? ` · ${ayahData.surahName}` : ""} · Ayah {a}
-          </p>
-          {ayahData?.surahNameArabic && (
-            <p className="text-base text-foreground/70" style={{ fontFamily: "var(--font-display)", direction: "rtl" }}>
-              {ayahData.surahNameArabic}
-            </p>
-          )}
-        </div>
-        <p className="mt-6 text-3xl leading-relaxed font-medium md:text-4xl" style={{ fontFamily: "var(--font-display)", direction: "rtl" }}>
+        <p className="text-3xl leading-relaxed font-medium md:text-4xl" style={{ fontFamily: "var(--font-display)", direction: "rtl" }}>
           {ayahData?.arabic || "···"}
         </p>
         {ayahData?.translation && <p className="mt-6 text-lg leading-relaxed text-foreground/90">{ayahData.translation}</p>}
         {ayahData?.transliteration && <p className="mt-3 text-sm italic text-muted-foreground">{ayahData.transliteration}</p>}
+        <p className="mt-5 text-[11px] uppercase tracking-[0.22em] text-muted-foreground">
+          {ayahData?.surahName ?? `Surah ${s}`} · {s}:{a}
+        </p>
 
         {ayahData?.audioUrl && (
           <audio controls preload="none" src={ayahData.audioUrl} className="mt-5 w-full">
