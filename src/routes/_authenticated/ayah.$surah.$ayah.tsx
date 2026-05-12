@@ -4,6 +4,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { z } from "zod";
 import { AppShell } from "@/components/app-shell";
+import { BookOpen, Bookmark, Sparkles } from "lucide-react";
 import { AmbientLiveGlow } from "@/components/ambient-live-glow";
 // PrimaryLink replaced with inline Link to keep TanStack typed-route inference
 import { getAyah } from "@/lib/qf-content.functions";
@@ -97,60 +98,118 @@ function AyahDetail() {
         </Link>
       )}
 
-      <section className="mt-8">
-        <p className="text-3xl leading-relaxed font-medium md:text-4xl" style={{ fontFamily: "var(--font-display)", direction: "rtl" }}>
+      {/* Ayah card */}
+      <section className="mt-6 rounded-3xl border border-border/60 bg-card/60 p-6 shadow-[var(--shadow-soft)] backdrop-blur-sm">
+        <div className="flex items-center justify-between">
+          <p className="text-xs uppercase tracking-[0.22em] text-[color:var(--gold)]">
+            {ayahData?.surahName ?? `Surah ${s}`}
+            {ayahData?.surahNameArabic && (
+              <span className="ml-2 text-muted-foreground" style={{ fontFamily: "var(--font-display)" }}>
+                {ayahData.surahNameArabic}
+              </span>
+            )}
+          </p>
+          <p className="text-xs tracking-[0.18em] text-[color:var(--emerald)]">{s}:{a}</p>
+        </div>
+
+        <p
+          className="mt-6 text-center text-3xl leading-loose font-medium md:text-4xl"
+          style={{ fontFamily: "var(--font-display)", direction: "rtl" }}
+        >
           {ayahData?.arabic || "···"}
         </p>
-        {ayahData?.translation && <p className="mt-6 text-lg leading-relaxed text-foreground/90">{ayahData.translation}</p>}
-        {ayahData?.transliteration && <p className="mt-3 text-sm italic text-muted-foreground">{ayahData.transliteration}</p>}
-        <p className="mt-5 text-[11px] uppercase tracking-[0.22em] text-muted-foreground">
-          {ayahData?.surahName ?? `Surah ${s}`} · {s}:{a}
-        </p>
 
-        {ayahData?.audioUrl && (
-          <audio controls preload="none" src={ayahData.audioUrl} className="mt-5 w-full">
+        <div className="mt-6 h-px w-full bg-border/60" />
+
+        {ayahData?.translation ? (
+          <p className="mt-5 text-base italic leading-relaxed text-foreground/90">
+            “{ayahData.translation}”
+          </p>
+        ) : ayahData ? (
+          <p className="mt-5 text-sm italic text-muted-foreground">Translation unavailable.</p>
+        ) : null}
+
+        {ayahData?.transliteration && (
+          <p className="mt-3 text-sm leading-relaxed text-[color:var(--emerald)]/90">
+            {ayahData.transliteration}
+          </p>
+        )}
+
+        {/* Icon action row */}
+        <div className="mt-6 flex flex-wrap items-center gap-2">
+          {ayahData?.tafsir && ayahData.tafsir.text && (
+            <button
+              onClick={() => {
+                const el = document.getElementById("tafsir-panel");
+                if (el) el.toggleAttribute("open");
+              }}
+              className="inline-flex items-center gap-1.5 rounded-full border border-[color:var(--gold)]/40 bg-[oklch(0.82_0.14_82_/_0.10)] px-3 py-1.5 text-xs font-medium text-[color:var(--gold)]"
+              aria-label="Tafsir"
+            >
+              <BookOpen className="size-3.5" /> Tafsir
+            </button>
+          )}
+          <button
+            onClick={async () => {
+              await toggleBookmarkFn({ data: { surah: s, ayah: a } });
+              qc.invalidateQueries({ queryKey: ["bookmark", s, a] });
+            }}
+            className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium ${
+              bookmark?.bookmarked
+                ? "border-[color:var(--emerald)]/50 bg-[oklch(0.74_0.14_168_/_0.12)] text-[color:var(--emerald)]"
+                : "border-border/60 bg-secondary/50 text-foreground/80"
+            }`}
+            aria-label="Bookmark"
+          >
+            <Bookmark className="size-3.5" /> {bookmark?.bookmarked ? "Bookmarked" : "Bookmark"}
+          </button>
+          <button
+            className="inline-flex items-center gap-1.5 rounded-full border border-[color:var(--violet)]/40 bg-[oklch(0.70_0.16_295_/_0.10)] px-3 py-1.5 text-xs font-medium text-[color:var(--violet)]"
+            aria-label="Ask"
+          >
+            <Sparkles className="size-3.5" /> Ask
+          </button>
+
+          <span className="ml-1 hidden h-5 w-px bg-border/60 sm:inline-block" />
+
+          {COLORS.map((c) => (
+            <button
+              key={c}
+              onClick={async () => {
+                const next = highlight?.color === c ? null : c;
+                await setHighlightFn({ data: { surah: s, ayah: a, color: next } });
+                qc.invalidateQueries({ queryKey: ["highlight", s, a] });
+              }}
+              aria-label={`Highlight ${c}`}
+              className={`size-5 rounded-full border-2 ${highlight?.color === c ? "border-foreground" : "border-transparent"}`}
+              style={{ background: c === "gold" ? "var(--gold)" : c === "blue" ? "oklch(0.78 0.08 240)" : c === "green" ? "oklch(0.75 0.10 150)" : "oklch(0.72 0.12 300)" }}
+            />
+          ))}
+        </div>
+      </section>
+
+      {/* Audio card */}
+      {ayahData?.audioUrl && (
+        <section className="mt-4 rounded-3xl border border-border/60 bg-card/60 p-4 backdrop-blur-sm">
+          <audio controls preload="none" src={ayahData.audioUrl} className="w-full">
             Your browser does not support audio playback.
           </audio>
-        )}
+          <p className="mt-2 text-[11px] uppercase tracking-[0.2em] text-muted-foreground">Mishary Al-Afasy</p>
+        </section>
+      )}
 
-        {ayahData?.tafsir && ayahData.tafsir.text && (
-          <details className="mt-6 rounded-2xl border border-border bg-card/50 p-4 text-sm leading-relaxed">
-            <summary className="cursor-pointer text-xs uppercase tracking-[0.2em] text-muted-foreground">
-              Tafsir · {ayahData.tafsir.name}
-            </summary>
-            <div
-              className="mt-3 text-foreground/85 [&_p]:mt-2"
-              dangerouslySetInnerHTML={{ __html: ayahData.tafsir.text }}
-            />
-          </details>
-        )}
-      </section>
-
-      {/* Toolbar */}
-      <section className="mt-6 flex flex-wrap items-center gap-2">
-        <button
-          onClick={async () => {
-            await toggleBookmarkFn({ data: { surah: s, ayah: a } });
-            qc.invalidateQueries({ queryKey: ["bookmark", s, a] });
-          }}
-          className={`rounded-full px-4 py-2 text-sm ${bookmark?.bookmarked ? "bg-primary text-primary-foreground" : "bg-secondary"}`}
-        >
-          {bookmark?.bookmarked ? "Bookmarked" : "Bookmark"}
-        </button>
-        {COLORS.map((c) => (
-          <button
-            key={c}
-            onClick={async () => {
-              const next = highlight?.color === c ? null : c;
-              await setHighlightFn({ data: { surah: s, ayah: a, color: next } });
-              qc.invalidateQueries({ queryKey: ["highlight", s, a] });
-            }}
-            aria-label={`Highlight ${c}`}
-            className={`size-7 rounded-full border-2 ${highlight?.color === c ? "border-foreground" : "border-transparent"}`}
-            style={{ background: c === "gold" ? "var(--gold)" : c === "blue" ? "oklch(0.78 0.08 240)" : c === "green" ? "oklch(0.75 0.10 150)" : "oklch(0.72 0.12 300)" }}
+      {/* Tafsir collapsible */}
+      {ayahData?.tafsir && ayahData.tafsir.text && (
+        <details id="tafsir-panel" className="mt-4 rounded-3xl border border-border/60 bg-card/40 p-5 text-sm leading-relaxed backdrop-blur-sm">
+          <summary className="cursor-pointer text-xs uppercase tracking-[0.2em] text-[color:var(--gold)]">
+            Tafsir · {ayahData.tafsir.name}
+          </summary>
+          <div
+            className="mt-3 text-foreground/85 [&_p]:mt-2"
+            dangerouslySetInnerHTML={{ __html: ayahData.tafsir.text }}
           />
-        ))}
-      </section>
+        </details>
+      )}
 
       {/* Journey panel */}
       <section className="mt-8 rounded-3xl border border-border bg-card p-5">

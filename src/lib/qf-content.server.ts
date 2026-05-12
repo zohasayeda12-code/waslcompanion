@@ -123,9 +123,11 @@ export async function fetchAyah(
 
   if (verseRes && verseRes.ok) {
     const j = (await verseRes.json()) as any;
-    const v = j.verse ?? j;
+    const v = j.verse ?? j.verses?.[0] ?? j;
     arabic = v.text_uthmani ?? v.text_imlaei ?? "";
-    translation = v.translations?.[0]?.text ?? "";
+    const tr = v.translations?.[0];
+    translation = (typeof tr === "string" ? tr : tr?.text) ?? "";
+    if (translation) translation = translation.replace(/<[^>]+>/g, "").trim();
     if (Array.isArray(v.words)) {
       transliteration = v.words
         .map((w: any) => w.transliteration?.text ?? w.transliteration ?? "")
