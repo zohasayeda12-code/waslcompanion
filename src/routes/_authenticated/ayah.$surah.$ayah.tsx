@@ -47,7 +47,7 @@ function AyahDetail() {
   const removeFn = useServerFn(removeIntention);
   const revisitFn = useServerFn(recordRevisit);
 
-  const { data: ayahData } = useQuery({ queryKey: ["ayah", s, a], queryFn: () => ayahFn({ data: { surah: s, ayah: a } }) });
+  const { data: ayahData } = useQuery({ queryKey: ["ayah", s, a, "full"], queryFn: () => ayahFn({ data: { surah: s, ayah: a, includeTafsir: true } }) });
   const { data: intentions = [] } = useQuery({ queryKey: ["intentions", s, a], queryFn: () => intentionsFn({ data: { surah: s, ayah: a } }) });
   const { data: active } = useQuery({ queryKey: ["active-intention"], queryFn: () => activeFn() });
   const { data: journey } = useQuery({ queryKey: ["journey"], queryFn: () => journeyFn() });
