@@ -28,7 +28,7 @@ export const qfConfig = {
     return process.env.QF_TOKEN_URL ?? "https://prelive-oauth2.quran.foundation/oauth2/token";
   },
   get scopes() {
-    return process.env.QF_SCOPES ?? "openid offline profile";
+    return process.env.QF_SCOPES ?? "openid profile";
   },
 };
 
