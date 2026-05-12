@@ -1,18 +1,53 @@
-import { getWaslSession } from "./qf-session.server";
+import { qfConfig } from "./qf-config.server";
 
-const CONTENT_BASE = process.env.QF_CONTENT_BASE_URL ?? "https://apis.quran.foundation/content/api/v4";
+const CONTENT_BASE = process.env.QF_CONTENT_BASE_URL ?? "https://apis-prelive.quran.foundation/content/api/v4";
+const CONTENT_TOKEN_URL = process.env.QF_CONTENT_TOKEN_URL ?? "https://prelive-oauth2.quran.foundation/oauth2/token";
+const CONTENT_SCOPES = process.env.QF_CONTENT_SCOPES ?? "content";
+
+// Cached client_credentials token for the Content API. Content API auth is
+// independent from per-user OAuth — it uses an app-level token with the
+// `content` scope.
+let cachedContentToken: { token: string; expiresAt: number } | null = null;
+
+async function getContentToken(): Promise<string> {
+  if (cachedContentToken && cachedContentToken.expiresAt > Date.now() + 60_000) {
+    return cachedContentToken.token;
+  }
+  const id = qfConfig.clientId;
+  const secret = qfConfig.clientSecret;
+  if (!id || !secret) throw new Error("QF_CLIENT_ID / QF_CLIENT_SECRET missing");
+
+  const basic = Buffer.from(`${id}:${secret}`).toString("base64");
+  const body = new URLSearchParams({ grant_type: "client_credentials", scope: CONTENT_SCOPES });
+  const res = await fetch(CONTENT_TOKEN_URL, {
+    method: "POST",
+    headers: {
+      Authorization: `Basic ${basic}`,
+      "Content-Type": "application/x-www-form-urlencoded",
+      Accept: "application/json",
+    },
+    body,
+  });
+  if (!res.ok) {
+    const t = await res.text().catch(() => "");
+    throw new Error(`content token failed: ${res.status} ${t.slice(0, 200)}`);
+  }
+  const j = (await res.json()) as { access_token: string; expires_in: number };
+  cachedContentToken = {
+    token: j.access_token,
+    expiresAt: Date.now() + (j.expires_in ?? 3600) * 1000,
+  };
+  return j.access_token;
+}
 
 async function qfFetch(path: string, init?: RequestInit): Promise<Response> {
-  const session = await getWaslSession();
-  const token = session.data?.accessToken;
-  if (!token) throw new Response("Unauthorized", { status: 401 });
+  const token = await getContentToken();
   return fetch(`${CONTENT_BASE}${path}`, {
     ...init,
     headers: {
       Accept: "application/json",
-      Authorization: `Bearer ${token}`,
       "x-auth-token": token,
-      "x-client-id": process.env.QF_CLIENT_ID ?? "",
+      "x-client-id": qfConfig.clientId,
       ...(init?.headers ?? {}),
     },
   });
@@ -28,16 +63,16 @@ export type AyahPayload = {
   translation: string;
   transliteration?: string;
   audioUrl?: string;
+  tafsir?: { name: string; text: string } | null;
 };
 
-// Tiny in-memory chapter-name cache. Chapters never change.
 const chapterCache = new Map<number, { name: string; nameArabic: string }>();
 
 async function fetchChapterName(surah: number): Promise<{ name?: string; nameArabic?: string }> {
   const cached = chapterCache.get(surah);
   if (cached) return { name: cached.name, nameArabic: cached.nameArabic };
   try {
-    const res = await qfFetch(`/chapters/${surah}`);
+    const res = await qfFetch(`/chapters/${surah}?language=en`);
     if (!res.ok) return {};
     const j = (await res.json()) as any;
     const c = j.chapter ?? j;
@@ -45,54 +80,91 @@ async function fetchChapterName(surah: number): Promise<{ name?: string; nameAra
     const nameArabic = c?.name_arabic ?? "";
     if (name) chapterCache.set(surah, { name, nameArabic });
     return { name, nameArabic };
-  } catch {
+  } catch (e) {
+    console.warn("fetchChapterName failed", surah, String(e));
     return {};
   }
 }
 
 /**
- * Fetch a single ayah. Returns a graceful stub if the QF Content API is not
- * configured or the upstream call fails — keeps the app rendering while
- * content credentials are being wired up.
+ * Fetch a single ayah using the QF Content API.
+ *  - /chapters/{id}            → surah name (en + ar)
+ *  - /verses/by_key/{key}      → arabic + translation + transliteration
+ *  - /chapter_recitations/7/{key} → audio (Mishary Alafasy reciter id 7)
+ *  - /tafsirs/{id}/by_ayah/{key} → tafsir text (default 169 = Maarif-ul-Quran EN)
  */
-export async function fetchAyah(surah: number, ayah: number): Promise<AyahPayload> {
+export async function fetchAyah(
+  surah: number,
+  ayah: number,
+  opts?: { translationId?: number; tafsirId?: number; reciterId?: number; includeTafsir?: boolean },
+): Promise<AyahPayload> {
   const verseKey = `${surah}:${ayah}`;
-  const [chapter, verseRes] = await Promise.all([
+  const translationId = opts?.translationId ?? 131; // Sahih International
+  const reciterId = opts?.reciterId ?? 7;
+  const tafsirId = opts?.tafsirId ?? 169;
+
+  const [chapter, verseRes, audioRes, tafsirRes] = await Promise.all([
     fetchChapterName(surah),
     qfFetch(
-      `/verses/by_key/${verseKey}?words=false&translations=131&fields=text_uthmani,text_imlaei&translation_fields=text&audio=1`,
+      `/verses/by_key/${verseKey}?words=true&translations=${translationId}&fields=text_uthmani,text_imlaei&word_fields=text_uthmani,transliteration&translation_fields=text`,
     ).catch((e) => {
-      console.warn("fetchAyah fallback", verseKey, String(e));
+      console.warn("verses.by_key failed", verseKey, String(e));
       return null;
     }),
+    qfFetch(`/chapter_recitations/${reciterId}/${surah}`).catch(() => null),
+    opts?.includeTafsir
+      ? qfFetch(`/tafsirs/${tafsirId}/by_ayah/${verseKey}`).catch(() => null)
+      : Promise.resolve(null),
   ]);
-  if (!verseRes || !verseRes.ok) {
-    return {
-      surah,
-      ayah,
-      verseKey,
-      surahName: chapter.name,
-      surahNameArabic: chapter.nameArabic,
-      arabic: "",
-      translation: "",
-    };
+
+  let arabic = "";
+  let translation = "";
+  let transliteration: string | undefined;
+
+  if (verseRes && verseRes.ok) {
+    const j = (await verseRes.json()) as any;
+    const v = j.verse ?? j;
+    arabic = v.text_uthmani ?? v.text_imlaei ?? "";
+    translation = v.translations?.[0]?.text ?? "";
+    if (Array.isArray(v.words)) {
+      transliteration = v.words
+        .map((w: any) => w.transliteration?.text ?? w.transliteration ?? "")
+        .filter(Boolean)
+        .join(" ");
+    }
   }
-  const j = (await verseRes.json()) as any;
-  const v = j.verse ?? j;
+
+  let audioUrl: string | undefined;
+  if (audioRes && audioRes.ok) {
+    const j = (await audioRes.json()) as any;
+    const url = j.audio_file?.audio_url ?? j.audio_files?.[0]?.audio_url;
+    if (url) audioUrl = url.startsWith("http") ? url : `https://verses.quran.com/${url}`;
+  }
+
+  let tafsir: AyahPayload["tafsir"] = null;
+  if (tafsirRes && tafsirRes.ok) {
+    const j = (await tafsirRes.json()) as any;
+    const t = j.tafsir ?? j.tafsirs?.[0];
+    if (t) tafsir = { name: t.resource_name ?? t.translated_name?.name ?? "Tafsir", text: t.text ?? "" };
+  }
+
   return {
     surah,
     ayah,
     verseKey,
     surahName: chapter.name,
     surahNameArabic: chapter.nameArabic,
-    arabic: v.text_uthmani ?? v.text_imlaei ?? "",
-    translation: v.translations?.[0]?.text ?? "",
-    transliteration: v.text_transliteration ?? undefined,
-    audioUrl: v.audio?.url ? `https://verses.quran.com/${v.audio.url}` : undefined,
+    arabic,
+    translation,
+    transliteration: transliteration || undefined,
+    audioUrl,
+    tafsir,
   };
 }
 
-export async function searchQuranContent(query: string): Promise<Array<{ surah: number; ayah: number; preview: string }>> {
+export async function searchQuranContent(
+  query: string,
+): Promise<Array<{ surah: number; ayah: number; preview: string }>> {
   try {
     const res = await qfFetch(`/search?q=${encodeURIComponent(query)}&size=20&language=en`);
     if (!res.ok) return [];

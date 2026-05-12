@@ -47,7 +47,7 @@ function AyahDetail() {
   const removeFn = useServerFn(removeIntention);
   const revisitFn = useServerFn(recordRevisit);
 
-  const { data: ayahData } = useQuery({ queryKey: ["ayah", s, a], queryFn: () => ayahFn({ data: { surah: s, ayah: a } }) });
+  const { data: ayahData } = useQuery({ queryKey: ["ayah", s, a, "full"], queryFn: () => ayahFn({ data: { surah: s, ayah: a, includeTafsir: true } }) });
   const { data: intentions = [] } = useQuery({ queryKey: ["intentions", s, a], queryFn: () => intentionsFn({ data: { surah: s, ayah: a } }) });
   const { data: active } = useQuery({ queryKey: ["active-intention"], queryFn: () => activeFn() });
   const { data: journey } = useQuery({ queryKey: ["journey"], queryFn: () => journeyFn() });
@@ -98,11 +98,39 @@ function AyahDetail() {
       )}
 
       <section className="mt-8">
-        <p className="text-3xl leading-relaxed font-medium md:text-4xl" style={{ fontFamily: "var(--font-display)", direction: "rtl" }}>
+        <div className="flex items-baseline justify-between gap-3">
+          <p className="text-[11px] uppercase tracking-[0.22em] text-muted-foreground">
+            Surah {s}{ayahData?.surahName ? ` · ${ayahData.surahName}` : ""} · Ayah {a}
+          </p>
+          {ayahData?.surahNameArabic && (
+            <p className="text-base text-foreground/70" style={{ fontFamily: "var(--font-display)", direction: "rtl" }}>
+              {ayahData.surahNameArabic}
+            </p>
+          )}
+        </div>
+        <p className="mt-6 text-3xl leading-relaxed font-medium md:text-4xl" style={{ fontFamily: "var(--font-display)", direction: "rtl" }}>
           {ayahData?.arabic || "···"}
         </p>
         {ayahData?.translation && <p className="mt-6 text-lg leading-relaxed text-foreground/90">{ayahData.translation}</p>}
         {ayahData?.transliteration && <p className="mt-3 text-sm italic text-muted-foreground">{ayahData.transliteration}</p>}
+
+        {ayahData?.audioUrl && (
+          <audio controls preload="none" src={ayahData.audioUrl} className="mt-5 w-full">
+            Your browser does not support audio playback.
+          </audio>
+        )}
+
+        {ayahData?.tafsir && ayahData.tafsir.text && (
+          <details className="mt-6 rounded-2xl border border-border bg-card/50 p-4 text-sm leading-relaxed">
+            <summary className="cursor-pointer text-xs uppercase tracking-[0.2em] text-muted-foreground">
+              Tafsir · {ayahData.tafsir.name}
+            </summary>
+            <div
+              className="mt-3 text-foreground/85 [&_p]:mt-2"
+              dangerouslySetInnerHTML={{ __html: ayahData.tafsir.text }}
+            />
+          </details>
+        )}
       </section>
 
       {/* Toolbar */}
