@@ -100,35 +100,49 @@ function LoginScreen() {
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
-        className="mt-14 flex flex-1 flex-col md:mt-20"
+        className="mt-10 flex flex-1 flex-col md:mt-12"
       >
-        <div className="flex size-14 items-center justify-center rounded-2xl bg-[var(--gradient-primary)] shadow-[var(--shadow-soft)]">
-          <svg
-            viewBox="0 0 64 64"
-            className="size-7"
-            fill="none"
-            stroke="oklch(0.88 0.12 82)"
-            strokeWidth="2.4"
-            strokeLinecap="round"
-            strokeLinejoin="round"
+        {/* Hero orb with concentric aurora rings */}
+        <div className="relative flex size-24 items-center justify-center">
+          <div
+            aria-hidden
+            className="absolute inset-0 animate-pulse-slow rounded-full opacity-70 blur-2xl"
+            style={{ background: "var(--gradient-aurora)" }}
+          />
+          <div
+            className="relative flex size-16 items-center justify-center rounded-3xl"
+            style={{
+              background: "var(--gradient-primary)",
+              boxShadow: "var(--shadow-glow-primary)",
+            }}
           >
-            <path d="M48 32a18 18 0 1 1-18-18 14 14 0 0 0 18 18z" />
-          </svg>
+            <svg
+              viewBox="0 0 64 64"
+              className="size-8"
+              fill="none"
+              stroke="oklch(0.95 0.10 82)"
+              strokeWidth="2.4"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M48 32a18 18 0 1 1-18-18 14 14 0 0 0 18 18z" />
+            </svg>
+          </div>
         </div>
 
-        <h1 className="mt-8 text-3xl font-medium tracking-tight md:text-4xl">
-          Welcome to Wasl
+        <h1 className="mt-8 text-[clamp(2rem,7vw,2.75rem)] font-medium tracking-tight">
+          Welcome to <span className="text-aurora">Wasl</span>
         </h1>
         <p className="mt-3 max-w-sm text-balance text-muted-foreground">
           Sign in with your Quran.Foundation account to keep your bookmarks,
-          reflections and streak in sync.
+          reflections and journey in sync.
         </p>
 
         {error && (
           <motion.div
             initial={{ opacity: 0, y: -4 }}
             animate={{ opacity: 1, y: 0 }}
-            className="mt-6 rounded-2xl border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive"
+            className="mt-6 rounded-2xl border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive"
             role="alert"
           >
             {prettyError(error)}
@@ -147,12 +161,16 @@ function LoginScreen() {
             <a
               href={loginHref}
               onClick={() => setRedirecting(true)}
-              className="inline-flex h-14 w-full items-center justify-center gap-2 rounded-2xl bg-[var(--gradient-primary)] px-6 text-base font-medium tracking-tight text-primary-foreground shadow-[var(--shadow-soft)] transition-all duration-300 ease-out hover:shadow-[var(--shadow-elevated)] active:scale-[0.985]"
+              className="group relative isolate inline-flex h-14 w-full items-center justify-center gap-2 rounded-2xl px-6 text-base font-medium tracking-tight text-primary-foreground transition-all duration-200 ease-[var(--ease-spring)] active:scale-[0.97] before:pointer-events-none before:absolute before:inset-0 before:-z-10 before:rounded-[inherit] before:[background:linear-gradient(180deg,oklch(1_0_0_/_0.18),transparent_55%)]"
+              style={{
+                background: "var(--gradient-primary)",
+                boxShadow: "var(--shadow-glow-primary)",
+              }}
             >
-              <span>Sign in with Quran.Foundation</span>
+              <span className="relative z-10">Sign in with Quran.Foundation</span>
               <svg
                 viewBox="0 0 24 24"
-                className="size-4"
+                className="relative z-10 size-4"
                 fill="none"
                 stroke="currentColor"
                 strokeWidth="2"
@@ -176,7 +194,7 @@ function LoginScreen() {
           href="https://quran.foundation"
           target="_blank"
           rel="noreferrer"
-          className="font-medium text-primary hover:underline"
+          className="font-medium text-[color:var(--gold)] hover:underline"
         >
           Create an account
         </a>
@@ -187,7 +205,7 @@ function LoginScreen() {
 
 function NotConfigured() {
   return (
-    <div className="mt-10 rounded-2xl border border-border bg-card p-5 text-sm shadow-[var(--shadow-soft)]">
+    <div className="glass mt-10 rounded-2xl p-5 text-sm">
       <p className="font-medium text-foreground">Setup required</p>
       <p className="mt-2 text-muted-foreground">
         Quran.Foundation OAuth credentials are not yet configured on this

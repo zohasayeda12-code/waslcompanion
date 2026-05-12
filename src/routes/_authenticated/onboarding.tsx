@@ -1,10 +1,12 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
-import { motion } from "motion/react";
+import { AnimatePresence, motion } from "motion/react";
 import { AppShell } from "@/components/app-shell";
 import { PrimaryButton } from "@/components/primary-button";
+import { GlassCard } from "@/components/glass-card";
 import { completeOnboarding } from "@/lib/profile.functions";
+import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/onboarding")({
   head: () => ({
@@ -16,18 +18,27 @@ export const Route = createFileRoute("/_authenticated/onboarding")({
   component: Onboarding,
 });
 
-const STEPS = ["welcome", "philosophy", "auth", "notifications", "style", "first-ayah"] as const;
+const STEPS = [
+  "welcome",
+  "philosophy",
+  "auth",
+  "notifications",
+  "style",
+  "first-ayah",
+] as const;
 type Step = (typeof STEPS)[number];
 
 function Onboarding() {
   const [step, setStep] = useState<Step>("welcome");
-  const [notificationPref, setNotificationPref] = useState<"allow" | "maybe_later">("maybe_later");
+  const [notificationPref, setNotificationPref] =
+    useState<"allow" | "maybe_later">("maybe_later");
   const navigate = useNavigate();
   const complete = useServerFn(completeOnboarding);
 
+  const idx = STEPS.indexOf(step);
+
   const next = () => {
-    const i = STEPS.indexOf(step);
-    if (i < STEPS.length - 1) setStep(STEPS[i + 1]);
+    if (idx < STEPS.length - 1) setStep(STEPS[idx + 1]);
   };
 
   const finish = async () => {
@@ -37,91 +48,138 @@ function Onboarding() {
 
   return (
     <AppShell className="justify-between">
-      <header className="pt-2 text-sm font-medium tracking-[0.18em] text-muted-foreground uppercase">Wasl</header>
-      <motion.section
-        key={step}
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="flex flex-1 flex-col items-center justify-center text-center"
-      >
-        {step === "welcome" && (
-          <>
-            <h1 className="text-4xl font-medium tracking-tight md:text-5xl">One ayah at a time.</h1>
-            <p className="mt-6 max-w-sm text-balance text-base text-muted-foreground">
-              Wasl helps you build a gentle, lasting relationship with the Quran — through reflection,
-              remembrance, and gradual implementation.
-            </p>
-          </>
-        )}
-        {step === "philosophy" && (
-          <>
-            <h1 className="text-3xl font-medium tracking-tight md:text-4xl">No rush. No race.</h1>
-            <p className="mt-6 max-w-sm text-balance text-base text-muted-foreground">
-              You do not need to rush through the Quran. Sometimes one ayah can stay with you for days.
-              Wasl honors that pace.
-            </p>
-          </>
-        )}
-        {step === "auth" && (
-          <>
-            <h1 className="text-3xl font-medium tracking-tight md:text-4xl">You're signed in.</h1>
-            <p className="mt-6 max-w-sm text-balance text-base text-muted-foreground">
-              Bookmarks, reflections, and your journey will sync across Quran.Foundation apps you use.
-            </p>
-          </>
-        )}
-        {step === "notifications" && (
-          <>
-            <h1 className="text-3xl font-medium tracking-tight md:text-4xl">Gentle reminders?</h1>
-            <p className="mt-6 max-w-sm text-balance text-base text-muted-foreground">
-              When you choose to live an ayah, we can softly remind you. No guilt, no pressure.
-            </p>
-            <div className="mt-8 flex gap-3">
-              <button
-                onClick={async () => {
-                  if ("Notification" in window) await Notification.requestPermission();
-                  setNotificationPref("allow");
-                  next();
-                }}
-                className="rounded-2xl bg-primary px-5 py-3 text-sm font-medium text-primary-foreground"
-              >
-                Allow Notifications
-              </button>
-              <button
-                onClick={() => {
-                  setNotificationPref("maybe_later");
-                  next();
-                }}
-                className="rounded-2xl bg-secondary px-5 py-3 text-sm font-medium text-secondary-foreground"
-              >
-                Maybe Later
-              </button>
-            </div>
-          </>
-        )}
-        {step === "style" && (
-          <>
-            <h1 className="text-3xl font-medium tracking-tight md:text-4xl">Sequential Journey</h1>
-            <p className="mt-6 max-w-sm text-balance text-base text-muted-foreground">
-              Move through the Quran one ayah at a time, starting from Sūrah Al-Fātiḥah. You can revisit
-              any ayah whenever your heart returns to it.
-            </p>
-          </>
-        )}
-        {step === "first-ayah" && (
-          <>
-            <h1 className="text-3xl font-medium tracking-tight md:text-4xl">Your first ayah awaits.</h1>
-            <p className="mt-6 max-w-sm text-balance text-base text-muted-foreground">
-              Sūrah Al-Fātiḥah · 1:1. Take your time. There's no clock here.
-            </p>
-          </>
-        )}
-      </motion.section>
+      <header className="flex items-center justify-between">
+        <span className="text-sm font-medium tracking-[0.22em] text-aurora uppercase">
+          Wasl
+        </span>
+        {/* Progress dots */}
+        <div className="flex items-center gap-1.5">
+          {STEPS.map((s, i) => (
+            <span
+              key={s}
+              className={cn(
+                "h-1.5 rounded-full transition-all duration-500",
+                i === idx
+                  ? "w-6 bg-[color:var(--gold)] shadow-[0_0_12px_oklch(0.82_0.14_82_/_0.6)]"
+                  : i < idx
+                    ? "w-1.5 bg-white/40"
+                    : "w-1.5 bg-white/10"
+              )}
+            />
+          ))}
+        </div>
+      </header>
 
-      <footer className="pb-[max(env(safe-area-inset-bottom),0.5rem)]">
+      <AnimatePresence mode="wait">
+        <motion.section
+          key={step}
+          initial={{ opacity: 0, y: 14, filter: "blur(6px)" }}
+          animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+          exit={{ opacity: 0, y: -8, filter: "blur(4px)" }}
+          transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+          className="flex flex-1 flex-col items-center justify-center text-center"
+        >
+          {step === "welcome" && (
+            <>
+              <h1 className="text-[clamp(2.25rem,9vw,3.25rem)] font-medium tracking-tight">
+                One ayah <span className="text-aurora">at a time.</span>
+              </h1>
+              <p className="mt-6 max-w-sm text-balance text-base text-muted-foreground">
+                Wasl helps you build a gentle, lasting relationship with the
+                Quran — through reflection, remembrance, and gradual
+                implementation.
+              </p>
+            </>
+          )}
+          {step === "philosophy" && (
+            <>
+              <h1 className="text-[clamp(2rem,8vw,3rem)] font-medium tracking-tight">
+                No rush. No race.
+              </h1>
+              <p className="mt-6 max-w-sm text-balance text-base text-muted-foreground">
+                You do not need to rush through the Quran. Sometimes one ayah
+                can stay with you for days. Wasl honors that pace.
+              </p>
+            </>
+          )}
+          {step === "auth" && (
+            <>
+              <h1 className="text-[clamp(2rem,8vw,3rem)] font-medium tracking-tight">
+                You're signed in.
+              </h1>
+              <p className="mt-6 max-w-sm text-balance text-base text-muted-foreground">
+                Bookmarks, reflections, and your journey will sync across
+                Quran.Foundation apps you use.
+              </p>
+            </>
+          )}
+          {step === "notifications" && (
+            <>
+              <h1 className="text-[clamp(2rem,8vw,3rem)] font-medium tracking-tight">
+                Gentle reminders?
+              </h1>
+              <p className="mt-6 max-w-sm text-balance text-base text-muted-foreground">
+                When you choose to live an ayah, we can softly remind you. No
+                guilt, no pressure.
+              </p>
+              <div className="mt-10 flex w-full max-w-xs flex-col gap-3">
+                <PrimaryButton
+                  onClick={async () => {
+                    if ("Notification" in window)
+                      await Notification.requestPermission();
+                    setNotificationPref("allow");
+                    next();
+                  }}
+                >
+                  Allow gentle reminders
+                </PrimaryButton>
+                <PrimaryButton
+                  variant="glass"
+                  onClick={() => {
+                    setNotificationPref("maybe_later");
+                    next();
+                  }}
+                >
+                  Maybe later
+                </PrimaryButton>
+              </div>
+            </>
+          )}
+          {step === "style" && (
+            <>
+              <h1 className="text-[clamp(2rem,8vw,3rem)] font-medium tracking-tight">
+                Sequential Journey
+              </h1>
+              <p className="mt-6 max-w-sm text-balance text-base text-muted-foreground">
+                Move through the Quran one ayah at a time, starting from Sūrah
+                Al-Fātiḥah. You can revisit any ayah whenever your heart returns
+                to it.
+              </p>
+            </>
+          )}
+          {step === "first-ayah" && (
+            <>
+              <h1 className="text-[clamp(2rem,8vw,3rem)] font-medium tracking-tight">
+                Your first ayah <span className="text-aurora">awaits.</span>
+              </h1>
+              <GlassCard tone="strong" glow className="mt-8 w-full max-w-xs">
+                <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
+                  Sūrah Al-Fātiḥah · 1:1
+                </p>
+                <p className="mt-3 text-sm text-muted-foreground">
+                  Take your time. There's no clock here.
+                </p>
+              </GlassCard>
+            </>
+          )}
+        </motion.section>
+      </AnimatePresence>
+
+      <footer className="pt-4">
         {step === "first-ayah" ? (
-          <PrimaryButton onClick={finish}>Begin</PrimaryButton>
+          <PrimaryButton variant="gold" onClick={finish}>
+            Begin
+          </PrimaryButton>
         ) : step === "notifications" ? null : (
           <PrimaryButton onClick={next}>Continue</PrimaryButton>
         )}
