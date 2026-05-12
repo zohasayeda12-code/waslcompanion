@@ -3,7 +3,7 @@ import { getWaslSession } from "@/lib/qf-session.server";
 
 /**
  * Clears the encrypted session cookie and redirects to /login.
- * Supports both GET (for simple links) and POST (recommended for forms).
+ * POST-only to prevent CSRF-based forced logouts via crafted links.
  */
 async function handleLogout(request: Request) {
   const session = await getWaslSession();
@@ -15,7 +15,6 @@ async function handleLogout(request: Request) {
 export const Route = createFileRoute("/api/auth/logout")({
   server: {
     handlers: {
-      GET: async ({ request }) => handleLogout(request),
       POST: async ({ request }) => handleLogout(request),
     },
   },
