@@ -111,7 +111,7 @@ export async function fetchAyah(
       console.warn("verses.by_key failed", verseKey, String(e));
       return null;
     }),
-    qfFetch(`/chapter_recitations/${reciterId}/${surah}`).catch(() => null),
+    qfFetch(`/recitations/${reciterId}/by_ayah/${verseKey}`).catch(() => null),
     opts?.includeTafsir
       ? qfFetch(`/tafsirs/${tafsirId}/by_ayah/${verseKey}`).catch(() => null)
       : Promise.resolve(null),
