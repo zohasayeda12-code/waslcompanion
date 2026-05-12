@@ -1,43 +1,64 @@
 import { motion } from "motion/react";
 import type { ReactNode } from "react";
+import { AmbientCanvas } from "./ambient-canvas";
+import { cn } from "@/lib/utils";
 
 type Props = {
   children: ReactNode;
   className?: string;
+  /** When true (default), wraps content in a centered "device" frame on >=md screens. */
+  framed?: boolean;
 };
 
 /**
- * AppShell — responsive container that frames every Wasl screen.
- * On mobile: full-width calm canvas.
- * On tablet/desktop: a centered "phone-like" surface, with breathing room.
+ * AppShell — the responsive container that frames every Wasl screen.
+ *
+ * Mobile (<768px):  edge-to-edge, safe-area aware, no max-width.
+ * Tablet/desktop:   a centered "device" canvas (max 440px) floating in an
+ *                   ambient aurora world, with soft outer glow + glass border.
  */
-export function AppShell({ children, className = "" }: Props) {
+export function AppShell({ children, className = "", framed = true }: Props) {
   return (
     <div className="relative min-h-[100dvh] w-full overflow-x-hidden">
-      {/* Ambient decorative glow */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-x-0 top-0 h-[60vh] opacity-60 blur-3xl"
-        style={{
-          background:
-            "radial-gradient(60% 50% at 50% 0%, oklch(0.92 0.05 95 / 0.7), transparent 70%)",
-        }}
-      />
+      <AmbientCanvas />
 
-      <motion.main
-        initial={{ opacity: 0, y: 8 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-        className={
-          "relative mx-auto flex min-h-[100dvh] w-full max-w-md flex-col px-6 pb-10 pt-[max(env(safe-area-inset-top),1.5rem)] " +
-          "sm:max-w-lg sm:px-8 " +
-          "md:max-w-2xl md:px-10 md:pt-12 " +
-          "lg:max-w-3xl " +
-          className
-        }
+      {/* Outer wrapper: centers the device on tablet+, full bleed on mobile */}
+      <div
+        className={cn(
+          "relative z-[1] flex min-h-[100dvh] w-full justify-center",
+          framed ? "md:items-center md:py-10 lg:py-14" : ""
+        )}
       >
-        {children}
-      </motion.main>
+        <motion.main
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+          className={cn(
+            // Mobile: full-bleed phone canvas
+            "relative flex w-full flex-col",
+            "px-[clamp(1rem,5vw,1.5rem)]",
+            "pt-[max(env(safe-area-inset-top),1.25rem)]",
+            "pb-[max(env(safe-area-inset-bottom),2rem)]",
+            "min-h-[100dvh]",
+            // Tablet/desktop: floating device
+            framed && [
+              "md:max-w-[440px]",
+              "md:min-h-[min(880px,90dvh)]",
+              "md:rounded-[2.25rem]",
+              "md:border md:border-white/10",
+              "md:bg-white/[0.03] md:backdrop-blur-xl",
+              "md:shadow-[var(--shadow-floating)]",
+              "md:px-7 md:py-8",
+              // Inner highlight edge to sell the depth
+              "md:before:pointer-events-none md:before:absolute md:before:inset-0",
+              "md:before:rounded-[inherit] md:before:[box-shadow:inset_0_1px_0_oklch(1_0_0_/_0.10),inset_0_-1px_0_oklch(0_0_0_/_0.30)]",
+            ],
+            className
+          )}
+        >
+          {children}
+        </motion.main>
+      </div>
     </div>
   );
 }
