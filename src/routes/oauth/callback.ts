@@ -120,7 +120,7 @@ export const Route = createFileRoute("/oauth/callback")({
 
         console.log("STEP 10: redirecting to app");
 
-        return Response.redirect(new URL(target, url.origin), 302);
+        return redirectTo(target);
       },
     },
   },
