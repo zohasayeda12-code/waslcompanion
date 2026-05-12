@@ -177,9 +177,13 @@ function AyahDetail() {
         ))}
 
         <AmbientLiveGlow className="mt-5">
-          <PrimaryLink to="/live/$surah/$ayah" params={{ surah, ayah }}>
+          <Link
+            to="/live/$surah/$ayah"
+            params={{ surah, ayah }}
+            className="inline-flex h-14 w-full items-center justify-center rounded-2xl bg-[var(--gradient-primary)] px-6 text-base font-medium text-primary-foreground shadow-[var(--shadow-soft)] hover:shadow-[var(--shadow-elevated)]"
+          >
             {intentions.some((i) => i.status === "lived") ? "Live This Ayah Again" : "Live This Ayah"}
-          </PrimaryLink>
+          </Link>
         </AmbientLiveGlow>
       </section>
 
