@@ -25,8 +25,21 @@ function HomeScreen() {
   const ayahFn = useServerFn(getAyah);
   const navigate = useNavigate();
 
+  const saveSubFn = useServerFn(saveSubscription);
+
   const { data: journey } = useQuery({ queryKey: ["journey"], queryFn: () => journeyFn() });
   const { data: active } = useQuery({ queryKey: ["active-intention"], queryFn: () => intentionFn() });
+
+  // Auto-register push so reminders arrive on this device
+  useEffect(() => {
+    if (!pushSupported()) return;
+    (async () => {
+      try {
+        const sub = await ensurePushSubscription();
+        if (sub) await saveSubFn({ data: { ...sub, userAgent: navigator.userAgent } });
+      } catch (e) { console.warn("push setup", e); }
+    })();
+  }, [saveSubFn]);
 
   const surah = journey?.current_surah ?? 1;
   const ayah = journey?.current_ayah ?? 1;
