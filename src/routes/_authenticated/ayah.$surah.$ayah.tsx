@@ -4,6 +4,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { z } from "zod";
 import { AppShell } from "@/components/app-shell";
+import { BookOpen, Bookmark, Sparkles } from "lucide-react";
 import { AmbientLiveGlow } from "@/components/ambient-live-glow";
 // PrimaryLink replaced with inline Link to keep TanStack typed-route inference
 import { getAyah } from "@/lib/qf-content.functions";
