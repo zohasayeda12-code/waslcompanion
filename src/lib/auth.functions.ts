@@ -13,7 +13,8 @@ export const getAuthStatus = createServerFn({ method: "GET" }).handler(
     }
     const session = await getWaslSession();
     const token = session.data?.accessToken;
-    if (!token) {
+    const expiresAt = session.data?.expiresAt;
+    if (!token || (expiresAt && Date.now() > expiresAt)) {
       return { isAuthenticated: false, configured: true } as const;
     }
     return { isAuthenticated: true, configured: true } as const;
