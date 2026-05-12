@@ -37,7 +37,7 @@ export const qfConfig = {
 };
 
 export function getRedirectUri(origin: string): string {
-  return process.env.QF_REDIRECT_URI ?? `${origin}/api/auth/callback`;
+  return process.env.QF_REDIRECT_URI ?? `${origin}/oauth/callback`;
 }
 
 export function isConfigured(): boolean {
