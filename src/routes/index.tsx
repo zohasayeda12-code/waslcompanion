@@ -91,9 +91,6 @@ function OnboardingScreen() {
         className="flex flex-col gap-3 pb-[max(env(safe-area-inset-bottom),0.5rem)]"
       >
         <PrimaryLink to="/login">Begin your journey</PrimaryLink>
-        <PrimaryLink to="/home" variant="ghost">
-          Continue as guest
-        </PrimaryLink>
       </motion.footer>
     </AppShell>
   );

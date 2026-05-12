@@ -1,26 +1,96 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 import { motion } from "motion/react";
+import { useState } from "react";
 import { AppShell } from "@/components/app-shell";
-import { PrimaryLink } from "@/components/primary-button";
+import { AuthSplash } from "@/components/auth-splash";
+import { getAuthStatus } from "@/lib/auth.functions";
+
+type LoginSearch = {
+  redirect?: string;
+  error?: string;
+  configured?: boolean;
+};
 
 export const Route = createFileRoute("/login")({
+  validateSearch: (search: Record<string, unknown>): LoginSearch => ({
+    redirect:
+      typeof search.redirect === "string" && search.redirect.startsWith("/")
+        ? search.redirect
+        : undefined,
+    error: typeof search.error === "string" ? search.error : undefined,
+    configured:
+      typeof search.configured === "boolean" ? search.configured : undefined,
+  }),
+  /**
+   * If already authenticated, skip the login screen entirely.
+   * Runs on server + client — eliminates flicker for returning users.
+   */
+  beforeLoad: async ({ search }) => {
+    const status = await getAuthStatus();
+    if (status.isAuthenticated) {
+      throw redirect({ to: search.redirect ?? "/home" });
+    }
+    return { configured: status.configured };
+  },
   head: () => ({
     meta: [
       { title: "Sign in — Wasl" },
-      { name: "description", content: "Sign in to your Wasl companion." },
+      {
+        name: "description",
+        content: "Sign in with Quran.Foundation to begin your Wasl journey.",
+      },
     ],
   }),
   component: LoginScreen,
 });
 
+function prettyError(code: string): string {
+  switch (code) {
+    case "invalid_callback":
+      return "The sign-in link was incomplete. Please try again.";
+    case "invalid_state":
+    case "state_mismatch":
+      return "Your sign-in session expired. Please try again.";
+    case "token_endpoint_unreachable":
+      return "We couldn't reach Quran.Foundation. Check your connection and try again.";
+    case "no_access_token":
+      return "Quran.Foundation didn't return a token. Please try again.";
+    default:
+      if (code.startsWith("token_exchange_")) {
+        return "Quran.Foundation rejected the sign-in. Please try again.";
+      }
+      return decodeURIComponent(code);
+  }
+}
+
 function LoginScreen() {
+  const { redirect: redirectParam, error } = Route.useSearch();
+  const { configured } = Route.useRouteContext();
+  const [redirecting, setRedirecting] = useState(false);
+
+  const loginHref =
+    "/api/auth/login" +
+    (redirectParam ? `?redirect=${encodeURIComponent(redirectParam)}` : "");
+
+  if (redirecting) {
+    return <AuthSplash message="Taking you to Quran.Foundation…" />;
+  }
+
   return (
     <AppShell>
       <Link
         to="/"
         className="-ml-1 inline-flex items-center gap-1 text-sm text-muted-foreground transition-colors hover:text-foreground"
       >
-        <svg viewBox="0 0 24 24" className="size-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <svg
+          viewBox="0 0 24 24"
+          className="size-4"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
           <path d="M15 18l-6-6 6-6" />
         </svg>
         Back
@@ -30,65 +100,102 @@ function LoginScreen() {
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
-        className="mt-10 md:mt-16"
+        className="mt-14 flex flex-1 flex-col md:mt-20"
       >
-        <h1 className="text-3xl font-medium tracking-tight md:text-4xl">
-          Welcome back
+        <div className="flex size-14 items-center justify-center rounded-2xl bg-[var(--gradient-primary)] shadow-[var(--shadow-soft)]">
+          <svg
+            viewBox="0 0 64 64"
+            className="size-7"
+            fill="none"
+            stroke="oklch(0.88 0.12 82)"
+            strokeWidth="2.4"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M48 32a18 18 0 1 1-18-18 14 14 0 0 0 18 18z" />
+          </svg>
+        </div>
+
+        <h1 className="mt-8 text-3xl font-medium tracking-tight md:text-4xl">
+          Welcome to Wasl
         </h1>
-        <p className="mt-3 max-w-sm text-muted-foreground">
-          Sign in to continue your quiet journey with the Quran.
+        <p className="mt-3 max-w-sm text-balance text-muted-foreground">
+          Sign in with your Quran.Foundation account to keep your bookmarks,
+          reflections and streak in sync.
         </p>
+
+        {error && (
+          <motion.div
+            initial={{ opacity: 0, y: -4 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mt-6 rounded-2xl border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive"
+            role="alert"
+          >
+            {prettyError(error)}
+          </motion.div>
+        )}
+
+        {configured === false ? (
+          <NotConfigured />
+        ) : (
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.25, ease: [0.22, 1, 0.36, 1] }}
+            className="mt-10 flex flex-col gap-3"
+          >
+            <a
+              href={loginHref}
+              onClick={() => setRedirecting(true)}
+              className="inline-flex h-14 w-full items-center justify-center gap-2 rounded-2xl bg-[var(--gradient-primary)] px-6 text-base font-medium tracking-tight text-primary-foreground shadow-[var(--shadow-soft)] transition-all duration-300 ease-out hover:shadow-[var(--shadow-elevated)] active:scale-[0.985]"
+            >
+              <span>Sign in with Quran.Foundation</span>
+              <svg
+                viewBox="0 0 24 24"
+                className="size-4"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M5 12h14" />
+                <path d="m12 5 7 7-7 7" />
+              </svg>
+            </a>
+            <p className="px-1 text-center text-xs text-muted-foreground">
+              You'll be redirected securely. Wasl never sees your password.
+            </p>
+          </motion.div>
+        )}
       </motion.div>
 
-      <motion.form
-        initial={{ opacity: 0, y: 16 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, delay: 0.25, ease: [0.22, 1, 0.36, 1] }}
-        onSubmit={(e) => e.preventDefault()}
-        className="mt-10 flex flex-col gap-4"
-      >
-        <Field label="Email" type="email" placeholder="you@example.com" autoComplete="email" />
-        <Field label="Password" type="password" placeholder="••••••••" autoComplete="current-password" />
-
-        <div className="mt-2">
-          <PrimaryLink to="/home">Sign in</PrimaryLink>
-        </div>
-
-        <div className="my-2 flex items-center gap-3 text-xs uppercase tracking-widest text-muted-foreground">
-          <span className="h-px flex-1 bg-border" />
-          or
-          <span className="h-px flex-1 bg-border" />
-        </div>
-
-        <button
-          type="button"
-          className="inline-flex h-14 w-full items-center justify-center rounded-2xl border border-border bg-card text-base font-medium text-foreground shadow-[var(--shadow-soft)] transition-all hover:bg-secondary/60 active:scale-[0.985]"
-        >
-          Continue with Google
-        </button>
-      </motion.form>
-
       <p className="mt-auto pt-10 text-center text-sm text-muted-foreground">
-        New here?{" "}
-        <Link to="/" className="font-medium text-primary hover:underline">
-          Start onboarding
-        </Link>
+        New to Quran.Foundation?{" "}
+        <a
+          href="https://quran.foundation"
+          target="_blank"
+          rel="noreferrer"
+          className="font-medium text-primary hover:underline"
+        >
+          Create an account
+        </a>
       </p>
     </AppShell>
   );
 }
 
-function Field({
-  label,
-  ...rest
-}: { label: string } & React.InputHTMLAttributes<HTMLInputElement>) {
+function NotConfigured() {
   return (
-    <label className="flex flex-col gap-1.5">
-      <span className="px-1 text-sm font-medium text-foreground/80">{label}</span>
-      <input
-        {...rest}
-        className="h-14 w-full rounded-2xl border border-input bg-card px-5 text-base text-foreground placeholder:text-muted-foreground/70 shadow-[var(--shadow-soft)] outline-none transition-all focus:border-ring focus:ring-2 focus:ring-ring/30"
-      />
-    </label>
+    <div className="mt-10 rounded-2xl border border-border bg-card p-5 text-sm shadow-[var(--shadow-soft)]">
+      <p className="font-medium text-foreground">Setup required</p>
+      <p className="mt-2 text-muted-foreground">
+        Quran.Foundation OAuth credentials are not yet configured on this
+        deployment. Once <code className="text-foreground">QF_CLIENT_ID</code>,{" "}
+        <code className="text-foreground">QF_CLIENT_SECRET</code>, and{" "}
+        <code className="text-foreground">SESSION_SECRET</code> are set, sign-in
+        will be available here.
+      </p>
+    </div>
   );
 }
