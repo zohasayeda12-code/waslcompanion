@@ -20,11 +20,7 @@ function HomeScreen() {
   const journeyFn = useServerFn(getJourneyState);
   const intentionFn = useServerFn(getActiveIntention);
   const ayahFn = useServerFn(getAyah);
-  const bookmarkedFn = useServerFn(isBookmarked);
-  const toggleBookmarkFn = useServerFn(toggleBookmark);
-  const advanceFn = useServerFn(advanceJourney);
   const navigate = useNavigate();
-  const qc = useQueryClient();
 
   const { data: journey } = useQuery({ queryKey: ["journey"], queryFn: () => journeyFn() });
   const { data: active } = useQuery({ queryKey: ["active-intention"], queryFn: () => intentionFn() });
@@ -37,26 +33,6 @@ function HomeScreen() {
     queryFn: () => ayahFn({ data: { surah, ayah } }),
     enabled: !!journey,
   });
-  const { data: bookmark } = useQuery({
-    queryKey: ["bookmark", surah, ayah],
-    queryFn: () => bookmarkedFn({ data: { surah, ayah } }),
-    enabled: !!journey,
-  });
-
-  // Ambient invitation: subtle one-time glow on Live after inactivity
-  const [inviteLive, setInviteLive] = useState(false);
-  useEffect(() => {
-    setInviteLive(false);
-    const t = setTimeout(() => setInviteLive(true), 6000);
-    const stop = () => setInviteLive(false);
-    window.addEventListener("pointerdown", stop, { once: true });
-    window.addEventListener("keydown", stop, { once: true });
-    return () => {
-      clearTimeout(t);
-      window.removeEventListener("pointerdown", stop);
-      window.removeEventListener("keydown", stop);
-    };
-  }, [surah, ayah]);
 
   const goAyah = () =>
     navigate({
