@@ -25,7 +25,7 @@ export function getWaslSession() {
     maxAge: 60 * 60 * 24 * 30, // 30 days
     cookie: {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+      secure: true,
       sameSite: "lax",
       path: "/",
     },
