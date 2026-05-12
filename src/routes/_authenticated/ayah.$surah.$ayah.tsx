@@ -293,3 +293,70 @@ function AyahDetail() {
     </AppShell>
   );
 }
+
+function BottomSheet({
+  title,
+  onClose,
+  children,
+}: {
+  title: string;
+  onClose: () => void;
+  children: React.ReactNode;
+}) {
+  const [dragY, setDragY] = useState(0);
+  const [startY, setStartY] = useState<number | null>(null);
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    document.addEventListener("keydown", onKey);
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.body.style.overflow = prev;
+    };
+  }, [onClose]);
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-end justify-center" role="dialog" aria-modal="true">
+      <div
+        className="absolute inset-0 bg-background/70 backdrop-blur-sm"
+        onClick={onClose}
+        aria-hidden
+      />
+      <div
+        className="relative z-10 w-full max-w-2xl rounded-t-3xl border-t border-x border-border/60 bg-card shadow-[var(--shadow-elevated)]"
+        style={{ transform: `translateY(${Math.max(0, dragY)}px)`, transition: startY === null ? "transform 200ms ease" : "none", maxHeight: "85vh" }}
+        onTouchStart={(e) => setStartY(e.touches[0].clientY)}
+        onTouchMove={(e) => {
+          if (startY === null) return;
+          const dy = e.touches[0].clientY - startY;
+          setDragY(dy);
+        }}
+        onTouchEnd={() => {
+          if (dragY > 120) {
+            onClose();
+          }
+          setStartY(null);
+          setDragY(0);
+        }}
+      >
+        <div className="flex items-center justify-between gap-3 px-5 pt-3 pb-2">
+          <button
+            onClick={onClose}
+            aria-label="Close"
+            className="inline-flex size-8 items-center justify-center rounded-full bg-secondary/60 text-foreground/80 hover:text-foreground"
+          >
+            <ChevronDown className="size-5" />
+          </button>
+          <p className="text-xs uppercase tracking-[0.2em] text-[color:var(--gold)]">{title}</p>
+          <span className="size-8" />
+        </div>
+        <div className="mx-auto mb-2 h-1 w-10 rounded-full bg-border/70" />
+        <div className="max-h-[70vh] overflow-y-auto px-5 pb-8">{children}</div>
+      </div>
+    </div>
+  );
+}
