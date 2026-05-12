@@ -2,6 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { requireUserId } from "./current-user.server";
+import { bookmarksAdapter, dispatchBackground } from "./sync.server";
 
 const AyahKey = z.object({ surah: z.number().int(), ayah: z.number().int() });
 
@@ -11,20 +12,50 @@ export const toggleBookmark = createServerFn({ method: "POST" })
     const userId = await requireUserId();
     const { data: existing } = await supabaseAdmin
       .from("bookmarks_local")
-      .select("id")
+      .select("id, qf_bookmark_id")
       .eq("user_id", userId)
       .eq("surah", data.surah)
       .eq("ayah", data.ayah)
       .maybeSingle();
+
     if (existing) {
+      // Optimistic local delete
       await supabaseAdmin.from("bookmarks_local").delete().eq("id", existing.id);
+      // Background QF delete (only if we have a remote id)
+      if (existing.qf_bookmark_id) {
+        const qfId = existing.qf_bookmark_id;
+        dispatchBackground(() => bookmarksAdapter.pushDelete(qfId), {
+          userId,
+          resource: "bookmark",
+          operation: "delete",
+          payload: { qfId, surah: data.surah, ayah: data.ayah },
+        });
+      }
       return { bookmarked: false };
     }
-    await supabaseAdmin.from("bookmarks_local").insert({
-      user_id: userId,
-      surah: data.surah,
-      ayah: data.ayah,
-    });
+
+    // Optimistic local insert
+    const { data: inserted } = await supabaseAdmin
+      .from("bookmarks_local")
+      .insert({ user_id: userId, surah: data.surah, ayah: data.ayah })
+      .select("id")
+      .single();
+
+    // Background QF push: capture qf id back to local row
+    const localId = inserted?.id;
+    dispatchBackground(
+      async () => {
+        const result = await bookmarksAdapter.pushCreate(data.surah, data.ayah);
+        if (result?.qfId && localId) {
+          await supabaseAdmin
+            .from("bookmarks_local")
+            .update({ qf_bookmark_id: result.qfId })
+            .eq("id", localId);
+        }
+      },
+      { userId, resource: "bookmark", operation: "create", payload: data },
+    );
+
     return { bookmarked: true };
   });
 
