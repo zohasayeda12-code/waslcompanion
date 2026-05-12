@@ -1,5 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { getCookie, deleteCookie } from "@tanstack/react-start/server";
+import {
+  getCookie,
+  deleteCookie,
+  setResponseStatus,
+  setResponseHeader,
+} from "@tanstack/react-start/server";
 import { qfConfig, getRedirectUri } from "@/lib/qf-config.server";
 import { getWaslSession } from "@/lib/qf-session.server";
 
