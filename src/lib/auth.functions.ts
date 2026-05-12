@@ -7,14 +7,6 @@ import { isConfigured } from "./qf-config.server";
  * Never throws — public-route loaders rely on this returning cleanly.
  */
 export const getAuthStatus = createServerFn({ method: "GET" }).handler(async () => {
-  // ⚠️ TEMPORARY DEV/HACKATHON BYPASS — remove once QF prelive OAuth is stable.
-  // When VITE_BYPASS_AUTH=true, treat every visitor as authenticated so we can
-  // keep building protected screens while upstream OAuth is down.
-  // Does NOT touch session, token exchange, or OAuth routes.
-  if (process.env.VITE_BYPASS_AUTH === "true") {
-    return { isAuthenticated: true, configured: true } as const;
-  }
-
   if (!isConfigured()) {
     return { isAuthenticated: false, configured: false } as const;
   }
