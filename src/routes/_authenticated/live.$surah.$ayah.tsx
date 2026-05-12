@@ -1,10 +1,12 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { useState } from "react";
+import { Sparkles, Loader2 } from "lucide-react";
 import { AppShell } from "@/components/app-shell";
 import { PrimaryButton } from "@/components/primary-button";
 import { createIntention, getActiveIntention } from "@/lib/intentions.functions";
+import { generateLiveSuggestion } from "@/lib/live-suggestion.functions";
 
 export const Route = createFileRoute("/_authenticated/live/$surah/$ayah")({
   head: ({ params }) => ({ meta: [{ title: `Live ${params.surah}:${params.ayah} — Wasl` }] }),
@@ -20,9 +22,22 @@ function LiveScreen() {
   const activeFn = useServerFn(getActiveIntention);
   const { data: active } = useQuery({ queryKey: ["active-intention"], queryFn: () => activeFn() });
 
+  const suggestFn = useServerFn(generateLiveSuggestion);
+
   const [text, setText] = useState("");
+  const [usedAi, setUsedAi] = useState(false);
   const [reminderHours, setReminderHours] = useState(8);
   const [confirmReplace, setConfirmReplace] = useState(false);
+
+  const suggest = useMutation({
+    mutationFn: () => suggestFn({ data: { surah: s, ayah: a } }),
+    onSuccess: (res) => {
+      if (res.ok) {
+        setText(res.suggestion);
+        setUsedAi(true);
+      }
+    },
+  });
 
   const conflict = active && (active.surah !== s || active.ayah !== a);
 
@@ -66,14 +81,41 @@ function LiveScreen() {
         </div>
       )}
 
-      <section className="mt-8">
+      <section className="mt-8 space-y-3">
+        <div className="flex items-center justify-between gap-3">
+          <button
+            type="button"
+            onClick={() => suggest.mutate()}
+            disabled={suggest.isPending}
+            className="inline-flex items-center gap-2 rounded-full border border-border bg-secondary/60 px-3 py-1.5 text-xs text-foreground/80 transition hover:bg-secondary disabled:opacity-50"
+          >
+            {suggest.isPending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Sparkles className="h-3.5 w-3.5" />}
+            Suggest a small action
+          </button>
+          {usedAi && text && (
+            <button type="button" onClick={() => { setText(""); setUsedAi(false); }} className="text-xs text-muted-foreground underline-offset-2 hover:underline">
+              Write your own
+            </button>
+          )}
+        </div>
+        {suggest.data && !suggest.data.ok && (
+          <p className="text-xs text-muted-foreground">
+            {suggest.data.reason === "rate_limited" && "Too many requests right now — try again in a moment."}
+            {suggest.data.reason === "credits_exhausted" && "AI credits are exhausted. Write your own intention below."}
+            {suggest.data.reason === "refused" && "No grounded suggestion this time — write your own."}
+            {suggest.data.reason === "tone_violation" && "Suggestion didn't feel right — try again or write your own."}
+            {suggest.data.reason === "no_ayah_text" && "Ayah text not available yet."}
+            {suggest.data.reason === "too_long" && "Suggestion was too long — try again."}
+            {suggest.data.reason === "error" && "Couldn't generate a suggestion — write your own."}
+          </p>
+        )}
         <textarea
           value={text}
-          onChange={(e) => setText(e.target.value)}
-          placeholder="e.g., I will be patient with my family today."
+          onChange={(e) => { setText(e.target.value); setUsedAi(false); }}
+          placeholder="A small, specific action for today."
           className="min-h-[120px] w-full rounded-2xl border border-border bg-card p-4 text-base"
         />
-        <label className="mt-4 flex items-center gap-3 text-sm text-muted-foreground">
+        <label className="mt-1 flex items-center gap-3 text-sm text-muted-foreground">
           Remind me in
           <select value={reminderHours} onChange={(e) => setReminderHours(Number(e.target.value))} className="rounded-lg bg-secondary px-2 py-1">
             <option value={2}>2 hours</option>
@@ -86,7 +128,7 @@ function LiveScreen() {
 
       <footer className="mt-8 pb-[max(env(safe-area-inset-bottom),0.5rem)]">
         <PrimaryButton
-          onClick={() => text.trim() && submit("custom", text.trim(), confirmReplace || !conflict)}
+          onClick={() => text.trim() && submit(usedAi ? "ai" : "custom", text.trim(), confirmReplace || !conflict)}
           disabled={!text.trim()}
         >
           Set Intention
