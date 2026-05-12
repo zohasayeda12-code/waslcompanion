@@ -74,6 +74,12 @@ function MyAyahs() {
         <Link to="/home" className="text-sm text-muted-foreground">← Home</Link>
         <h1 className="mt-2 text-2xl font-medium tracking-tight md:text-3xl">My Ayahs</h1>
         <p className="mt-1 text-sm text-muted-foreground">{lived.length} ayahs lived in your journey.</p>
+        {syncState?.syncing ? (
+          <p className="mt-2 flex items-center gap-2 text-xs text-muted-foreground/70" aria-live="polite">
+            <span className="inline-block h-1.5 w-1.5 animate-pulse rounded-full bg-muted-foreground/60" />
+            bringing your ayahs in…
+          </p>
+        ) : null}
       </header>
 
       <Section title="Lived" items={lived.map((i) => ({ surah: i.surah, ayah: i.ayah, label: i.text }))} from="my-ayahs" />
