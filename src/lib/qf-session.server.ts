@@ -12,11 +12,13 @@ export type WaslSession = {
   expiresAt?: number;
 };
 
-const DEV_FALLBACK_SECRET =
-  "wasl-dev-only-secret-please-set-SESSION_SECRET-32+chars";
-
 export function getWaslSession() {
-  const password = process.env.SESSION_SECRET || DEV_FALLBACK_SECRET;
+  const password = process.env.SESSION_SECRET;
+  if (!password || password.length < 32) {
+    throw new Error(
+      "SESSION_SECRET must be set to a value of at least 32 characters."
+    );
+  }
   return useSession<WaslSession>({
     password,
     name: "wasl_session",
