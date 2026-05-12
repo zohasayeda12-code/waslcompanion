@@ -104,22 +104,8 @@ function HomeScreen() {
             className="block w-full text-left"
           >
             <div className="px-[clamp(1.25rem,5.5vw,1.75rem)] py-[clamp(1.75rem,7vw,2.25rem)]">
-              <div className="flex items-baseline justify-between gap-3">
-                <p className="text-[10px] uppercase tracking-[0.24em] text-muted-foreground">
-                  Surah {surah}
-                  {ayahData?.surahName ? ` · ${ayahData.surahName}` : ""} · Ayah {ayah}
-                </p>
-                {ayahData?.surahNameArabic && (
-                  <p
-                    className="text-sm text-foreground/70"
-                    style={{ fontFamily: "var(--font-display)", direction: "rtl" }}
-                  >
-                    {ayahData.surahNameArabic}
-                  </p>
-                )}
-              </div>
               <p
-                className="mt-7 text-[clamp(1.6rem,7.5vw,2.15rem)] leading-[1.85] font-medium tracking-tight text-foreground"
+                className="text-[clamp(1.6rem,7.5vw,2.15rem)] leading-[1.85] font-medium tracking-tight text-foreground"
                 style={{ fontFamily: "var(--font-display)", direction: "rtl" }}
               >
                 {ayahData?.arabic || "···"}
@@ -129,6 +115,9 @@ function HomeScreen() {
                   {ayahData.translation}
                 </p>
               )}
+              <p className="mt-5 text-[10px] uppercase tracking-[0.24em] text-muted-foreground">
+                {ayahData?.surahName ?? `Surah ${surah}`} · {surah}:{ayah}
+              </p>
             </div>
           </button>
         </article>
