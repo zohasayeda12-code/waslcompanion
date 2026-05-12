@@ -17,7 +17,7 @@ type TokenResponse = {
  *  - Persists tokens in an encrypted session cookie
  *  - 302s to the original redirect target
  */
-export const Route = createFileRoute("/api/auth/callback")({
+export const Route = createFileRoute("/oauth/callback")({
   server: {
     handlers: {
       GET: async ({ request }) => {
