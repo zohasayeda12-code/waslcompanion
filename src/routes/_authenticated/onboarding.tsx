@@ -6,7 +6,7 @@ import { AppShell } from "@/components/app-shell";
 import { PrimaryButton } from "@/components/primary-button";
 import { completeOnboarding } from "@/lib/profile.functions";
 
-export const Route = createFileRoute("/onboarding")({
+export const Route = createFileRoute("/_authenticated/onboarding")({
   head: () => ({
     meta: [
       { title: "Welcome — Wasl" },
