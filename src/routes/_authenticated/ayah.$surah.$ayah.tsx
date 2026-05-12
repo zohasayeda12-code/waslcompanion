@@ -1,13 +1,14 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useEffect } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { z } from "zod";
 import { AppShell } from "@/components/app-shell";
-import { BookOpen, Bookmark, Sparkles } from "lucide-react";
+import { BookOpen, Bookmark, Sparkles, Heart, ChevronDown } from "lucide-react";
 import { AmbientLiveGlow } from "@/components/ambient-live-glow";
 // PrimaryLink replaced with inline Link to keep TanStack typed-route inference
 import { getAyah } from "@/lib/qf-content.functions";
+import { getAyahContext } from "@/lib/ayah-context.functions";
 import { listIntentionsForAyah, getActiveIntention, markLived, carryForward, removeIntention } from "@/lib/intentions.functions";
 import { getJourneyState, advanceJourney } from "@/lib/journey.functions";
 import { toggleBookmark, isBookmarked, recordRevisit } from "@/lib/library.functions";
@@ -24,7 +25,7 @@ export const Route = createFileRoute("/_authenticated/ayah/$surah/$ayah")({
   component: AyahDetail,
 });
 
-const COLORS = ["gold", "blue", "green", "purple"] as const;
+type SheetKind = "tafsir" | "context" | null;
 
 function AyahDetail() {
   const { surah, ayah } = Route.useParams();
@@ -47,6 +48,9 @@ function AyahDetail() {
   const carryFn = useServerFn(carryForward);
   const removeFn = useServerFn(removeIntention);
   const revisitFn = useServerFn(recordRevisit);
+  const contextFn = useServerFn(getAyahContext);
+
+  const [sheet, setSheet] = useState<SheetKind>(null);
 
   const { data: ayahData } = useQuery({ queryKey: ["ayah", s, a, "full"], queryFn: () => ayahFn({ data: { surah: s, ayah: a, includeTafsir: true } }) });
   const { data: intentions = [] } = useQuery({ queryKey: ["intentions", s, a], queryFn: () => intentionsFn({ data: { surah: s, ayah: a } }) });
@@ -54,6 +58,12 @@ function AyahDetail() {
   const { data: journey } = useQuery({ queryKey: ["journey"], queryFn: () => journeyFn() });
   const { data: bookmark } = useQuery({ queryKey: ["bookmark", s, a], queryFn: () => bookmarkedFn({ data: { surah: s, ayah: a } }) });
   const { data: highlight } = useQuery({ queryKey: ["highlight", s, a], queryFn: () => getHighlightFn({ data: { surah: s, ayah: a } }) });
+  const { data: contextData, isLoading: contextLoading } = useQuery({
+    queryKey: ["ayah-context", s, a],
+    queryFn: () => contextFn({ data: { surah: s, ayah: a } }),
+    enabled: sheet === "context",
+    staleTime: 24 * 60 * 60 * 1000,
+  });
 
   const isCurrent = journey?.current_surah === s && journey?.current_ayah === a;
   const activeForThis = active?.surah === s && active?.ayah === a ? active : null;
@@ -137,18 +147,21 @@ function AyahDetail() {
 
         {/* Icon action row */}
         <div className="mt-6 flex flex-wrap items-center gap-2">
-          {ayahData?.tafsir && ayahData.tafsir.text && (
-            <button
-              onClick={() => {
-                const el = document.getElementById("tafsir-panel");
-                if (el) el.toggleAttribute("open");
-              }}
-              className="inline-flex items-center gap-1.5 rounded-full border border-[color:var(--gold)]/40 bg-[oklch(0.82_0.14_82_/_0.10)] px-3 py-1.5 text-xs font-medium text-[color:var(--gold)]"
-              aria-label="Tafsir"
-            >
-              <BookOpen className="size-3.5" /> Tafsir
-            </button>
-          )}
+          <Link
+            to="/live/$surah/$ayah"
+            params={{ surah, ayah }}
+            className="inline-flex items-center gap-1.5 rounded-full border border-[color:var(--rose)]/40 bg-[oklch(0.72_0.16_15_/_0.10)] px-3 py-1.5 text-xs font-medium text-[color:var(--rose,oklch(0.72_0.16_15))]"
+            aria-label="Live this ayah"
+          >
+            <Heart className="size-3.5" /> Live
+          </Link>
+          <button
+            onClick={() => setSheet("tafsir")}
+            className="inline-flex items-center gap-1.5 rounded-full border border-[color:var(--gold)]/40 bg-[oklch(0.82_0.14_82_/_0.10)] px-3 py-1.5 text-xs font-medium text-[color:var(--gold)]"
+            aria-label="Tafsir"
+          >
+            <BookOpen className="size-3.5" /> Tafsir
+          </button>
           <button
             onClick={async () => {
               await toggleBookmarkFn({ data: { surah: s, ayah: a } });
@@ -164,27 +177,12 @@ function AyahDetail() {
             <Bookmark className="size-3.5" /> {bookmark?.bookmarked ? "Bookmarked" : "Bookmark"}
           </button>
           <button
+            onClick={() => setSheet("context")}
             className="inline-flex items-center gap-1.5 rounded-full border border-[color:var(--violet)]/40 bg-[oklch(0.70_0.16_295_/_0.10)] px-3 py-1.5 text-xs font-medium text-[color:var(--violet)]"
-            aria-label="Ask"
+            aria-label="Context (Asbāb al-Nuzūl)"
           >
-            <Sparkles className="size-3.5" /> Ask
+            <Sparkles className="size-3.5" /> Context
           </button>
-
-          <span className="ml-1 hidden h-5 w-px bg-border/60 sm:inline-block" />
-
-          {COLORS.map((c) => (
-            <button
-              key={c}
-              onClick={async () => {
-                const next = highlight?.color === c ? null : c;
-                await setHighlightFn({ data: { surah: s, ayah: a, color: next } });
-                qc.invalidateQueries({ queryKey: ["highlight", s, a] });
-              }}
-              aria-label={`Highlight ${c}`}
-              className={`size-5 rounded-full border-2 ${highlight?.color === c ? "border-foreground" : "border-transparent"}`}
-              style={{ background: c === "gold" ? "var(--gold)" : c === "blue" ? "oklch(0.78 0.08 240)" : c === "green" ? "oklch(0.75 0.10 150)" : "oklch(0.72 0.12 300)" }}
-            />
-          ))}
         </div>
       </section>
 
@@ -198,17 +196,31 @@ function AyahDetail() {
         </section>
       )}
 
-      {/* Tafsir collapsible */}
-      {ayahData?.tafsir && ayahData.tafsir.text && (
-        <details id="tafsir-panel" className="mt-4 rounded-3xl border border-border/60 bg-card/40 p-5 text-sm leading-relaxed backdrop-blur-sm">
-          <summary className="cursor-pointer text-xs uppercase tracking-[0.2em] text-[color:var(--gold)]">
-            Tafsir · {ayahData.tafsir.name}
-          </summary>
-          <div
-            className="mt-3 text-foreground/85 [&_p]:mt-2"
-            dangerouslySetInnerHTML={{ __html: ayahData.tafsir.text }}
-          />
-        </details>
+      {/* Bottom sheet */}
+      {sheet && (
+        <BottomSheet
+          title={sheet === "tafsir" ? `Tafsir · ${ayahData?.tafsir?.name ?? "Ibn Kathir"}` : "Context · Asbāb al-Nuzūl"}
+          onClose={() => setSheet(null)}
+        >
+          {sheet === "tafsir" ? (
+            ayahData?.tafsir?.text ? (
+              <div
+                className="text-sm leading-relaxed text-foreground/85 [&_p]:mt-2"
+                dangerouslySetInnerHTML={{ __html: ayahData.tafsir.text }}
+              />
+            ) : (
+              <p className="text-sm text-muted-foreground">Tafsir unavailable for this ayah.</p>
+            )
+          ) : contextLoading ? (
+            <p className="text-sm text-muted-foreground">Generating context…</p>
+          ) : contextData?.context ? (
+            <div className="whitespace-pre-wrap text-sm leading-relaxed text-foreground/85">
+              {contextData.context}
+            </div>
+          ) : (
+            <p className="text-sm text-muted-foreground">No context available.</p>
+          )}
+        </BottomSheet>
       )}
 
       {/* Journey panel */}
@@ -279,5 +291,72 @@ function AyahDetail() {
         </button>
       )}
     </AppShell>
+  );
+}
+
+function BottomSheet({
+  title,
+  onClose,
+  children,
+}: {
+  title: string;
+  onClose: () => void;
+  children: ReactNode;
+}) {
+  const [dragY, setDragY] = useState(0);
+  const [startY, setStartY] = useState<number | null>(null);
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    document.addEventListener("keydown", onKey);
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.body.style.overflow = prev;
+    };
+  }, [onClose]);
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-end justify-center" role="dialog" aria-modal="true">
+      <div
+        className="absolute inset-0 bg-background/70 backdrop-blur-sm"
+        onClick={onClose}
+        aria-hidden
+      />
+      <div
+        className="relative z-10 w-full max-w-2xl rounded-t-3xl border-t border-x border-border/60 bg-card shadow-[var(--shadow-elevated)]"
+        style={{ transform: `translateY(${Math.max(0, dragY)}px)`, transition: startY === null ? "transform 200ms ease" : "none", maxHeight: "85vh" }}
+        onTouchStart={(e) => setStartY(e.touches[0].clientY)}
+        onTouchMove={(e) => {
+          if (startY === null) return;
+          const dy = e.touches[0].clientY - startY;
+          setDragY(dy);
+        }}
+        onTouchEnd={() => {
+          if (dragY > 120) {
+            onClose();
+          }
+          setStartY(null);
+          setDragY(0);
+        }}
+      >
+        <div className="flex items-center justify-between gap-3 px-5 pt-3 pb-2">
+          <button
+            onClick={onClose}
+            aria-label="Close"
+            className="inline-flex size-8 items-center justify-center rounded-full bg-secondary/60 text-foreground/80 hover:text-foreground"
+          >
+            <ChevronDown className="size-5" />
+          </button>
+          <p className="text-xs uppercase tracking-[0.2em] text-[color:var(--gold)]">{title}</p>
+          <span className="size-8" />
+        </div>
+        <div className="mx-auto mb-2 h-1 w-10 rounded-full bg-border/70" />
+        <div className="max-h-[70vh] overflow-y-auto px-5 pb-8">{children}</div>
+      </div>
+    </div>
   );
 }
