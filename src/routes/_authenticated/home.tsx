@@ -12,7 +12,7 @@ import { getJourneyState } from "@/lib/journey.functions";
 import { getAyah } from "@/lib/qf-content.functions";
 import { getActiveIntention } from "@/lib/intentions.functions";
 import { saveSubscription } from "@/lib/push.functions";
-import { ensurePushSubscription, pushSupported } from "@/lib/push.client";
+
 
 export const Route = createFileRoute("/_authenticated/home")({
   head: () => ({ meta: [{ title: "Home — Wasl" }] }),
