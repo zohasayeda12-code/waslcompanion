@@ -106,7 +106,7 @@ export async function fetchAyah(
   const [chapter, verseRes, audioRes, tafsirRes] = await Promise.all([
     fetchChapterName(surah),
     qfFetch(
-      `/verses/by_key/${verseKey}?words=true&translations=${translationId}&fields=text_uthmani,text_imlaei&word_fields=text_uthmani,transliteration&translation_fields=text`,
+      `/verses/by_key/${verseKey}?language=en&words=true&translations=${translationId}&fields=text_uthmani,text_imlaei&word_fields=text_uthmani,transliteration&translation_fields=text,resource_name`,
     ).catch((e) => {
       console.warn("verses.by_key failed", verseKey, String(e));
       return null;
