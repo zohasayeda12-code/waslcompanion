@@ -1,0 +1,1 @@
+ALTER TABLE public.collection_items_local ADD COLUMN IF NOT EXISTS qf_item_id text;
