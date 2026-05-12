@@ -22,9 +22,22 @@ function LiveScreen() {
   const activeFn = useServerFn(getActiveIntention);
   const { data: active } = useQuery({ queryKey: ["active-intention"], queryFn: () => activeFn() });
 
+  const suggestFn = useServerFn(generateLiveSuggestion);
+
   const [text, setText] = useState("");
+  const [usedAi, setUsedAi] = useState(false);
   const [reminderHours, setReminderHours] = useState(8);
   const [confirmReplace, setConfirmReplace] = useState(false);
+
+  const suggest = useMutation({
+    mutationFn: () => suggestFn({ data: { surah: s, ayah: a } }),
+    onSuccess: (res) => {
+      if (res.ok) {
+        setText(res.suggestion);
+        setUsedAi(true);
+      }
+    },
+  });
 
   const conflict = active && (active.surah !== s || active.ayah !== a);
 
