@@ -10,6 +10,8 @@ export type WaslSession = {
   tokenType?: string;
   /** Absolute expiry in ms-epoch. */
   expiresAt?: number;
+  /** Stable internal user id (profiles.id). Created lazily on first authenticated server call. */
+  userId?: string;
 };
 
 export function getWaslSession() {

@@ -13,9 +13,16 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as OauthCallbackRouteImport } from './routes/oauth/callback'
+import { Route as AuthenticatedSearchRouteImport } from './routes/_authenticated/search'
+import { Route as AuthenticatedQuranRouteImport } from './routes/_authenticated/quran'
+import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated/onboarding'
+import { Route as AuthenticatedMyAyahsRouteImport } from './routes/_authenticated/my-ayahs'
+import { Route as AuthenticatedIntentionsRouteImport } from './routes/_authenticated/intentions'
 import { Route as AuthenticatedHomeRouteImport } from './routes/_authenticated/home'
 import { Route as ApiAuthLogoutRouteImport } from './routes/api/auth/logout'
 import { Route as ApiAuthLoginRouteImport } from './routes/api/auth/login'
+import { Route as AuthenticatedLiveSurahAyahRouteImport } from './routes/_authenticated/live.$surah.$ayah'
+import { Route as AuthenticatedAyahSurahAyahRouteImport } from './routes/_authenticated/ayah.$surah.$ayah'
 
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
@@ -36,6 +43,31 @@ const OauthCallbackRoute = OauthCallbackRouteImport.update({
   path: '/oauth/callback',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedSearchRoute = AuthenticatedSearchRouteImport.update({
+  id: '/search',
+  path: '/search',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedQuranRoute = AuthenticatedQuranRouteImport.update({
+  id: '/quran',
+  path: '/quran',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedOnboardingRoute = AuthenticatedOnboardingRouteImport.update({
+  id: '/onboarding',
+  path: '/onboarding',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedMyAyahsRoute = AuthenticatedMyAyahsRouteImport.update({
+  id: '/my-ayahs',
+  path: '/my-ayahs',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedIntentionsRoute = AuthenticatedIntentionsRouteImport.update({
+  id: '/intentions',
+  path: '/intentions',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
 const AuthenticatedHomeRoute = AuthenticatedHomeRouteImport.update({
   id: '/home',
   path: '/home',
@@ -51,22 +83,48 @@ const ApiAuthLoginRoute = ApiAuthLoginRouteImport.update({
   path: '/api/auth/login',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedLiveSurahAyahRoute =
+  AuthenticatedLiveSurahAyahRouteImport.update({
+    id: '/live/$surah/$ayah',
+    path: '/live/$surah/$ayah',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedAyahSurahAyahRoute =
+  AuthenticatedAyahSurahAyahRouteImport.update({
+    id: '/ayah/$surah/$ayah',
+    path: '/ayah/$surah/$ayah',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/home': typeof AuthenticatedHomeRoute
+  '/intentions': typeof AuthenticatedIntentionsRoute
+  '/my-ayahs': typeof AuthenticatedMyAyahsRoute
+  '/onboarding': typeof AuthenticatedOnboardingRoute
+  '/quran': typeof AuthenticatedQuranRoute
+  '/search': typeof AuthenticatedSearchRoute
   '/oauth/callback': typeof OauthCallbackRoute
   '/api/auth/login': typeof ApiAuthLoginRoute
   '/api/auth/logout': typeof ApiAuthLogoutRoute
+  '/ayah/$surah/$ayah': typeof AuthenticatedAyahSurahAyahRoute
+  '/live/$surah/$ayah': typeof AuthenticatedLiveSurahAyahRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/home': typeof AuthenticatedHomeRoute
+  '/intentions': typeof AuthenticatedIntentionsRoute
+  '/my-ayahs': typeof AuthenticatedMyAyahsRoute
+  '/onboarding': typeof AuthenticatedOnboardingRoute
+  '/quran': typeof AuthenticatedQuranRoute
+  '/search': typeof AuthenticatedSearchRoute
   '/oauth/callback': typeof OauthCallbackRoute
   '/api/auth/login': typeof ApiAuthLoginRoute
   '/api/auth/logout': typeof ApiAuthLogoutRoute
+  '/ayah/$surah/$ayah': typeof AuthenticatedAyahSurahAyahRoute
+  '/live/$surah/$ayah': typeof AuthenticatedLiveSurahAyahRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -74,9 +132,16 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/login': typeof LoginRoute
   '/_authenticated/home': typeof AuthenticatedHomeRoute
+  '/_authenticated/intentions': typeof AuthenticatedIntentionsRoute
+  '/_authenticated/my-ayahs': typeof AuthenticatedMyAyahsRoute
+  '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
+  '/_authenticated/quran': typeof AuthenticatedQuranRoute
+  '/_authenticated/search': typeof AuthenticatedSearchRoute
   '/oauth/callback': typeof OauthCallbackRoute
   '/api/auth/login': typeof ApiAuthLoginRoute
   '/api/auth/logout': typeof ApiAuthLogoutRoute
+  '/_authenticated/ayah/$surah/$ayah': typeof AuthenticatedAyahSurahAyahRoute
+  '/_authenticated/live/$surah/$ayah': typeof AuthenticatedLiveSurahAyahRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -84,26 +149,47 @@ export interface FileRouteTypes {
     | '/'
     | '/login'
     | '/home'
+    | '/intentions'
+    | '/my-ayahs'
+    | '/onboarding'
+    | '/quran'
+    | '/search'
     | '/oauth/callback'
     | '/api/auth/login'
     | '/api/auth/logout'
+    | '/ayah/$surah/$ayah'
+    | '/live/$surah/$ayah'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/login'
     | '/home'
+    | '/intentions'
+    | '/my-ayahs'
+    | '/onboarding'
+    | '/quran'
+    | '/search'
     | '/oauth/callback'
     | '/api/auth/login'
     | '/api/auth/logout'
+    | '/ayah/$surah/$ayah'
+    | '/live/$surah/$ayah'
   id:
     | '__root__'
     | '/'
     | '/_authenticated'
     | '/login'
     | '/_authenticated/home'
+    | '/_authenticated/intentions'
+    | '/_authenticated/my-ayahs'
+    | '/_authenticated/onboarding'
+    | '/_authenticated/quran'
+    | '/_authenticated/search'
     | '/oauth/callback'
     | '/api/auth/login'
     | '/api/auth/logout'
+    | '/_authenticated/ayah/$surah/$ayah'
+    | '/_authenticated/live/$surah/$ayah'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -145,6 +231,41 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OauthCallbackRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/search': {
+      id: '/_authenticated/search'
+      path: '/search'
+      fullPath: '/search'
+      preLoaderRoute: typeof AuthenticatedSearchRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/quran': {
+      id: '/_authenticated/quran'
+      path: '/quran'
+      fullPath: '/quran'
+      preLoaderRoute: typeof AuthenticatedQuranRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/onboarding': {
+      id: '/_authenticated/onboarding'
+      path: '/onboarding'
+      fullPath: '/onboarding'
+      preLoaderRoute: typeof AuthenticatedOnboardingRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/my-ayahs': {
+      id: '/_authenticated/my-ayahs'
+      path: '/my-ayahs'
+      fullPath: '/my-ayahs'
+      preLoaderRoute: typeof AuthenticatedMyAyahsRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/intentions': {
+      id: '/_authenticated/intentions'
+      path: '/intentions'
+      fullPath: '/intentions'
+      preLoaderRoute: typeof AuthenticatedIntentionsRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/home': {
       id: '/_authenticated/home'
       path: '/home'
@@ -166,15 +287,43 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAuthLoginRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/live/$surah/$ayah': {
+      id: '/_authenticated/live/$surah/$ayah'
+      path: '/live/$surah/$ayah'
+      fullPath: '/live/$surah/$ayah'
+      preLoaderRoute: typeof AuthenticatedLiveSurahAyahRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/ayah/$surah/$ayah': {
+      id: '/_authenticated/ayah/$surah/$ayah'
+      path: '/ayah/$surah/$ayah'
+      fullPath: '/ayah/$surah/$ayah'
+      preLoaderRoute: typeof AuthenticatedAyahSurahAyahRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
   }
 }
 
 interface AuthenticatedRouteChildren {
   AuthenticatedHomeRoute: typeof AuthenticatedHomeRoute
+  AuthenticatedIntentionsRoute: typeof AuthenticatedIntentionsRoute
+  AuthenticatedMyAyahsRoute: typeof AuthenticatedMyAyahsRoute
+  AuthenticatedOnboardingRoute: typeof AuthenticatedOnboardingRoute
+  AuthenticatedQuranRoute: typeof AuthenticatedQuranRoute
+  AuthenticatedSearchRoute: typeof AuthenticatedSearchRoute
+  AuthenticatedAyahSurahAyahRoute: typeof AuthenticatedAyahSurahAyahRoute
+  AuthenticatedLiveSurahAyahRoute: typeof AuthenticatedLiveSurahAyahRoute
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedHomeRoute: AuthenticatedHomeRoute,
+  AuthenticatedIntentionsRoute: AuthenticatedIntentionsRoute,
+  AuthenticatedMyAyahsRoute: AuthenticatedMyAyahsRoute,
+  AuthenticatedOnboardingRoute: AuthenticatedOnboardingRoute,
+  AuthenticatedQuranRoute: AuthenticatedQuranRoute,
+  AuthenticatedSearchRoute: AuthenticatedSearchRoute,
+  AuthenticatedAyahSurahAyahRoute: AuthenticatedAyahSurahAyahRoute,
+  AuthenticatedLiveSurahAyahRoute: AuthenticatedLiveSurahAyahRoute,
 }
 
 const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
@@ -192,13 +341,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

@@ -1,0 +1,160 @@
+import { createServerFn } from "@tanstack/react-start";
+import { z } from "zod";
+import { supabaseAdmin } from "@/integrations/supabase/client.server";
+import { requireUserId } from "./current-user.server";
+
+const AyahKey = z.object({ surah: z.number().int(), ayah: z.number().int() });
+
+export const toggleBookmark = createServerFn({ method: "POST" })
+  .inputValidator((d) => AyahKey.parse(d))
+  .handler(async ({ data }) => {
+    const userId = await requireUserId();
+    const { data: existing } = await supabaseAdmin
+      .from("bookmarks_local")
+      .select("id")
+      .eq("user_id", userId)
+      .eq("surah", data.surah)
+      .eq("ayah", data.ayah)
+      .maybeSingle();
+    if (existing) {
+      await supabaseAdmin.from("bookmarks_local").delete().eq("id", existing.id);
+      return { bookmarked: false };
+    }
+    await supabaseAdmin.from("bookmarks_local").insert({
+      user_id: userId,
+      surah: data.surah,
+      ayah: data.ayah,
+    });
+    return { bookmarked: true };
+  });
+
+export const isBookmarked = createServerFn({ method: "GET" })
+  .inputValidator((d) => AyahKey.parse(d))
+  .handler(async ({ data }) => {
+    const userId = await requireUserId();
+    const { data: row } = await supabaseAdmin
+      .from("bookmarks_local")
+      .select("id")
+      .eq("user_id", userId)
+      .eq("surah", data.surah)
+      .eq("ayah", data.ayah)
+      .maybeSingle();
+    return { bookmarked: !!row };
+  });
+
+export const listBookmarks = createServerFn({ method: "GET" }).handler(async () => {
+  const userId = await requireUserId();
+  const { data } = await supabaseAdmin
+    .from("bookmarks_local")
+    .select("surah, ayah, created_at")
+    .eq("user_id", userId)
+    .order("created_at", { ascending: false });
+  return data ?? [];
+});
+
+// Reflections
+export const listReflections = createServerFn({ method: "GET" })
+  .inputValidator((d) => z.object({ surah: z.number().int().optional(), ayah: z.number().int().optional() }).parse(d))
+  .handler(async ({ data }) => {
+    const userId = await requireUserId();
+    let q = supabaseAdmin
+      .from("reflections_local")
+      .select("*")
+      .eq("user_id", userId)
+      .order("created_at", { ascending: false });
+    if (data.surah) q = q.eq("surah", data.surah);
+    if (data.ayah) q = q.eq("ayah", data.ayah);
+    const { data: rows } = await q;
+    return rows ?? [];
+  });
+
+export const saveReflection = createServerFn({ method: "POST" })
+  .inputValidator((d) => z.object({ surah: z.number().int(), ayah: z.number().int(), body: z.string().min(1).max(2000), id: z.string().uuid().optional() }).parse(d))
+  .handler(async ({ data }) => {
+    const userId = await requireUserId();
+    if (data.id) {
+      await supabaseAdmin
+        .from("reflections_local")
+        .update({ body: data.body })
+        .eq("id", data.id)
+        .eq("user_id", userId);
+      return { ok: true, id: data.id };
+    }
+    const { data: r } = await supabaseAdmin
+      .from("reflections_local")
+      .insert({ user_id: userId, surah: data.surah, ayah: data.ayah, body: data.body })
+      .select("id")
+      .single();
+    return { ok: true, id: r?.id };
+  });
+
+export const deleteReflection = createServerFn({ method: "POST" })
+  .inputValidator((d) => z.object({ id: z.string().uuid() }).parse(d))
+  .handler(async ({ data }) => {
+    const userId = await requireUserId();
+    await supabaseAdmin.from("reflections_local").delete().eq("id", data.id).eq("user_id", userId);
+    return { ok: true };
+  });
+
+// Collections
+export const listCollections = createServerFn({ method: "GET" }).handler(async () => {
+  const userId = await requireUserId();
+  const { data } = await supabaseAdmin
+    .from("collections_local")
+    .select("id, name, created_at")
+    .eq("user_id", userId)
+    .order("created_at", { ascending: false });
+  return data ?? [];
+});
+
+export const createCollection = createServerFn({ method: "POST" })
+  .inputValidator((d) => z.object({ name: z.string().min(1).max(100) }).parse(d))
+  .handler(async ({ data }) => {
+    const userId = await requireUserId();
+    const { data: c } = await supabaseAdmin
+      .from("collections_local")
+      .insert({ user_id: userId, name: data.name })
+      .select("id, name")
+      .single();
+    return c;
+  });
+
+export const addToCollection = createServerFn({ method: "POST" })
+  .inputValidator((d) => z.object({ collectionId: z.string().uuid(), surah: z.number().int(), ayah: z.number().int() }).parse(d))
+  .handler(async ({ data }) => {
+    const userId = await requireUserId();
+    // Verify collection ownership
+    const { data: c } = await supabaseAdmin
+      .from("collections_local")
+      .select("id")
+      .eq("id", data.collectionId)
+      .eq("user_id", userId)
+      .maybeSingle();
+    if (!c) throw new Response("Forbidden", { status: 403 });
+    await supabaseAdmin
+      .from("collection_items_local")
+      .upsert({ collection_id: data.collectionId, surah: data.surah, ayah: data.ayah });
+    return { ok: true };
+  });
+
+// Recently revisited
+export const recordRevisit = createServerFn({ method: "POST" })
+  .inputValidator((d) => AyahKey.parse(d))
+  .handler(async ({ data }) => {
+    const userId = await requireUserId();
+    await supabaseAdmin
+      .from("recently_revisited")
+      .insert({ user_id: userId, surah: data.surah, ayah: data.ayah });
+    return { ok: true };
+  });
+
+export const listRevisited = createServerFn({ method: "GET" }).handler(async () => {
+  const userId = await requireUserId();
+  const { data } = await supabaseAdmin
+    .from("recently_revisited")
+    .select("surah, ayah, visited_at")
+    .eq("user_id", userId)
+    .order("visited_at", { ascending: false })
+    .limit(50);
+  return data ?? [];
+});
