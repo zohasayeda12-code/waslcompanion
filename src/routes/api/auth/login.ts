@@ -44,7 +44,7 @@ export const Route = createFileRoute("/api/auth/login")({
           JSON.stringify({ state, verifier, redirect: safeRedirect }),
           {
             httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
+            secure: true,
             sameSite: "lax",
             path: "/",
             maxAge: 600, // 10 minutes — enough to complete the OAuth dance
