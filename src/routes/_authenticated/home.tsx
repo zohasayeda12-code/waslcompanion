@@ -3,6 +3,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { useQuery } from "@tanstack/react-query";
 import { motion } from "motion/react";
 import { LogOut } from "lucide-react";
+import { useEffect } from "react";
 import { AppShell } from "@/components/app-shell";
 import { GlassCard } from "@/components/glass-card";
 import { GlowChip } from "@/components/glow-chip";
@@ -10,6 +11,8 @@ import { HijriBanner } from "@/components/hijri-banner";
 import { getJourneyState } from "@/lib/journey.functions";
 import { getAyah } from "@/lib/qf-content.functions";
 import { getActiveIntention } from "@/lib/intentions.functions";
+import { saveSubscription } from "@/lib/push.functions";
+import { ensurePushSubscription, pushSupported } from "@/lib/push.client";
 
 export const Route = createFileRoute("/_authenticated/home")({
   head: () => ({ meta: [{ title: "Home — Wasl" }] }),
