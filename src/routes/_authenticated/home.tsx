@@ -130,73 +130,34 @@ function HomeScreen() {
             onClick={goAyah}
             className="block w-full text-left"
           >
-            <div className="px-[clamp(1.25rem,5.5vw,1.75rem)] pt-[clamp(1.5rem,6vw,2rem)] pb-5">
-              <p className="text-[10px] uppercase tracking-[0.24em] text-muted-foreground">
-                Surah {surah} · Ayah {ayah}
-              </p>
+            <div className="px-[clamp(1.25rem,5.5vw,1.75rem)] py-[clamp(1.75rem,7vw,2.25rem)]">
+              <div className="flex items-baseline justify-between gap-3">
+                <p className="text-[10px] uppercase tracking-[0.24em] text-muted-foreground">
+                  Surah {surah}
+                  {ayahData?.surahName ? ` · ${ayahData.surahName}` : ""} · Ayah {ayah}
+                </p>
+                {ayahData?.surahNameArabic && (
+                  <p
+                    className="text-sm text-foreground/70"
+                    style={{ fontFamily: "var(--font-display)", direction: "rtl" }}
+                  >
+                    {ayahData.surahNameArabic}
+                  </p>
+                )}
+              </div>
               <p
-                className="mt-6 text-[clamp(1.6rem,7.5vw,2.15rem)] leading-[1.85] font-medium tracking-tight text-foreground"
+                className="mt-7 text-[clamp(1.6rem,7.5vw,2.15rem)] leading-[1.85] font-medium tracking-tight text-foreground"
                 style={{ fontFamily: "var(--font-display)", direction: "rtl" }}
               >
                 {ayahData?.arabic || "···"}
               </p>
               {ayahData?.translation && (
-                <p className="mt-5 text-[clamp(0.95rem,3.6vw,1.05rem)] leading-relaxed text-foreground/75">
+                <p className="mt-6 text-[clamp(0.95rem,3.6vw,1.05rem)] leading-relaxed text-foreground/75">
                   {ayahData.translation}
                 </p>
               )}
             </div>
           </button>
-
-          {/* Subtle divider */}
-          <div
-            aria-hidden
-            className="mx-[clamp(1.25rem,5.5vw,1.75rem)] h-px"
-            style={{
-              background:
-                "linear-gradient(90deg, transparent, oklch(1 0 0 / 0.07), transparent)",
-            }}
-          />
-
-          {/* 3. Quick action row — integrated, not a CTA */}
-          <div className="flex items-stretch gap-1 px-[clamp(0.75rem,3vw,1rem)] py-3">
-            <ActionButton
-              label="Reflect"
-              onClick={() =>
-                navigate({
-                  to: "/ayah/$surah/$ayah",
-                  params: { surah: String(surah), ayah: String(ayah) },
-                  search: { from: "home", reflect: true },
-                })
-              }
-              icon={<Feather className="size-4" />}
-              emphasis="secondary"
-            />
-            <LiveAction surah={surah} ayah={ayah} invite={inviteLive} />
-            <ActionButton
-              label={bookmark?.bookmarked ? "Saved" : "Bookmark"}
-              onClick={async () => {
-                await toggleBookmarkFn({ data: { surah, ayah } });
-                qc.invalidateQueries({ queryKey: ["bookmark", surah, ayah] });
-              }}
-              icon={<BookmarkPlus className={`size-4 ${bookmark?.bookmarked ? "fill-current" : ""}`} />}
-              emphasis="quiet"
-            />
-            <ActionButton
-              label="Next"
-              onClick={async () => {
-                await advanceFn({ data: { surah, ayah: ayah + 1 } });
-                qc.invalidateQueries({ queryKey: ["journey"] });
-                navigate({
-                  to: "/ayah/$surah/$ayah",
-                  params: { surah: String(surah), ayah: String(ayah + 1) },
-                  search: { from: "home" },
-                });
-              }}
-              icon={<ChevronRight className="size-4" />}
-              emphasis="ghost"
-            />
-          </div>
         </article>
       </motion.section>
 
