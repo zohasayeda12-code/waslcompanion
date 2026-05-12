@@ -37,13 +37,10 @@ Examples of the WRONG register — never produce these:
 
 If the ayah text is missing or you cannot anchor a concrete action in it, output exactly: REFUSE.`;
 
-// const McpUrl = process.env.QURAN_MCP_URL ?? "";
+import { fetchQuranMcpContext } from "./quran-mcp.server";
 
-async function gatherMcpContext(_surah: number, _ayah: number): Promise<string> {
-  // MCP client integration deferred — `ai` v6 moved MCP out of the core package.
-  // Suggestions are grounded in the ayah translation directly. When a stable
-  // remote MCP URL + AI SDK MCP client package is wired in, fetch tool output here.
-  return "";
+async function gatherMcpContext(surah: number, ayah: number): Promise<string> {
+  return fetchQuranMcpContext(surah, ayah);
 }
 
 export const generateLiveSuggestion = createServerFn({ method: "POST" })

@@ -1,15 +1,14 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useEffect, useState, type ReactNode } from "react";
+import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { z } from "zod";
 import { AppShell } from "@/components/app-shell";
-import { BookOpen, Bookmark, Sparkles, Heart, ChevronDown } from "lucide-react";
-import { AmbientLiveGlow } from "@/components/ambient-live-glow";
-// PrimaryLink replaced with inline Link to keep TanStack typed-route inference
+import { BookOpen, Bookmark, Sparkles, Heart, ChevronDown, Loader2, Check } from "lucide-react";
 import { getAyah } from "@/lib/qf-content.functions";
 import { getAyahContext } from "@/lib/ayah-context.functions";
-import { listIntentionsForAyah, getActiveIntention, markLived, carryForward, removeIntention } from "@/lib/intentions.functions";
+import { listIntentionsForAyah, getActiveIntention, markLived, carryForward, removeIntention, createIntention } from "@/lib/intentions.functions";
+import { generateLiveSuggestion } from "@/lib/live-suggestion.functions";
 import { getJourneyState, advanceJourney } from "@/lib/journey.functions";
 import { toggleBookmark, isBookmarked, recordRevisit } from "@/lib/library.functions";
 import { setHighlight, getHighlight } from "@/lib/highlights.functions";
@@ -25,7 +24,7 @@ export const Route = createFileRoute("/_authenticated/ayah/$surah/$ayah")({
   component: AyahDetail,
 });
 
-type SheetKind = "tafsir" | "context" | null;
+type SheetKind = "tafsir" | "context" | "live" | null;
 
 function AyahDetail() {
   const { surah, ayah } = Route.useParams();
@@ -42,7 +41,6 @@ function AyahDetail() {
   const advanceFn = useServerFn(advanceJourney);
   const bookmarkedFn = useServerFn(isBookmarked);
   const toggleBookmarkFn = useServerFn(toggleBookmark);
-  const setHighlightFn = useServerFn(setHighlight);
   const getHighlightFn = useServerFn(getHighlight);
   const markLivedFn = useServerFn(markLived);
   const carryFn = useServerFn(carryForward);
@@ -51,13 +49,21 @@ function AyahDetail() {
   const contextFn = useServerFn(getAyahContext);
 
   const [sheet, setSheet] = useState<SheetKind>(null);
+  const [glowLive, setGlowLive] = useState(false);
+  const [confirmation, setConfirmation] = useState<{ when: string } | null>(null);
+
+  // 3-second delayed glow on Live icon
+  useEffect(() => {
+    const t = setTimeout(() => setGlowLive(true), 3000);
+    return () => clearTimeout(t);
+  }, [s, a]);
 
   const { data: ayahData } = useQuery({ queryKey: ["ayah", s, a, "full"], queryFn: () => ayahFn({ data: { surah: s, ayah: a, includeTafsir: true } }) });
   const { data: intentions = [] } = useQuery({ queryKey: ["intentions", s, a], queryFn: () => intentionsFn({ data: { surah: s, ayah: a } }) });
   const { data: active } = useQuery({ queryKey: ["active-intention"], queryFn: () => activeFn() });
   const { data: journey } = useQuery({ queryKey: ["journey"], queryFn: () => journeyFn() });
   const { data: bookmark } = useQuery({ queryKey: ["bookmark", s, a], queryFn: () => bookmarkedFn({ data: { surah: s, ayah: a } }) });
-  const { data: highlight } = useQuery({ queryKey: ["highlight", s, a], queryFn: () => getHighlightFn({ data: { surah: s, ayah: a } }) });
+  useQuery({ queryKey: ["highlight", s, a], queryFn: () => getHighlightFn({ data: { surah: s, ayah: a } }) });
   const { data: contextData, isLoading: contextLoading } = useQuery({
     queryKey: ["ayah-context", s, a],
     queryFn: () => contextFn({ data: { surah: s, ayah: a } }),
@@ -66,7 +72,6 @@ function AyahDetail() {
   });
 
   const isCurrent = journey?.current_surah === s && journey?.current_ayah === a;
-  const activeForThis = active?.surah === s && active?.ayah === a ? active : null;
 
   useEffect(() => {
     if (from && from !== "home") {
@@ -89,6 +94,12 @@ function AyahDetail() {
     };
     navigate({ to: map[from ?? "home"] ?? "/home" });
   };
+
+  // Active intention for THIS ayah (shown below the card)
+  const activeForThis = useMemo(
+    () => intentions.find((i) => i.status === "pending" || i.status === "awaiting_response" || i.status === "carried"),
+    [intentions]
+  );
 
   return (
     <AppShell>
@@ -113,11 +124,6 @@ function AyahDetail() {
         <div className="flex items-center justify-between">
           <p className="text-xs uppercase tracking-[0.22em] text-[color:var(--gold)]">
             {ayahData?.surahName ?? `Surah ${s}`}
-            {ayahData?.surahNameArabic && (
-              <span className="ml-2 text-muted-foreground" style={{ fontFamily: "var(--font-display)" }}>
-                {ayahData.surahNameArabic}
-              </span>
-            )}
           </p>
           <p className="text-xs tracking-[0.18em] text-[color:var(--emerald)]">{s}:{a}</p>
         </div>
@@ -145,44 +151,37 @@ function AyahDetail() {
           </p>
         )}
 
-        {/* Icon action row */}
-        <div className="mt-6 flex flex-wrap items-center gap-2">
-          <Link
-            to="/live/$surah/$ayah"
-            params={{ surah, ayah }}
-            className="inline-flex items-center gap-1.5 rounded-full border border-[color:var(--rose)]/40 bg-[oklch(0.72_0.16_15_/_0.10)] px-3 py-1.5 text-xs font-medium text-[color:var(--rose,oklch(0.72_0.16_15))]"
-            aria-label="Live this ayah"
-          >
-            <Heart className="size-3.5" /> Live
-          </Link>
-          <button
+        {/* 4 icons — one row */}
+        <div className="mt-6 grid grid-cols-4 gap-1.5">
+          <IconPill
+            label="Live"
+            icon={<Heart className="size-3.5" />}
+            color="var(--rose, oklch(0.72 0.16 15))"
+            glow={glowLive && !activeForThis}
+            onClick={() => setSheet("live")}
+          />
+          <IconPill
+            label="Tafsir"
+            icon={<BookOpen className="size-3.5" />}
+            color="var(--gold)"
             onClick={() => setSheet("tafsir")}
-            className="inline-flex items-center gap-1.5 rounded-full border border-[color:var(--gold)]/40 bg-[oklch(0.82_0.14_82_/_0.10)] px-3 py-1.5 text-xs font-medium text-[color:var(--gold)]"
-            aria-label="Tafsir"
-          >
-            <BookOpen className="size-3.5" /> Tafsir
-          </button>
-          <button
+          />
+          <IconPill
+            label={bookmark?.bookmarked ? "Saved" : "Save"}
+            icon={<Bookmark className="size-3.5" />}
+            color="var(--emerald)"
+            active={bookmark?.bookmarked}
             onClick={async () => {
               await toggleBookmarkFn({ data: { surah: s, ayah: a } });
               qc.invalidateQueries({ queryKey: ["bookmark", s, a] });
             }}
-            className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium ${
-              bookmark?.bookmarked
-                ? "border-[color:var(--emerald)]/50 bg-[oklch(0.74_0.14_168_/_0.12)] text-[color:var(--emerald)]"
-                : "border-border/60 bg-secondary/50 text-foreground/80"
-            }`}
-            aria-label="Bookmark"
-          >
-            <Bookmark className="size-3.5" /> {bookmark?.bookmarked ? "Bookmarked" : "Bookmark"}
-          </button>
-          <button
+          />
+          <IconPill
+            label="Context"
+            icon={<Sparkles className="size-3.5" />}
+            color="var(--violet)"
             onClick={() => setSheet("context")}
-            className="inline-flex items-center gap-1.5 rounded-full border border-[color:var(--violet)]/40 bg-[oklch(0.70_0.16_295_/_0.10)] px-3 py-1.5 text-xs font-medium text-[color:var(--violet)]"
-            aria-label="Context (Asbāb al-Nuzūl)"
-          >
-            <Sparkles className="size-3.5" /> Context
-          </button>
+          />
         </div>
       </section>
 
@@ -196,88 +195,86 @@ function AyahDetail() {
         </section>
       )}
 
-      {/* Bottom sheet */}
-      {sheet && (
-        <BottomSheet
-          title={sheet === "tafsir" ? `Tafsir · ${ayahData?.tafsir?.name ?? "Ibn Kathir"}` : "Context · Asbāb al-Nuzūl"}
-          onClose={() => setSheet(null)}
-        >
-          {sheet === "tafsir" ? (
-            ayahData?.tafsir?.text ? (
-              <div
-                className="text-sm leading-relaxed text-foreground/85 [&_p]:mt-2"
-                dangerouslySetInnerHTML={{ __html: ayahData.tafsir.text }}
-              />
-            ) : (
-              <p className="text-sm text-muted-foreground">Tafsir unavailable for this ayah.</p>
-            )
-          ) : contextLoading ? (
-            <p className="text-sm text-muted-foreground">Generating context…</p>
+      {/* Active intention summary */}
+      {activeForThis && (
+        <section className="mt-4 rounded-3xl border border-[color:var(--rose,oklch(0.72_0.16_15))]/30 bg-[oklch(0.72_0.16_15_/_0.06)] p-4">
+          <p className="text-[11px] uppercase tracking-[0.2em] text-[color:var(--rose,oklch(0.72_0.16_15))]">Your intention · {activeForThis.kind === "ai" ? "Suggested" : "Custom"}</p>
+          <p className="mt-2 text-sm leading-relaxed text-foreground/90">{activeForThis.text}</p>
+          {activeForThis.reminder_at && (
+            <p className="mt-2 text-xs text-muted-foreground">
+              Reminder: {new Date(activeForThis.reminder_at).toLocaleString([], { dateStyle: "medium", timeStyle: "short" })}
+            </p>
+          )}
+          <div className="mt-3 flex flex-wrap gap-2">
+            <button
+              onClick={async () => { await markLivedFn({ data: { intentionId: activeForThis.id } }); qc.invalidateQueries(); }}
+              className="rounded-full bg-primary px-3 py-1 text-xs text-primary-foreground"
+            >
+              Yes, lived it
+            </button>
+            <button
+              onClick={async () => { await carryFn({ data: { intentionId: activeForThis.id } }); qc.invalidateQueries(); }}
+              className="rounded-full bg-accent/60 px-3 py-1 text-xs"
+            >
+              Carry forward
+            </button>
+            <button
+              onClick={async () => { await removeFn({ data: { intentionId: activeForThis.id } }); qc.invalidateQueries(); }}
+              className="rounded-full bg-secondary px-3 py-1 text-xs"
+            >
+              Remove
+            </button>
+          </div>
+        </section>
+      )}
+
+      {/* Bottom sheets */}
+      {sheet === "tafsir" && (
+        <BottomSheet title={`Tafsir · ${ayahData?.tafsir?.name ?? "Ibn Kathir"}`} onClose={() => setSheet(null)}>
+          {ayahData?.tafsir?.text ? (
+            <div
+              className="text-sm leading-relaxed text-foreground/85 [&_p]:mt-2"
+              dangerouslySetInnerHTML={{ __html: ayahData.tafsir.text }}
+            />
+          ) : (
+            <p className="text-sm text-muted-foreground">Tafsir unavailable for this ayah.</p>
+          )}
+        </BottomSheet>
+      )}
+
+      {sheet === "context" && (
+        <BottomSheet title="Context · Asbāb al-Nuzūl" onClose={() => setSheet(null)}>
+          {contextLoading ? (
+            <p className="text-sm text-muted-foreground">Generating context from Quran MCP…</p>
           ) : contextData?.context ? (
-            <div className="whitespace-pre-wrap text-sm leading-relaxed text-foreground/85">
-              {contextData.context}
-            </div>
+            <div className="whitespace-pre-wrap text-sm leading-relaxed text-foreground/85">{contextData.context}</div>
           ) : (
             <p className="text-sm text-muted-foreground">No context available.</p>
           )}
         </BottomSheet>
       )}
 
-      {/* Journey panel */}
-      <section className="mt-8 rounded-3xl border border-border bg-card p-5">
-        <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Journey</p>
-        {intentions.length === 0 && <p className="mt-2 text-sm text-muted-foreground">No intention set yet.</p>}
-        {intentions.map((it) => (
-          <div key={it.id} className="mt-3 rounded-2xl bg-secondary/60 p-3 text-sm">
-            <div className="flex items-center justify-between">
-              <span className="text-xs uppercase tracking-wider text-muted-foreground">{it.status}</span>
-              {it.lived_at && <span className="text-xs text-muted-foreground">{new Date(it.lived_at).toLocaleDateString()}</span>}
-            </div>
-            <p className="mt-1">{it.text}</p>
-            {(it.status === "pending" || it.status === "awaiting_response" || it.status === "carried") && (
-              <div className="mt-3 flex gap-2">
-                <button
-                  onClick={async () => {
-                    await markLivedFn({ data: { intentionId: it.id } });
-                    qc.invalidateQueries();
-                  }}
-                  className="rounded-full bg-primary px-3 py-1 text-xs text-primary-foreground"
-                >
-                  Yes, lived it
-                </button>
-                <button
-                  onClick={async () => {
-                    await carryFn({ data: { intentionId: it.id } });
-                    qc.invalidateQueries();
-                  }}
-                  className="rounded-full bg-accent/60 px-3 py-1 text-xs"
-                >
-                  Not yet — carry forward
-                </button>
-                <button
-                  onClick={async () => {
-                    await removeFn({ data: { intentionId: it.id } });
-                    qc.invalidateQueries();
-                  }}
-                  className="rounded-full bg-secondary px-3 py-1 text-xs"
-                >
-                  Remove
-                </button>
-              </div>
-            )}
-          </div>
-        ))}
+      {sheet === "live" && (
+        <LiveSheet
+          surah={s}
+          ayah={a}
+          existingActive={active && (active.surah !== s || active.ayah !== a) ? active : null}
+          onClose={() => setSheet(null)}
+          onSet={(when) => {
+            setSheet(null);
+            setConfirmation({ when });
+            qc.invalidateQueries({ queryKey: ["intentions", s, a] });
+            qc.invalidateQueries({ queryKey: ["active-intention"] });
+          }}
+        />
+      )}
 
-        <AmbientLiveGlow className="mt-5">
-          <Link
-            to="/live/$surah/$ayah"
-            params={{ surah, ayah }}
-            className="inline-flex h-14 w-full items-center justify-center rounded-2xl bg-[var(--gradient-primary)] px-6 text-base font-medium text-primary-foreground shadow-[var(--shadow-soft)] hover:shadow-[var(--shadow-elevated)]"
-          >
-            {intentions.some((i) => i.status === "lived") ? "Live This Ayah Again" : "Live This Ayah"}
-          </Link>
-        </AmbientLiveGlow>
-      </section>
+      {confirmation && (
+        <ConfirmDialog
+          when={confirmation.when}
+          onClose={() => setConfirmation(null)}
+        />
+      )}
 
       {isCurrent && (
         <button
@@ -291,6 +288,197 @@ function AyahDetail() {
         </button>
       )}
     </AppShell>
+  );
+}
+
+function IconPill({
+  label,
+  icon,
+  color,
+  glow,
+  active,
+  onClick,
+}: {
+  label: string;
+  icon: ReactNode;
+  color: string;
+  glow?: boolean;
+  active?: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      className={`relative inline-flex flex-col items-center justify-center gap-1 rounded-2xl border px-2 py-2 text-[10px] font-medium transition ${
+        active ? "border-current/50" : "border-border/60 bg-secondary/40"
+      }`}
+      style={{ color }}
+    >
+      <span className="relative inline-flex size-6 items-center justify-center">
+        {glow && (
+          <span
+            className="absolute inset-0 -z-10 animate-ping rounded-full"
+            style={{ background: `color-mix(in oklab, ${color} 50%, transparent)` }}
+          />
+        )}
+        {icon}
+      </span>
+      <span className="leading-none">{label}</span>
+    </button>
+  );
+}
+
+function LiveSheet({
+  surah,
+  ayah,
+  existingActive,
+  onClose,
+  onSet,
+}: {
+  surah: number;
+  ayah: number;
+  existingActive: { surah: number; ayah: number } | null;
+  onClose: () => void;
+  onSet: (whenIso: string) => void;
+}) {
+  const suggestFn = useServerFn(generateLiveSuggestion);
+  const createFn = useServerFn(createIntention);
+
+  const [text, setText] = useState("");
+  const [usedAi, setUsedAi] = useState(false);
+  const [confirmReplace, setConfirmReplace] = useState(false);
+
+  // Default reminder: tomorrow 9am
+  const defaultDate = useMemo(() => {
+    const d = new Date();
+    d.setDate(d.getDate() + 1);
+    d.setHours(9, 0, 0, 0);
+    const pad = (n: number) => String(n).padStart(2, "0");
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  }, []);
+  const [reminderLocal, setReminderLocal] = useState(defaultDate);
+
+  const suggest = useMutation({
+    mutationFn: () => suggestFn({ data: { surah, ayah } }),
+    onSuccess: (res) => {
+      if (res.ok) {
+        setText(res.suggestion);
+        setUsedAi(true);
+      }
+    },
+  });
+
+  const submit = useMutation({
+    mutationFn: async () => {
+      const reminderAt = new Date(reminderLocal).toISOString();
+      const res = await createFn({
+        data: {
+          surah,
+          ayah,
+          kind: usedAi ? "ai" : "custom",
+          text: text.trim(),
+          reminderAt,
+          onConflict: confirmReplace || !existingActive ? "replace" : "skip",
+        },
+      });
+      return { res, reminderAt };
+    },
+    onSuccess: ({ res, reminderAt }) => {
+      if (!res.ok) {
+        setConfirmReplace(true);
+        return;
+      }
+      onSet(reminderAt);
+    },
+  });
+
+  const conflict = existingActive && !confirmReplace;
+
+  return (
+    <BottomSheet title="Live this ayah" onClose={onClose}>
+      <p className="text-base font-medium tracking-tight">How will you live this ayah today?</p>
+      <p className="mt-1 text-xs text-muted-foreground">A small, gentle action. One ayah, one intention.</p>
+
+      {conflict && (
+        <div className="mt-4 rounded-2xl border border-border bg-accent/30 p-3 text-xs">
+          You are still carrying an intention from {existingActive.surah}:{existingActive.ayah}.
+          <button
+            onClick={() => setConfirmReplace(true)}
+            className="ml-2 rounded-full bg-primary px-2 py-0.5 text-[11px] text-primary-foreground"
+          >
+            Replace
+          </button>
+        </div>
+      )}
+
+      <div className="mt-4 flex items-center justify-between gap-3">
+        <button
+          type="button"
+          onClick={() => suggest.mutate()}
+          disabled={suggest.isPending}
+          className="inline-flex items-center gap-2 rounded-full border border-border bg-secondary/60 px-3 py-1.5 text-xs text-foreground/80 transition hover:bg-secondary disabled:opacity-50"
+        >
+          {suggest.isPending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Sparkles className="h-3.5 w-3.5" />}
+          Suggest a small action
+        </button>
+        {usedAi && text && (
+          <button onClick={() => { setText(""); setUsedAi(false); }} className="text-xs text-muted-foreground underline-offset-2 hover:underline">
+            Write your own
+          </button>
+        )}
+      </div>
+      {suggest.data && !suggest.data.ok && (
+        <p className="mt-2 text-xs text-muted-foreground">Couldn't generate a suggestion — write your own.</p>
+      )}
+
+      <textarea
+        value={text}
+        onChange={(e) => { setText(e.target.value); setUsedAi(false); }}
+        placeholder="A small, specific action for today."
+        className="mt-3 min-h-[100px] w-full rounded-2xl border border-border bg-background/60 p-3 text-sm"
+      />
+
+      <label className="mt-4 block text-xs uppercase tracking-[0.18em] text-muted-foreground">
+        Remind me at
+      </label>
+      <input
+        type="datetime-local"
+        value={reminderLocal}
+        onChange={(e) => setReminderLocal(e.target.value)}
+        className="mt-2 w-full rounded-2xl border border-border bg-background/60 px-3 py-2.5 text-sm"
+      />
+
+      <button
+        onClick={() => submit.mutate()}
+        disabled={!text.trim() || submit.isPending || !reminderLocal}
+        className="mt-5 inline-flex h-12 w-full items-center justify-center rounded-2xl bg-[var(--gradient-primary)] px-6 text-sm font-medium text-primary-foreground shadow-[var(--shadow-soft)] disabled:opacity-50"
+      >
+        {submit.isPending ? <Loader2 className="size-4 animate-spin" /> : "Set Intention"}
+      </button>
+    </BottomSheet>
+  );
+}
+
+function ConfirmDialog({ when, onClose }: { when: string; onClose: () => void }) {
+  const formatted = new Date(when).toLocaleString([], { dateStyle: "medium", timeStyle: "short" });
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-6" role="dialog" aria-modal="true">
+      <div className="absolute inset-0 bg-background/70 backdrop-blur-sm" onClick={onClose} aria-hidden />
+      <div className="relative z-10 w-full max-w-sm rounded-3xl border border-border/60 bg-card p-6 text-center shadow-[var(--shadow-elevated)]">
+        <div className="mx-auto mb-3 inline-flex size-10 items-center justify-center rounded-full bg-[oklch(0.74_0.14_168_/_0.15)] text-[color:var(--emerald)]">
+          <Check className="size-5" />
+        </div>
+        <p className="text-sm leading-relaxed text-foreground/90">
+          I will remind you of this niyyah at <span className="font-medium">{formatted}</span>.
+        </p>
+        <button
+          onClick={onClose}
+          className="mt-5 inline-flex h-10 w-full items-center justify-center rounded-2xl bg-secondary px-4 text-sm"
+        >
+          Close
+        </button>
+      </div>
+    </div>
   );
 }
 
@@ -321,11 +509,7 @@ function BottomSheet({
 
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center" role="dialog" aria-modal="true">
-      <div
-        className="absolute inset-0 bg-background/70 backdrop-blur-sm"
-        onClick={onClose}
-        aria-hidden
-      />
+      <div className="absolute inset-0 bg-background/70 backdrop-blur-sm" onClick={onClose} aria-hidden />
       <div
         className="relative z-10 w-full max-w-2xl rounded-t-3xl border-t border-x border-border/60 bg-card shadow-[var(--shadow-elevated)]"
         style={{ transform: `translateY(${Math.max(0, dragY)}px)`, transition: startY === null ? "transform 200ms ease" : "none", maxHeight: "85vh" }}
