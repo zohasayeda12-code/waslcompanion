@@ -301,7 +301,7 @@ function BottomSheet({
 }: {
   title: string;
   onClose: () => void;
-  children: React.ReactNode;
+  children: ReactNode;
 }) {
   const [dragY, setDragY] = useState(0);
   const [startY, setStartY] = useState<number | null>(null);
