@@ -39,8 +39,15 @@ export const Route = createFileRoute("/oauth/callback")({
         const cookieRaw = getCookie("wasl_oauth");
         deleteCookie("wasl_oauth", { path: "/" });
 
-        const redirectTo = (path: string) =>
-          new Response(null, { status: 302, headers: { Location: new URL(path, url.origin).toString() } });
+        const redirectTo = (path: string) => {
+          // Use h3 response helpers so any Set-Cookie staged by useSession
+          // (the encrypted wasl_session cookie) is attached to the redirect.
+          // Returning `new Response(null, {...})` bypasses h3's response and
+          // silently drops those cookies.
+          setResponseStatus(302);
+          setResponseHeader("Location", new URL(path, url.origin).toString());
+          return null;
+        };
 
         const fail = (reason: string) =>
           redirectTo(`/login?error=${encodeURIComponent(reason)}`);
