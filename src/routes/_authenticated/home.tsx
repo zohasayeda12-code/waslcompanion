@@ -13,7 +13,6 @@ import {
 import { AppShell } from "@/components/app-shell";
 import { GlassCard } from "@/components/glass-card";
 import { GlowChip } from "@/components/glow-chip";
-import { PrimaryLink } from "@/components/primary-button";
 import { getJourneyState } from "@/lib/journey.functions";
 import { getAyah } from "@/lib/qf-content.functions";
 import { getActiveIntention } from "@/lib/intentions.functions";
