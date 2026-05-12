@@ -22,14 +22,10 @@ export const qfConfig = {
     return process.env.QF_CLIENT_SECRET ?? "";
   },
   get authUrl() {
-    return (
-      process.env.QF_AUTH_URL ?? "https://oauth2.quran.foundation/oauth2/auth"
-    );
+    return process.env.QF_AUTH_URL ?? "https://prelive-oauth2.quran.foundation/oauth2/auth";
   },
   get tokenUrl() {
-    return (
-      process.env.QF_TOKEN_URL ?? "https://oauth2.quran.foundation/oauth2/token"
-    );
+    return process.env.QF_TOKEN_URL ?? "https://prelive-oauth2.quran.foundation/oauth2/token";
   },
   get scopes() {
     return process.env.QF_SCOPES ?? "openid offline profile";
