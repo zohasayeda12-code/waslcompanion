@@ -125,15 +125,26 @@ export async function fetchAyah(
     const j = (await verseRes.json()) as any;
     const v = j.verse ?? j.verses?.[0] ?? j;
     arabic = v.text_uthmani ?? v.text_imlaei ?? "";
-    const tr = v.translations?.[0];
-    translation = (typeof tr === "string" ? tr : tr?.text) ?? "";
-    if (translation) translation = translation.replace(/<[^>]+>/g, "").trim();
+    const tr = Array.isArray(v.translations) ? v.translations[0] : v.translations;
+    let tText = typeof tr === "string" ? tr : tr?.text ?? tr?.translation ?? "";
+    if (tText) tText = String(tText).replace(/<[^>]+>/g, "").trim();
+    translation = tText;
     if (Array.isArray(v.words)) {
       transliteration = v.words
-        .map((w: any) => w.transliteration?.text ?? w.transliteration ?? "")
+        .map((w: any) => {
+          const t = w.transliteration;
+          if (!t) return "";
+          if (typeof t === "string") return t;
+          return typeof t.text === "string" ? t.text : "";
+        })
         .filter(Boolean)
         .join(" ");
     }
+    if (!translation) {
+      console.warn("translation empty for", verseKey, "keys:", Object.keys(v ?? {}), "tr:", tr);
+    }
+  } else if (verseRes) {
+    console.warn("verses.by_key non-ok", verseKey, verseRes.status, await verseRes.text().catch(() => ""));
   }
 
   let audioUrl: string | undefined;
