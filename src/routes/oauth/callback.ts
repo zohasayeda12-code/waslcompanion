@@ -34,8 +34,11 @@ export const Route = createFileRoute("/oauth/callback")({
         const cookieRaw = getCookie("wasl_oauth");
         deleteCookie("wasl_oauth", { path: "/" });
 
+        const redirectTo = (path: string) =>
+          new Response(null, { status: 302, headers: { Location: new URL(path, url.origin).toString() } });
+
         const fail = (reason: string) =>
-          Response.redirect(new URL(`/login?error=${encodeURIComponent(reason)}`, url.origin), 302);
+          redirectTo(`/login?error=${encodeURIComponent(reason)}`);
 
         if (error) return fail(errorDescription ?? error);
         if (!code || !state || !cookieRaw) return fail("invalid_callback");
