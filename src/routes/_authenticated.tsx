@@ -11,7 +11,7 @@ import { getAuthStatus } from "@/lib/auth.functions";
 export const Route = createFileRoute("/_authenticated")({
   beforeLoad: async ({ location }) => {
     const status = await getAuthStatus();
-    if (!status.isAuthenticated && !import.meta.env.DEV) {
+    if (!status.isAuthenticated) {
       throw redirect({
         to: "/login",
         search: {
