@@ -2,7 +2,12 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { requireUserId } from "./current-user.server";
-import { bookmarksAdapter, dispatchBackground } from "./sync.server";
+import {
+  bookmarksAdapter,
+  collectionsAdapter,
+  dispatchBackground,
+  reflectionsAdapter,
+} from "./sync.server";
 
 const AyahKey = z.object({ surah: z.number().int(), ayah: z.number().int() });
 
@@ -104,11 +109,26 @@ export const saveReflection = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     const userId = await requireUserId();
     if (data.id) {
+      // Optimistic local update
       await supabaseAdmin
         .from("reflections_local")
         .update({ body: data.body })
         .eq("id", data.id)
         .eq("user_id", userId);
+      const { data: row } = await supabaseAdmin
+        .from("reflections_local")
+        .select("qf_post_id")
+        .eq("id", data.id)
+        .maybeSingle();
+      const qfId = row?.qf_post_id;
+      if (qfId) {
+        dispatchBackground(() => reflectionsAdapter.pushUpdate(qfId, data.body), {
+          userId,
+          resource: "reflection",
+          operation: "update",
+          payload: { id: data.id, qfId },
+        });
+      }
       return { ok: true, id: data.id };
     }
     const { data: r } = await supabaseAdmin
@@ -116,14 +136,42 @@ export const saveReflection = createServerFn({ method: "POST" })
       .insert({ user_id: userId, surah: data.surah, ayah: data.ayah, body: data.body })
       .select("id")
       .single();
-    return { ok: true, id: r?.id };
+    const localId = r?.id;
+    dispatchBackground(
+      async () => {
+        const result = await reflectionsAdapter.pushCreate(data.surah, data.ayah, data.body);
+        if (result?.qfId && localId) {
+          await supabaseAdmin
+            .from("reflections_local")
+            .update({ qf_post_id: result.qfId })
+            .eq("id", localId);
+        }
+      },
+      { userId, resource: "reflection", operation: "create", payload: data },
+    );
+    return { ok: true, id: localId };
   });
 
 export const deleteReflection = createServerFn({ method: "POST" })
   .inputValidator((d) => z.object({ id: z.string().uuid() }).parse(d))
   .handler(async ({ data }) => {
     const userId = await requireUserId();
+    const { data: row } = await supabaseAdmin
+      .from("reflections_local")
+      .select("qf_post_id")
+      .eq("id", data.id)
+      .eq("user_id", userId)
+      .maybeSingle();
     await supabaseAdmin.from("reflections_local").delete().eq("id", data.id).eq("user_id", userId);
+    const qfId = row?.qf_post_id;
+    if (qfId) {
+      dispatchBackground(() => reflectionsAdapter.pushDelete(qfId), {
+        userId,
+        resource: "reflection",
+        operation: "delete",
+        payload: { id: data.id, qfId },
+      });
+    }
     return { ok: true };
   });
 
@@ -147,6 +195,19 @@ export const createCollection = createServerFn({ method: "POST" })
       .insert({ user_id: userId, name: data.name })
       .select("id, name")
       .single();
+    const localId = c?.id;
+    dispatchBackground(
+      async () => {
+        const result = await collectionsAdapter.pushCreate(data.name);
+        if (result?.qfId && localId) {
+          await supabaseAdmin
+            .from("collections_local")
+            .update({ qf_collection_id: result.qfId })
+            .eq("id", localId);
+        }
+      },
+      { userId, resource: "collection", operation: "create", payload: data },
+    );
     return c;
   });
 
@@ -154,17 +215,35 @@ export const addToCollection = createServerFn({ method: "POST" })
   .inputValidator((d) => z.object({ collectionId: z.string().uuid(), surah: z.number().int(), ayah: z.number().int() }).parse(d))
   .handler(async ({ data }) => {
     const userId = await requireUserId();
-    // Verify collection ownership
+    // Verify collection ownership and grab QF id
     const { data: c } = await supabaseAdmin
       .from("collections_local")
-      .select("id")
+      .select("id, qf_collection_id")
       .eq("id", data.collectionId)
       .eq("user_id", userId)
       .maybeSingle();
     if (!c) throw new Response("Forbidden", { status: 403 });
-    await supabaseAdmin
+    const { data: item } = await supabaseAdmin
       .from("collection_items_local")
-      .upsert({ collection_id: data.collectionId, surah: data.surah, ayah: data.ayah });
+      .upsert({ collection_id: data.collectionId, surah: data.surah, ayah: data.ayah })
+      .select("id")
+      .single();
+    const itemLocalId = item?.id;
+    const qfCollectionId = c.qf_collection_id;
+    if (qfCollectionId) {
+      dispatchBackground(
+        async () => {
+          const result = await collectionsAdapter.pushAddItem(qfCollectionId, data.surah, data.ayah);
+          if (result?.qfId && itemLocalId) {
+            await supabaseAdmin
+              .from("collection_items_local")
+              .update({ qf_item_id: result.qfId })
+              .eq("id", itemLocalId);
+          }
+        },
+        { userId, resource: "collection_item", operation: "add", payload: data },
+      );
+    }
     return { ok: true };
   });
 

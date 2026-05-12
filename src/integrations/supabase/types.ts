@@ -55,6 +55,7 @@ export type Database = {
           collection_id: string
           created_at: string
           id: string
+          qf_item_id: string | null
           surah: number
         }
         Insert: {
@@ -62,6 +63,7 @@ export type Database = {
           collection_id: string
           created_at?: string
           id?: string
+          qf_item_id?: string | null
           surah: number
         }
         Update: {
@@ -69,6 +71,7 @@ export type Database = {
           collection_id?: string
           created_at?: string
           id?: string
+          qf_item_id?: string | null
           surah?: number
         }
         Relationships: [

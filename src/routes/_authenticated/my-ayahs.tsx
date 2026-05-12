@@ -1,10 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useEffect } from "react";
 import { AppShell } from "@/components/app-shell";
 import { listBookmarks, listReflections, listRevisited } from "@/lib/library.functions";
 import { listHighlights } from "@/lib/highlights.functions";
 import { listAllIntentions } from "@/lib/intentions.functions";
+import { getSyncStatus } from "@/lib/sync.functions";
 
 export const Route = createFileRoute("/_authenticated/my-ayahs")({
   head: () => ({ meta: [{ title: "My Ayahs — Wasl" }] }),
@@ -12,17 +14,35 @@ export const Route = createFileRoute("/_authenticated/my-ayahs")({
 });
 
 function MyAyahs() {
+  const qc = useQueryClient();
   const bm = useServerFn(listBookmarks);
   const re = useServerFn(listReflections);
   const hl = useServerFn(listHighlights);
   const intents = useServerFn(listAllIntentions);
   const rv = useServerFn(listRevisited);
+  const status = useServerFn(getSyncStatus);
   const { data: bookmarks = [] } = useQuery({ queryKey: ["bookmarks"], queryFn: () => bm() });
   const { data: reflections = [] } = useQuery({ queryKey: ["reflections"], queryFn: () => re({ data: {} }) });
   const { data: highlights = [] } = useQuery({ queryKey: ["highlights"], queryFn: () => hl({ data: {} }) });
   const { data: allIntents = [] } = useQuery({ queryKey: ["intents-all"], queryFn: () => intents() });
   const { data: revisited = [] } = useQuery({ queryKey: ["revisited"], queryFn: () => rv() });
+  const { data: syncState } = useQuery({
+    queryKey: ["sync-status"],
+    queryFn: () => status(),
+    refetchInterval: (q) => (q.state.data?.syncing ? 3000 : false),
+  });
   const lived = allIntents.filter((i) => i.status === "lived");
+
+  // While the initial pull is running, quietly refresh lists so newly
+  // imported ayahs appear without any user action.
+  useEffect(() => {
+    if (!syncState?.syncing) return;
+    const t = setInterval(() => {
+      qc.invalidateQueries({ queryKey: ["bookmarks"] });
+      qc.invalidateQueries({ queryKey: ["reflections"] });
+    }, 3000);
+    return () => clearInterval(t);
+  }, [syncState?.syncing, qc]);
 
   const Section = ({ title, items, from }: { title: string; items: { surah: number; ayah: number; key?: string; label?: string }[]; from: string }) => (
     <section className="mt-6">
@@ -54,6 +74,12 @@ function MyAyahs() {
         <Link to="/home" className="text-sm text-muted-foreground">← Home</Link>
         <h1 className="mt-2 text-2xl font-medium tracking-tight md:text-3xl">My Ayahs</h1>
         <p className="mt-1 text-sm text-muted-foreground">{lived.length} ayahs lived in your journey.</p>
+        {syncState?.syncing ? (
+          <p className="mt-2 flex items-center gap-2 text-xs text-muted-foreground/70" aria-live="polite">
+            <span className="inline-block h-1.5 w-1.5 animate-pulse rounded-full bg-muted-foreground/60" />
+            bringing your ayahs in…
+          </p>
+        ) : null}
       </header>
 
       <Section title="Lived" items={lived.map((i) => ({ surah: i.surah, ayah: i.ayah, label: i.text }))} from="my-ayahs" />
