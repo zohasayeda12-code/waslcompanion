@@ -3,7 +3,7 @@ import { z } from "zod";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { requireUserId } from "./current-user.server";
 
-const ACTIVE_STATUSES = ["pending", "awaiting_response", "carried"] as const;
+const ACTIVE_STATUSES: ("pending" | "awaiting_response" | "carried")[] = ["pending", "awaiting_response", "carried"];
 
 export const getActiveIntention = createServerFn({ method: "GET" }).handler(async () => {
   const userId = await requireUserId();
@@ -11,7 +11,7 @@ export const getActiveIntention = createServerFn({ method: "GET" }).handler(asyn
     .from("intentions")
     .select("*")
     .eq("user_id", userId)
-    .in("status", ACTIVE_STATUSES as unknown as string[])
+    .in("status", ACTIVE_STATUSES)
     .order("created_at", { ascending: false })
     .limit(1)
     .maybeSingle();
@@ -62,7 +62,7 @@ export const createIntention = createServerFn({ method: "POST" })
       .from("intentions")
       .select("id, surah, ayah")
       .eq("user_id", userId)
-      .in("status", ACTIVE_STATUSES as unknown as string[])
+      .in("status", ACTIVE_STATUSES)
       .limit(1)
       .maybeSingle();
 
