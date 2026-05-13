@@ -38,7 +38,7 @@ export function AppShell({ children, className = "", framed = true }: Props) {
             "relative flex w-full flex-col",
             "px-[clamp(1rem,5vw,1.5rem)]",
             "pt-[max(env(safe-area-inset-top),1.25rem)]",
-            "pb-[max(env(safe-area-inset-bottom),2rem)]",
+            "pb-[calc(max(env(safe-area-inset-bottom),1rem)+5.5rem)]",
             "min-h-[100dvh]",
             // Tablet/desktop: floating device
             framed && [
