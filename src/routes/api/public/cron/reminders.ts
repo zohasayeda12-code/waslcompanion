@@ -39,6 +39,7 @@ async function run() {
   for (const it of due ?? []) {
     const url = `/ayah/${it.surah}/${it.ayah}?from=notification`;
     const body = it.text.length > 140 ? `${it.text.slice(0, 137)}…` : it.text;
+    const reminderCycle = it.reminder_at ? new Date(it.reminder_at).getTime() : Date.now();
 
     let result;
     try {
@@ -46,7 +47,7 @@ async function run() {
         title: `Niyyah · ${it.surah}:${it.ayah}`,
         body,
         url,
-        tag: `intention-${it.id}`,
+        tag: `intention-${it.id}-${reminderCycle}`,
       });
     } catch (e) {
       const reason = e instanceof Error ? `${e.name}: ${e.message}` : String(e);
