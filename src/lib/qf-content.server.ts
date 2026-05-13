@@ -179,6 +179,59 @@ export async function fetchAyah(
   };
 }
 
+export type MushafPageVerse = {
+  surah: number;
+  ayah: number;
+  verseKey: string;
+  textUthmani: string;
+  lineStart: number;
+  lineEnd: number;
+};
+
+export type MushafPagePayload = {
+  pageNumber: number;
+  juz?: number;
+  verses: MushafPageVerse[];
+};
+
+const pageCache = new Map<number, { payload: MushafPagePayload; expiresAt: number }>();
+const PAGE_TTL_MS = 60 * 60 * 1000;
+
+/** Fetch all verses on a Madani mushaf page (1..604). */
+export async function fetchPage(pageNumber: number): Promise<MushafPagePayload> {
+  const cached = pageCache.get(pageNumber);
+  if (cached && cached.expiresAt > Date.now()) return cached.payload;
+
+  const res = await qfFetch(
+    `/verses/by_page/${pageNumber}?language=en&words=true&per_page=50&fields=text_uthmani,page_number,juz_number&word_fields=line_number,page_number`,
+  );
+  if (!res.ok) {
+    const t = await res.text().catch(() => "");
+    throw new Error(`verses.by_page failed: ${res.status} ${t.slice(0, 200)}`);
+  }
+  const j = (await res.json()) as any;
+  const verses = (j.verses ?? []) as any[];
+  let juz: number | undefined;
+  const out: MushafPageVerse[] = verses.map((v) => {
+    const [s, a] = String(v.verse_key ?? "1:1").split(":").map(Number);
+    if (!juz && v.juz_number) juz = v.juz_number;
+    const words = Array.isArray(v.words) ? v.words.filter((w: any) => w.line_number) : [];
+    const lineNumbers = words.map((w: any) => Number(w.line_number)).filter((n: number) => Number.isFinite(n));
+    return {
+      surah: s,
+      ayah: a,
+      verseKey: v.verse_key,
+      textUthmani: v.text_uthmani ?? "",
+      lineStart: lineNumbers.length ? Math.min(...lineNumbers) : 1,
+      lineEnd: lineNumbers.length ? Math.max(...lineNumbers) : 1,
+    };
+  });
+
+  const payload: MushafPagePayload = { pageNumber, juz, verses: out };
+  pageCache.set(pageNumber, { payload, expiresAt: Date.now() + PAGE_TTL_MS });
+  return payload;
+}
+
 export async function searchQuranContent(
   query: string,
 ): Promise<Array<{ surah: number; ayah: number; preview: string }>> {
