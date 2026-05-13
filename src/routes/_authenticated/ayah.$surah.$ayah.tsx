@@ -237,22 +237,22 @@ function AyahDetail() {
           )}
           <div className="mt-3 flex flex-wrap gap-2">
             <button
-              onClick={async () => { await markLivedFn({ data: { intentionId: activeForThis.id } }); qc.invalidateQueries(); }}
+              onClick={() => setLivedFlow({ intentionId: activeForThis.id, phase: "celebrate" })}
               className="interactive rounded-full bg-primary px-3 py-1 text-xs text-primary-foreground"
             >
-              Yes, lived it
+              Yes, I tried
             </button>
             <button
-              onClick={async () => { await carryFn({ data: { intentionId: activeForThis.id } }); qc.invalidateQueries(); }}
+              onClick={() => setCarryFlow({ intentionId: activeForThis.id })}
               className="interactive rounded-full bg-accent/60 px-3 py-1 text-xs"
             >
-              Carry forward
+              Carry this ayah forward
             </button>
             <button
               onClick={async () => { await removeFn({ data: { intentionId: activeForThis.id } }); qc.invalidateQueries(); }}
               className="interactive rounded-full bg-secondary px-3 py-1 text-xs"
             >
-              Remove
+              Remove intention
             </button>
           </div>
         </section>
