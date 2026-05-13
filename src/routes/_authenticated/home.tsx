@@ -76,7 +76,7 @@ function HomeScreen() {
           <button
             type="submit"
             aria-label="Sign out"
-            className="glass flex size-10 items-center justify-center rounded-full transition-transform active:scale-95"
+            className="glass interactive flex size-10 items-center justify-center rounded-full"
           >
             <LogOut className="size-4" />
           </button>
@@ -121,7 +121,7 @@ function HomeScreen() {
           <button
             type="button"
             onClick={goAyah}
-            className="block w-full text-left"
+            className="interactive-card block w-full rounded-[2rem] text-left"
           >
             <div className="px-[clamp(1.25rem,5.5vw,1.75rem)] py-[clamp(1.75rem,7vw,2.25rem)]">
               <p
@@ -151,7 +151,7 @@ function HomeScreen() {
           search={{ from: "home" }}
           className="mt-5 block"
         >
-          <GlassCard tone="default" className="!p-4">
+          <GlassCard tone="default" interactive className="!p-4">
             <div className="flex items-center gap-3">
               <GlowChip tone="emerald" pulse>
                 Carrying intention

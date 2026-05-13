@@ -106,7 +106,7 @@ function AyahDetail() {
   return (
     <AppShell>
       <header className="flex items-center justify-between">
-        <button onClick={back} className="text-sm text-muted-foreground hover:text-foreground">← Back</button>
+        <button onClick={back} className="interactive rounded-full px-2 py-1 text-sm text-muted-foreground hover:text-foreground">← Back</button>
         <span className="text-xs uppercase tracking-[0.18em] text-muted-foreground">{s}:{a}</span>
       </header>
 
@@ -130,7 +130,7 @@ function AyahDetail() {
           <button
             onClick={() => setSheet("live")}
             aria-label="Live this ayah"
-            className="relative inline-flex size-8 items-center justify-center rounded-full border border-border/60 bg-secondary/40 text-[color:var(--rose,oklch(0.72_0.16_15))]"
+            className="interactive relative inline-flex size-8 items-center justify-center rounded-full border border-border/60 bg-secondary/40 text-[color:var(--rose,oklch(0.72_0.16_15))]"
           >
             {glowLive && !activeForThis && (
               <span
@@ -227,19 +227,19 @@ function AyahDetail() {
           <div className="mt-3 flex flex-wrap gap-2">
             <button
               onClick={async () => { await markLivedFn({ data: { intentionId: activeForThis.id } }); qc.invalidateQueries(); }}
-              className="rounded-full bg-primary px-3 py-1 text-xs text-primary-foreground"
+              className="interactive rounded-full bg-primary px-3 py-1 text-xs text-primary-foreground"
             >
               Yes, lived it
             </button>
             <button
               onClick={async () => { await carryFn({ data: { intentionId: activeForThis.id } }); qc.invalidateQueries(); }}
-              className="rounded-full bg-accent/60 px-3 py-1 text-xs"
+              className="interactive rounded-full bg-accent/60 px-3 py-1 text-xs"
             >
               Carry forward
             </button>
             <button
               onClick={async () => { await removeFn({ data: { intentionId: activeForThis.id } }); qc.invalidateQueries(); }}
-              className="rounded-full bg-secondary px-3 py-1 text-xs"
+              className="interactive rounded-full bg-secondary px-3 py-1 text-xs"
             >
               Remove
             </button>
@@ -301,7 +301,7 @@ function AyahDetail() {
             await advanceFn({ data: { surah: s, ayah: a + 1 } });
             navigate({ to: "/ayah/$surah/$ayah", params: { surah, ayah: String(a + 1) }, search: { from: "home" } });
           }}
-          className="mt-6 w-full rounded-2xl bg-secondary py-3 text-sm font-medium"
+          className="interactive mt-6 w-full rounded-2xl bg-secondary py-3 text-sm font-medium"
         >
           Next Ayah →
         </button>
@@ -328,8 +328,10 @@ function IconPill({
   return (
     <button
       onClick={onClick}
-      className={`relative inline-flex flex-col items-center justify-center gap-1 rounded-2xl border px-2 py-2 text-[10px] font-medium transition ${
-        active ? "border-current/50" : "border-border/60 bg-secondary/40"
+      className={`interactive relative inline-flex flex-col items-center justify-center gap-1 rounded-2xl border px-2 py-2 text-[10px] font-medium ${
+        active
+          ? "border-current/60 bg-[color:var(--surface-2)] shadow-[var(--shadow-inner-soft)]"
+          : "border-border/60 bg-secondary/40"
       }`}
       style={{ color }}
     >

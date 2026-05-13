@@ -262,6 +262,79 @@
   }
   .ring-aurora { box-shadow: var(--shadow-glow-primary); }
   .ring-gold { box-shadow: var(--shadow-glow-gold); }
+
+  /* === Interaction system ===
+   * Calm, tactile responsiveness. iOS-level acknowledgment.
+   * Use .interactive on any touch target (buttons, cards, chips, icon actions).
+   * Use .interactive-card on larger surfaces that should lift on hover.
+   */
+  .interactive {
+    cursor: pointer;
+    transition:
+      transform 120ms var(--ease-spring),
+      background-color 140ms ease,
+      border-color 140ms ease,
+      box-shadow 160ms ease,
+      filter 140ms ease,
+      color 140ms ease;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    will-change: transform;
+  }
+  .interactive:hover {
+    filter: brightness(1.06);
+    background-color: oklch(1 0 0 / 0.06);
+  }
+  .interactive:active {
+    transform: scale(0.97);
+    transition-duration: 80ms;
+    filter: brightness(0.97);
+  }
+  .interactive:focus-visible {
+    outline: none;
+    box-shadow:
+      0 0 0 2px var(--background),
+      0 0 0 4px var(--ring);
+  }
+
+  .interactive-card {
+    cursor: pointer;
+    transition:
+      transform 160ms var(--ease-spring),
+      box-shadow 200ms ease,
+      border-color 160ms ease,
+      filter 160ms ease;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+  @media (hover: hover) {
+    .interactive-card:hover {
+      transform: translateY(-1px);
+      filter: brightness(1.04);
+      box-shadow: var(--shadow-elevated), var(--shadow-inner-soft);
+      border-color: oklch(1 0 0 / 0.14);
+    }
+  }
+  .interactive-card:active {
+    transform: scale(0.985);
+    transition-duration: 90ms;
+    filter: brightness(0.98);
+  }
+  .interactive-card:focus-visible {
+    outline: none;
+    box-shadow:
+      0 0 0 2px var(--background),
+      0 0 0 4px var(--ring),
+      var(--shadow-soft);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .interactive, .interactive-card {
+      transition: none;
+    }
+    .interactive:active, .interactive-card:active { transform: none; }
+    .interactive-card:hover { transform: none; }
+  }
 }
 
 /* === Motion === */

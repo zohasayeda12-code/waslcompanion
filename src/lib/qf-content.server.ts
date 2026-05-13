@@ -99,7 +99,9 @@ export async function fetchAyah(
   opts?: { translationId?: number; tafsirId?: number; reciterId?: number; includeTafsir?: boolean },
 ): Promise<AyahPayload> {
   const verseKey = `${surah}:${ayah}`;
-  const translationId = opts?.translationId ?? 131; // Sahih International
+  // Default = 85 (Abdel Haleem). The QF prelive Content API does not expose
+  // translation 131 (Sahih International) — passing it returns no translations.
+  const translationId = opts?.translationId ?? 85;
   const reciterId = opts?.reciterId ?? 7;
   const tafsirId = opts?.tafsirId ?? 169;
 
