@@ -202,15 +202,17 @@ export async function fetchPage(pageNumber: number): Promise<MushafPagePayload> 
   const cached = pageCache.get(pageNumber);
   if (cached && cached.expiresAt > Date.now()) return cached.payload;
 
-  const res = await qfFetch(
-    `/verses/by_page/${pageNumber}?language=en&words=true&per_page=50&fields=text_uthmani,page_number,juz_number&word_fields=line_number,page_number`,
-  );
+  const url = `/verses/by_page/${pageNumber}?language=en&words=true&per_page=50&fields=text_uthmani,page_number,juz_number&word_fields=line_number,page_number`;
+  const res = await qfFetch(url);
   if (!res.ok) {
     const t = await res.text().catch(() => "");
     throw new Error(`verses.by_page failed: ${res.status} ${t.slice(0, 200)}`);
   }
   const j = (await res.json()) as any;
   const verses = (j.verses ?? []) as any[];
+  if (verses.length === 0) {
+    console.warn("[fetchPage] empty verses for page", pageNumber, "response keys:", Object.keys(j), "raw:", JSON.stringify(j).slice(0, 500));
+  }
   let juz: number | undefined;
   const out: MushafPageVerse[] = verses.map((v) => {
     const [s, a] = String(v.verse_key ?? "1:1").split(":").map(Number);
