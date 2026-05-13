@@ -28,11 +28,12 @@ export function MushafPage({ pageNumber, onAyahHover, onAyahLongPress }: Props) 
   const bookmarksFn = useServerFn(listBookmarks);
   const highlightsFn = useServerFn(listHighlights);
 
-  const { data: page, isLoading } = useQuery({
+  const { data: page, isLoading, error } = useQuery({
     queryKey: ["mushaf-page", pageNumber],
     queryFn: () => pageFn({ data: { page: pageNumber } }),
     staleTime: 60 * 60 * 1000,
     gcTime: 5 * 60 * 1000,
+    retry: 1,
   });
   const { data: bookmarks = [] } = useQuery({
     queryKey: ["bookmarks-list"],
