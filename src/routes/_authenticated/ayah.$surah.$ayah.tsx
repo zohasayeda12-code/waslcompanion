@@ -13,6 +13,7 @@ import { getJourneyState, advanceJourney } from "@/lib/journey.functions";
 import { toggleBookmark, isBookmarked, recordRevisit } from "@/lib/library.functions";
 import { setHighlight, getHighlight } from "@/lib/highlights.functions";
 import { saveReflection } from "@/lib/library.functions";
+import { nextAyahPos } from "@/lib/surah-meta";
 
 const search = z.object({
   from: z.enum(["home", "quran", "bookmarks", "highlights", "reflections", "collections", "search", "notification", "revisited", "my-ayahs"]).optional(),
@@ -338,9 +339,10 @@ function AyahDetail() {
           onClose={() => setAdvanceFlow(false)}
           onContinue={async () => {
             setAdvanceFlow(false);
-            await advanceFn({ data: { surah: s, ayah: a + 1 } });
-            qc.setQueryData(["journey"], { current_surah: s, current_ayah: a + 1, paused_journey: null });
-            navigate({ to: "/ayah/$surah/$ayah", params: { surah, ayah: String(a + 1) }, search: { from: "home" } });
+            const next = nextAyahPos(s, a);
+            await advanceFn({ data: { surah: next.surah, ayah: next.ayah } });
+            qc.setQueryData(["journey"], { current_surah: next.surah, current_ayah: next.ayah, paused_journey: null });
+            navigate({ to: "/ayah/$surah/$ayah", params: { surah: String(next.surah), ayah: String(next.ayah) }, search: { from: "home" } });
           }}
         />
       )}
@@ -355,9 +357,10 @@ function AyahDetail() {
             setLivedFlow(null);
             qc.invalidateQueries();
             if (isCurrent) {
-              await advanceFn({ data: { surah: s, ayah: a + 1 } });
-              qc.setQueryData(["journey"], { current_surah: s, current_ayah: a + 1, paused_journey: null });
-              navigate({ to: "/ayah/$surah/$ayah", params: { surah, ayah: String(a + 1) }, search: { from: "home" } });
+              const next = nextAyahPos(s, a);
+              await advanceFn({ data: { surah: next.surah, ayah: next.ayah } });
+              qc.setQueryData(["journey"], { current_surah: next.surah, current_ayah: next.ayah, paused_journey: null });
+              navigate({ to: "/ayah/$surah/$ayah", params: { surah: String(next.surah), ayah: String(next.ayah) }, search: { from: "home" } });
             }
           }}
         />
