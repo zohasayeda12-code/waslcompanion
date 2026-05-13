@@ -73,7 +73,8 @@ function flattenContent(result: unknown): string {
 async function callTool(name: string, args: Record<string, unknown>): Promise<string> {
   await ensureInit();
   try {
-    const result = await rpc("tools/call", { name, arguments: args });
+    const result = await rpc<{ isError?: boolean }>("tools/call", { name, arguments: args });
+    if ((result as { isError?: boolean })?.isError) return "";
     return flattenContent(result);
   } catch (e) {
     console.warn(`MCP tool ${name} failed`, String(e));
