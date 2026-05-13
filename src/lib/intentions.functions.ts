@@ -147,6 +147,7 @@ export const carryForward = createServerFn({ method: "POST" })
         status: "carried",
         carry_forward_count: (intent.carry_forward_count ?? 0) + 1,
         reminder_at: data.reminderAt ?? null,
+        reminder_sent_at: null,
       })
       .eq("id", data.intentionId)
       .eq("user_id", userId);
@@ -171,7 +172,7 @@ export const updateReminder = createServerFn({ method: "POST" })
     const userId = await requireUserId();
     await supabaseAdmin
       .from("intentions")
-      .update({ reminder_at: data.reminderAt })
+      .update({ reminder_at: data.reminderAt, reminder_sent_at: null })
       .eq("id", data.intentionId)
       .eq("user_id", userId)
       .in("status", ["pending", "carried"]);
