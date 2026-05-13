@@ -1,6 +1,7 @@
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
 import { getAuthStatus } from "@/lib/auth.functions";
 import { getProfile } from "@/lib/profile.functions";
+import { BottomNav } from "@/components/bottom-nav";
 
 export const Route = createFileRoute("/_authenticated")({
   beforeLoad: async ({ location }) => {
