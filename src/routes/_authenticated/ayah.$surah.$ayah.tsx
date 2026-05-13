@@ -328,13 +328,12 @@ function IconPill({
   return (
     <button
       onClick={onClick}
-      className={`relative inline-flex flex-col items-center justify-center gap-1 rounded-2xl border px-2 py-2 text-[10px] font-medium transition ${
+      className={`interactive relative inline-flex flex-col items-center justify-center gap-1 rounded-2xl border px-2 py-2 text-[10px] font-medium ${
         active
           ? "border-current/60 bg-[color:var(--surface-2)] shadow-[var(--shadow-inner-soft)]"
           : "border-border/60 bg-secondary/40"
       }`}
       style={{ color }}
-      data-interactive
     >
       <span className="relative inline-flex size-6 items-center justify-center">
         {glow && (
