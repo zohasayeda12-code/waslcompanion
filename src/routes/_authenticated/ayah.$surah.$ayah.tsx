@@ -42,8 +42,7 @@ function AyahDetail() {
   const bookmarkedFn = useServerFn(isBookmarked);
   const toggleBookmarkFn = useServerFn(toggleBookmark);
   const getHighlightFn = useServerFn(getHighlight);
-  const markLivedFn = useServerFn(markLived);
-  const carryFn = useServerFn(carryForward);
+  // markLived is invoked inside <LivedFlow/>; carryForward inside <CarryForwardSheet/>
   const removeFn = useServerFn(removeIntention);
   const revisitFn = useServerFn(recordRevisit);
   const contextFn = useServerFn(getAyahContext);
