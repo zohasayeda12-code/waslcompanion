@@ -5,7 +5,7 @@ import { useWindowVirtualizer } from "@tanstack/react-virtual";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { z } from "zod";
 import { Eye, EyeOff, ChevronLeft, ChevronRight } from "lucide-react";
-import { zodValidator, fallback } from "@tanstack/zod-adapter";
+
 
 import { AppShell } from "@/components/app-shell";
 import { MushafPage, type AyahHit } from "@/components/mushaf/MushafPage";
@@ -23,11 +23,11 @@ const TOTAL_PAGES = 604;
 const PAGE_PARAM = z.coerce.number().int().min(1).max(TOTAL_PAGES);
 
 const searchSchema = z.object({
-  restore: fallback(z.coerce.number().optional(), undefined).optional(),
+  restore: z.coerce.number().optional(),
 });
 
 export const Route = createFileRoute("/_authenticated/quran/page/$page")({
-  validateSearch: zodValidator(searchSchema),
+  validateSearch: (s) => searchSchema.parse(s),
   parseParams: (p) => ({ page: PAGE_PARAM.parse(p.page) }),
   stringifyParams: (p) => ({ page: String(p.page) }),
   head: ({ params }) => ({ meta: [{ title: `Mushaf · Page ${params.page} — Wasl` }] }),
