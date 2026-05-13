@@ -23,6 +23,7 @@ import { Route as ApiAuthLogoutRouteImport } from './routes/api/auth/logout'
 import { Route as ApiAuthLoginRouteImport } from './routes/api/auth/login'
 import { Route as ApiPublicCronRemindersRouteImport } from './routes/api/public/cron/reminders'
 import { Route as ApiPublicCronEnsureScheduleRouteImport } from './routes/api/public/cron/ensure-schedule'
+import { Route as AuthenticatedQuranPagePageRouteImport } from './routes/_authenticated/quran.page.$page'
 import { Route as AuthenticatedLiveSurahAyahRouteImport } from './routes/_authenticated/live.$surah.$ayah'
 import { Route as AuthenticatedAyahSurahAyahRouteImport } from './routes/_authenticated/ayah.$surah.$ayah'
 
@@ -96,6 +97,12 @@ const ApiPublicCronEnsureScheduleRoute =
     path: '/api/public/cron/ensure-schedule',
     getParentRoute: () => rootRouteImport,
   } as any)
+const AuthenticatedQuranPagePageRoute =
+  AuthenticatedQuranPagePageRouteImport.update({
+    id: '/page/$page',
+    path: '/page/$page',
+    getParentRoute: () => AuthenticatedQuranRoute,
+  } as any)
 const AuthenticatedLiveSurahAyahRoute =
   AuthenticatedLiveSurahAyahRouteImport.update({
     id: '/live/$surah/$ayah',
@@ -116,13 +123,14 @@ export interface FileRoutesByFullPath {
   '/intentions': typeof AuthenticatedIntentionsRoute
   '/my-ayahs': typeof AuthenticatedMyAyahsRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
-  '/quran': typeof AuthenticatedQuranRoute
+  '/quran': typeof AuthenticatedQuranRouteWithChildren
   '/search': typeof AuthenticatedSearchRoute
   '/oauth/callback': typeof OauthCallbackRoute
   '/api/auth/login': typeof ApiAuthLoginRoute
   '/api/auth/logout': typeof ApiAuthLogoutRoute
   '/ayah/$surah/$ayah': typeof AuthenticatedAyahSurahAyahRoute
   '/live/$surah/$ayah': typeof AuthenticatedLiveSurahAyahRoute
+  '/quran/page/$page': typeof AuthenticatedQuranPagePageRoute
   '/api/public/cron/ensure-schedule': typeof ApiPublicCronEnsureScheduleRoute
   '/api/public/cron/reminders': typeof ApiPublicCronRemindersRoute
 }
@@ -133,13 +141,14 @@ export interface FileRoutesByTo {
   '/intentions': typeof AuthenticatedIntentionsRoute
   '/my-ayahs': typeof AuthenticatedMyAyahsRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
-  '/quran': typeof AuthenticatedQuranRoute
+  '/quran': typeof AuthenticatedQuranRouteWithChildren
   '/search': typeof AuthenticatedSearchRoute
   '/oauth/callback': typeof OauthCallbackRoute
   '/api/auth/login': typeof ApiAuthLoginRoute
   '/api/auth/logout': typeof ApiAuthLogoutRoute
   '/ayah/$surah/$ayah': typeof AuthenticatedAyahSurahAyahRoute
   '/live/$surah/$ayah': typeof AuthenticatedLiveSurahAyahRoute
+  '/quran/page/$page': typeof AuthenticatedQuranPagePageRoute
   '/api/public/cron/ensure-schedule': typeof ApiPublicCronEnsureScheduleRoute
   '/api/public/cron/reminders': typeof ApiPublicCronRemindersRoute
 }
@@ -152,13 +161,14 @@ export interface FileRoutesById {
   '/_authenticated/intentions': typeof AuthenticatedIntentionsRoute
   '/_authenticated/my-ayahs': typeof AuthenticatedMyAyahsRoute
   '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
-  '/_authenticated/quran': typeof AuthenticatedQuranRoute
+  '/_authenticated/quran': typeof AuthenticatedQuranRouteWithChildren
   '/_authenticated/search': typeof AuthenticatedSearchRoute
   '/oauth/callback': typeof OauthCallbackRoute
   '/api/auth/login': typeof ApiAuthLoginRoute
   '/api/auth/logout': typeof ApiAuthLogoutRoute
   '/_authenticated/ayah/$surah/$ayah': typeof AuthenticatedAyahSurahAyahRoute
   '/_authenticated/live/$surah/$ayah': typeof AuthenticatedLiveSurahAyahRoute
+  '/_authenticated/quran/page/$page': typeof AuthenticatedQuranPagePageRoute
   '/api/public/cron/ensure-schedule': typeof ApiPublicCronEnsureScheduleRoute
   '/api/public/cron/reminders': typeof ApiPublicCronRemindersRoute
 }
@@ -178,6 +188,7 @@ export interface FileRouteTypes {
     | '/api/auth/logout'
     | '/ayah/$surah/$ayah'
     | '/live/$surah/$ayah'
+    | '/quran/page/$page'
     | '/api/public/cron/ensure-schedule'
     | '/api/public/cron/reminders'
   fileRoutesByTo: FileRoutesByTo
@@ -195,6 +206,7 @@ export interface FileRouteTypes {
     | '/api/auth/logout'
     | '/ayah/$surah/$ayah'
     | '/live/$surah/$ayah'
+    | '/quran/page/$page'
     | '/api/public/cron/ensure-schedule'
     | '/api/public/cron/reminders'
   id:
@@ -213,6 +225,7 @@ export interface FileRouteTypes {
     | '/api/auth/logout'
     | '/_authenticated/ayah/$surah/$ayah'
     | '/_authenticated/live/$surah/$ayah'
+    | '/_authenticated/quran/page/$page'
     | '/api/public/cron/ensure-schedule'
     | '/api/public/cron/reminders'
   fileRoutesById: FileRoutesById
@@ -328,6 +341,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicCronEnsureScheduleRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/quran/page/$page': {
+      id: '/_authenticated/quran/page/$page'
+      path: '/page/$page'
+      fullPath: '/quran/page/$page'
+      preLoaderRoute: typeof AuthenticatedQuranPagePageRouteImport
+      parentRoute: typeof AuthenticatedQuranRoute
+    }
     '/_authenticated/live/$surah/$ayah': {
       id: '/_authenticated/live/$surah/$ayah'
       path: '/live/$surah/$ayah'
@@ -345,12 +365,23 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface AuthenticatedQuranRouteChildren {
+  AuthenticatedQuranPagePageRoute: typeof AuthenticatedQuranPagePageRoute
+}
+
+const AuthenticatedQuranRouteChildren: AuthenticatedQuranRouteChildren = {
+  AuthenticatedQuranPagePageRoute: AuthenticatedQuranPagePageRoute,
+}
+
+const AuthenticatedQuranRouteWithChildren =
+  AuthenticatedQuranRoute._addFileChildren(AuthenticatedQuranRouteChildren)
+
 interface AuthenticatedRouteChildren {
   AuthenticatedHomeRoute: typeof AuthenticatedHomeRoute
   AuthenticatedIntentionsRoute: typeof AuthenticatedIntentionsRoute
   AuthenticatedMyAyahsRoute: typeof AuthenticatedMyAyahsRoute
   AuthenticatedOnboardingRoute: typeof AuthenticatedOnboardingRoute
-  AuthenticatedQuranRoute: typeof AuthenticatedQuranRoute
+  AuthenticatedQuranRoute: typeof AuthenticatedQuranRouteWithChildren
   AuthenticatedSearchRoute: typeof AuthenticatedSearchRoute
   AuthenticatedAyahSurahAyahRoute: typeof AuthenticatedAyahSurahAyahRoute
   AuthenticatedLiveSurahAyahRoute: typeof AuthenticatedLiveSurahAyahRoute
@@ -361,7 +392,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedIntentionsRoute: AuthenticatedIntentionsRoute,
   AuthenticatedMyAyahsRoute: AuthenticatedMyAyahsRoute,
   AuthenticatedOnboardingRoute: AuthenticatedOnboardingRoute,
-  AuthenticatedQuranRoute: AuthenticatedQuranRoute,
+  AuthenticatedQuranRoute: AuthenticatedQuranRouteWithChildren,
   AuthenticatedSearchRoute: AuthenticatedSearchRoute,
   AuthenticatedAyahSurahAyahRoute: AuthenticatedAyahSurahAyahRoute,
   AuthenticatedLiveSurahAyahRoute: AuthenticatedLiveSurahAyahRoute,
@@ -384,3 +415,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
