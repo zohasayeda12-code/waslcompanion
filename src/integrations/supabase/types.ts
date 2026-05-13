@@ -221,6 +221,7 @@ export type Database = {
         Row: {
           current_ayah: number
           current_surah: number
+          last_mushaf_page: number
           paused_journey: Json | null
           updated_at: string
           user_id: string
@@ -228,6 +229,7 @@ export type Database = {
         Insert: {
           current_ayah?: number
           current_surah?: number
+          last_mushaf_page?: number
           paused_journey?: Json | null
           updated_at?: string
           user_id: string
@@ -235,6 +237,7 @@ export type Database = {
         Update: {
           current_ayah?: number
           current_surah?: number
+          last_mushaf_page?: number
           paused_journey?: Json | null
           updated_at?: string
           user_id?: string
@@ -482,7 +485,7 @@ export type Database = {
       }
     }
     Enums: {
-      highlight_color: "gold" | "blue" | "green" | "purple"
+      highlight_color: "gold" | "blue" | "green" | "purple" | "rose"
       intention_kind: "ai" | "custom"
       intention_status:
         | "pending"
@@ -618,7 +621,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      highlight_color: ["gold", "blue", "green", "purple"],
+      highlight_color: ["gold", "blue", "green", "purple", "rose"],
       intention_kind: ["ai", "custom"],
       intention_status: [
         "pending",

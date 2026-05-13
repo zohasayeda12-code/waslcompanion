@@ -6,7 +6,7 @@ import { requireUserId } from "./current-user.server";
 const HighlightInput = z.object({
   surah: z.number().int(),
   ayah: z.number().int(),
-  color: z.enum(["gold", "blue", "green", "purple"]).nullable(),
+  color: z.enum(["gold", "blue", "green", "purple", "rose"]).nullable(),
 });
 
 export const setHighlight = createServerFn({ method: "POST" })
@@ -46,7 +46,7 @@ export const getHighlight = createServerFn({ method: "GET" })
   });
 
 export const listHighlights = createServerFn({ method: "GET" })
-  .inputValidator((d) => z.object({ color: z.enum(["gold", "blue", "green", "purple"]).optional() }).parse(d))
+  .inputValidator((d) => z.object({ color: z.enum(["gold", "blue", "green", "purple", "rose"]).optional() }).parse(d))
   .handler(async ({ data }) => {
     const userId = await requireUserId();
     let q = supabaseAdmin

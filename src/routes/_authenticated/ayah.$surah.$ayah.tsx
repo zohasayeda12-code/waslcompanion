@@ -91,8 +91,25 @@ function AyahDetail() {
   }, [s, a, from, revisitFn]);
 
   const back = () => {
+    if (from === "quran") {
+      let page = 1;
+      let scrollY: number | undefined;
+      try {
+        const raw = sessionStorage.getItem("wasl.mushaf.pos");
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (parsed?.page) page = parsed.page;
+          if (typeof parsed?.scrollY === "number") scrollY = parsed.scrollY;
+        }
+      } catch {}
+      navigate({
+        to: "/quran/page/$page",
+        params: { page: String(page) },
+        search: scrollY != null ? { restore: scrollY } : {},
+      });
+      return;
+    }
     const map: Record<string, string> = {
-      quran: `/quran/${s}`,
       bookmarks: "/my-ayahs",
       highlights: "/my-ayahs",
       reflections: "/my-ayahs",

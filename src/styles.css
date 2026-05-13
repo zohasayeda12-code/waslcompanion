@@ -1,6 +1,7 @@
 @import "tailwindcss" source(none);
 @source "../src";
 @import "tw-animate-css";
+@import url("https://fonts.googleapis.com/css2?family=Amiri+Quran&display=swap");
 
 @custom-variant dark (&:is(.dark *));
 
@@ -347,3 +348,74 @@
   .animate-aurora,
   .animate-shimmer-in { animation: none !important; }
 }
+
+/* === Mushaf (Quran View) === */
+:root {
+  --hl-gold: oklch(0.82 0.14 82);
+  --hl-blue: oklch(0.74 0.12 230);
+  --hl-green: oklch(0.74 0.14 168);
+  --hl-purple: oklch(0.70 0.16 295);
+  --hl-rose: oklch(0.74 0.14 18);
+
+  --mushaf-paper: oklch(0.96 0.012 85);
+  --mushaf-ink: oklch(0.18 0.02 270);
+}
+.dark, :root {
+  --mushaf-paper: oklch(0.22 0.025 268);
+  --mushaf-ink: oklch(0.96 0.012 95);
+}
+
+.font-mushaf {
+  font-family: "Amiri Quran", "KFGQPC HAFS Uthmanic Script", "Scheherazade New", serif;
+  font-feature-settings: "liga", "calt", "ss01";
+}
+
+.mushaf-page {
+  background: var(--mushaf-paper);
+  color: var(--mushaf-ink);
+  border: 1px solid oklch(0 0 0 / 0.08);
+  border-radius: 1rem;
+  box-shadow: var(--shadow-soft);
+  position: relative;
+}
+.mushaf-page::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: var(--noise-overlay);
+  opacity: 0.04;
+  pointer-events: none;
+  border-radius: inherit;
+  mix-blend-mode: overlay;
+}
+
+.ayah-span {
+  display: inline;
+  border-radius: 0.25rem;
+  padding: 0 0.05em;
+  cursor: pointer;
+  transition: background-color 140ms ease;
+}
+.ayah-span:hover { background-color: oklch(0 0 0 / 0.04); }
+.dark .ayah-span:hover { background-color: oklch(1 0 0 / 0.05); }
+
+.ayah-end {
+  display: inline-block;
+  margin: 0 0.15em;
+  font-size: 0.85em;
+  color: color-mix(in oklab, var(--gold) 70%, var(--mushaf-ink));
+  font-feature-settings: normal;
+}
+
+.hl-gold   { background-color: color-mix(in oklab, var(--hl-gold)   18%, transparent); }
+.hl-blue   { background-color: color-mix(in oklab, var(--hl-blue)   18%, transparent); }
+.hl-green  { background-color: color-mix(in oklab, var(--hl-green)  18%, transparent); }
+.hl-purple { background-color: color-mix(in oklab, var(--hl-purple) 18%, transparent); }
+.hl-rose   { background-color: color-mix(in oklab, var(--hl-rose)   18%, transparent); }
+
+/* Pure Quran Mode — strip personal state, keep only mushaf */
+body.pure-mode .ayah-span { background-color: transparent !important; cursor: default; }
+body.pure-mode .ayah-span:hover { background-color: transparent !important; }
+body.pure-mode .mushaf-bookmark-dot,
+body.pure-mode .mushaf-active-glow { display: none !important; }
+
