@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { timingSafeEqual } from "crypto";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 
 const JOB_NAME = "wasl-reminders-every-minute";
@@ -21,10 +22,9 @@ function checkApiKey(request: Request): boolean {
   const b = Buffer.from(expected);
   if (a.length !== b.length) return false;
   try {
-    const { timingSafeEqual } = require("crypto") as typeof import("crypto");
     return timingSafeEqual(a, b);
   } catch {
-    return provided === expected;
+    return false;
   }
 }
 

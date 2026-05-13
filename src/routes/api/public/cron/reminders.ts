@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { timingSafeEqual } from "crypto";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { sendPushToUser } from "@/lib/push.server";
 
@@ -111,16 +112,13 @@ function checkApiKey(request: Request): boolean {
     request.headers.get("apikey") ??
     request.headers.get("authorization")?.replace(/^Bearer\s+/i, "") ??
     "";
-  // Constant-time comparison to prevent timing attacks
   const a = Buffer.from(provided);
   const b = Buffer.from(expected);
   if (a.length !== b.length) return false;
   try {
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const { timingSafeEqual } = require("crypto") as typeof import("crypto");
     return timingSafeEqual(a, b);
   } catch {
-    return provided === expected;
+    return false;
   }
 }
 
