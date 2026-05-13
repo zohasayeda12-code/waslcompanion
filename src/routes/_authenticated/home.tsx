@@ -11,7 +11,7 @@ import { HijriBanner } from "@/components/hijri-banner";
 import { getJourneyState } from "@/lib/journey.functions";
 import { getAyah } from "@/lib/qf-content.functions";
 import { getActiveIntention } from "@/lib/intentions.functions";
-import { saveSubscription } from "@/lib/push.functions";
+import { saveSubscription, getVapidPublicKey } from "@/lib/push.functions";
 
 
 export const Route = createFileRoute("/_authenticated/home")({
@@ -26,6 +26,7 @@ function HomeScreen() {
   const navigate = useNavigate();
 
   const saveSubFn = useServerFn(saveSubscription);
+  const getKeyFn = useServerFn(getVapidPublicKey);
 
   const { data: journey } = useQuery({ queryKey: ["journey"], queryFn: () => journeyFn() });
   const { data: active } = useQuery({ queryKey: ["active-intention"], queryFn: () => intentionFn() });
@@ -36,11 +37,13 @@ function HomeScreen() {
       try {
         const mod = await import("@/lib/push-browser");
         if (!mod.pushSupported()) return;
-        const sub = await mod.ensurePushSubscription();
+        const { publicKey } = await getKeyFn();
+        if (!publicKey) return;
+        const sub = await mod.ensurePushSubscription(publicKey);
         if (sub) await saveSubFn({ data: { ...sub, userAgent: navigator.userAgent } });
       } catch (e) { console.warn("push setup", e); }
     })();
-  }, [saveSubFn]);
+  }, [saveSubFn, getKeyFn]);
 
   const surah = journey?.current_surah ?? 1;
   const ayah = journey?.current_ayah ?? 1;

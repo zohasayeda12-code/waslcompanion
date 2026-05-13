@@ -4,6 +4,10 @@ import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { requireUserId } from "./current-user.server";
 import { sendPushToUser } from "./push.server";
 
+export const getVapidPublicKey = createServerFn({ method: "GET" }).handler(async () => {
+  return { publicKey: process.env.VAPID_PUBLIC_KEY ?? "" };
+});
+
 export const saveSubscription = createServerFn({ method: "POST" })
   .inputValidator((d) =>
     z.object({
