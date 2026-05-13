@@ -63,9 +63,18 @@ export function MushafPage({ pageNumber, onAyahHover, onAyahLongPress }: Props) 
         {page?.juz && <span>Juz {page.juz}</span>}
       </header>
 
-      {isLoading || !page ? (
+      {isLoading ? (
         <div className="flex items-center justify-center py-20 text-muted-foreground">
           <Loader2 className="h-5 w-5 animate-spin" />
+        </div>
+      ) : error || !page ? (
+        <div className="py-16 text-center text-sm text-muted-foreground">
+          <p className="mb-2 font-medium text-foreground">Couldn't load this page.</p>
+          <p className="text-xs opacity-70">{(error as Error)?.message ?? "No data returned."}</p>
+        </div>
+      ) : page.verses.length === 0 ? (
+        <div className="py-16 text-center text-sm text-muted-foreground">
+          No verses returned for page {pageNumber}.
         </div>
       ) : (
         <p
