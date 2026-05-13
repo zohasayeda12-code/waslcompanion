@@ -4,7 +4,7 @@ import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { z } from "zod";
 import { AppShell } from "@/components/app-shell";
-import { BookOpen, Bookmark, Sparkles, Heart, ChevronDown, Loader2, Check, Play, Pause } from "lucide-react";
+import { BookOpen, Bookmark, Sparkles, Heart, ChevronDown, Loader2, Check, Play, Pause, X, Lock } from "lucide-react";
 import { getAyah } from "@/lib/qf-content.functions";
 import { getAyahContext } from "@/lib/ayah-context.functions";
 import { listIntentionsForAyah, getActiveIntention, markLived, carryForward, removeIntention, createIntention } from "@/lib/intentions.functions";
@@ -53,6 +53,12 @@ function AyahDetail() {
   const [confirmation, setConfirmation] = useState<{ when: string } | null>(null);
   const [audioPlaying, setAudioPlaying] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  // Lived flow: 'celebrate' (warm rotating message) → 'reflect' (optional reflection) → done
+  const [livedFlow, setLivedFlow] = useState<null | { intentionId: string; phase: "celebrate" | "reflect" }>(null);
+  // Carry-forward picker
+  const [carryFlow, setCarryFlow] = useState<null | { intentionId: string }>(null);
+  // Tooltip when Next Ayah is blocked
+  const [showBlocked, setShowBlocked] = useState(false);
 
   // 3-second delayed glow on Live icon
   useEffect(() => {
@@ -102,6 +108,11 @@ function AyahDetail() {
     () => intentions.find((i) => i.status === "pending" || i.status === "awaiting_response" || i.status === "carried"),
     [intentions]
   );
+
+  // Next Ayah gating: blocked while there is an active intention on THIS ayah
+  // and it has been carried forward fewer than 2 times. Once the user has
+  // chosen "Carry forward" twice, the next-ayah button unlocks.
+  const nextAyahLocked = Boolean(activeForThis && (activeForThis.carry_forward_count ?? 0) < 2);
 
   return (
     <AppShell>
@@ -296,15 +307,52 @@ function AyahDetail() {
       )}
 
       {isCurrent && (
-        <button
-          onClick={async () => {
-            await advanceFn({ data: { surah: s, ayah: a + 1 } });
-            navigate({ to: "/ayah/$surah/$ayah", params: { surah, ayah: String(a + 1) }, search: { from: "home" } });
+        <div className="mt-6">
+          <button
+            onClick={async () => {
+              if (nextAyahLocked) { setShowBlocked(true); return; }
+              await advanceFn({ data: { surah: s, ayah: a + 1 } });
+              navigate({ to: "/ayah/$surah/$ayah", params: { surah, ayah: String(a + 1) }, search: { from: "home" } });
+            }}
+            aria-disabled={nextAyahLocked}
+            className={`interactive flex w-full items-center justify-center gap-2 rounded-2xl py-3 text-sm font-medium ${
+              nextAyahLocked ? "bg-secondary/50 text-muted-foreground" : "bg-secondary"
+            }`}
+          >
+            {nextAyahLocked && <Lock className="size-3.5" />}
+            {nextAyahLocked ? "Sit with this ayah" : "Next Ayah →"}
+          </button>
+          {showBlocked && nextAyahLocked && (
+            <p className="mt-2 text-center text-xs leading-relaxed text-muted-foreground">
+              You are carrying this ayah. Live it, carry it forward, or remove the intention to move on.
+            </p>
+          )}
+        </div>
+      )}
+
+      {livedFlow && (
+        <LivedFlow
+          phase={livedFlow.phase}
+          intentionId={livedFlow.intentionId}
+          onAdvancePhase={() => setLivedFlow((f) => (f ? { ...f, phase: "reflect" } : f))}
+          onCloseStay={() => { setLivedFlow(null); qc.invalidateQueries(); }}
+          onDoneAdvance={async () => {
+            setLivedFlow(null);
+            qc.invalidateQueries();
+            if (isCurrent) {
+              await advanceFn({ data: { surah: s, ayah: a + 1 } });
+              navigate({ to: "/ayah/$surah/$ayah", params: { surah, ayah: String(a + 1) }, search: { from: "home" } });
+            }
           }}
-          className="interactive mt-6 w-full rounded-2xl bg-secondary py-3 text-sm font-medium"
-        >
-          Next Ayah →
-        </button>
+        />
+      )}
+
+      {carryFlow && (
+        <CarryForwardSheet
+          intentionId={carryFlow.intentionId}
+          onClose={() => setCarryFlow(null)}
+          onSaved={() => { setCarryFlow(null); qc.invalidateQueries(); }}
+        />
       )}
     </AppShell>
   );
