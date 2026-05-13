@@ -105,13 +105,23 @@ async function run() {
 }
 
 function checkApiKey(request: Request): boolean {
-  const expected = process.env.SUPABASE_PUBLISHABLE_KEY;
-  if (!expected) return false;
+  const expected = process.env.CRON_SECRET;
+  if (!expected || expected.length < 16) return false;
   const provided =
     request.headers.get("apikey") ??
     request.headers.get("authorization")?.replace(/^Bearer\s+/i, "") ??
     "";
-  return provided === expected;
+  // Constant-time comparison to prevent timing attacks
+  const a = Buffer.from(provided);
+  const b = Buffer.from(expected);
+  if (a.length !== b.length) return false;
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const { timingSafeEqual } = require("crypto") as typeof import("crypto");
+    return timingSafeEqual(a, b);
+  } catch {
+    return provided === expected;
+  }
 }
 
 function unauthorized() {
