@@ -339,6 +339,7 @@ function AyahDetail() {
           onContinue={async () => {
             setAdvanceFlow(false);
             await advanceFn({ data: { surah: s, ayah: a + 1 } });
+            qc.setQueryData(["journey"], { current_surah: s, current_ayah: a + 1, paused_journey: null });
             navigate({ to: "/ayah/$surah/$ayah", params: { surah, ayah: String(a + 1) }, search: { from: "home" } });
           }}
         />
@@ -355,6 +356,7 @@ function AyahDetail() {
             qc.invalidateQueries();
             if (isCurrent) {
               await advanceFn({ data: { surah: s, ayah: a + 1 } });
+              qc.setQueryData(["journey"], { current_surah: s, current_ayah: a + 1, paused_journey: null });
               navigate({ to: "/ayah/$surah/$ayah", params: { surah, ayah: String(a + 1) }, search: { from: "home" } });
             }
           }}
