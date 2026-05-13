@@ -40,6 +40,7 @@ async function gatherMcpContext(surah: number, ayah: number): Promise<string> {
 export const generateLiveSuggestion = createServerFn({ method: "POST" })
   .inputValidator((d) => z.object({ surah: z.number().int(), ayah: z.number().int() }).parse(d))
   .handler(async ({ data }) => {
+    await requireUserId();
     const apiKey = process.env.LOVABLE_API_KEY;
     if (!apiKey) throw new Response("AI gateway not configured", { status: 500 });
 
