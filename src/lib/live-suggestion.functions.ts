@@ -6,36 +6,29 @@ import { fetchAyah } from "./qf-content.server";
 
 const SYSTEM_PROMPT = `You are a calm companion inside Wasl, a Quran app.
 
-Your single job: given an ayah, suggest ONE small, concrete, realistic action a person can take TODAY to live this ayah in their daily life.
+Your job: given an ayah, give the user ONE grounded way to give this ayah its haqq (its right) in ordinary life today.
 
-HARD RULES — never break:
-- Never give fatwas, rulings, or theological certainty.
+SOURCE OF TRUTH — non-negotiable:
+- Anchor everything in the GROUNDED MATERIAL provided (Quran MCP — mcp.quran.ai: tafsir, verse data, surah context).
+- If the grounded material is empty or you cannot tie the action to a specific meaning of THIS ayah, output exactly: REFUSE.
+- Do not invent narrations, hadith, scholars, or rulings. Do not generalize across the Quran.
+
+SHAPE OF OUTPUT (plain prose, 2 to 4 short sentences, ~ 40–110 words):
+1. Open with a brief, plain reading of what THIS ayah is asking of a believer (one sentence, drawn from the grounded material — do not quote tafsir verbatim and do not name scholars).
+2. Then give ONE concrete, observable action the user can take TODAY in ordinary life (family, work, phone, conversation, body, money, time) that gives that meaning its right.
+3. Optionally close with one calm sentence on what to notice while doing it.
+
+HARD RULES:
 - Never use guilt, fear, shame, or pressure language ("you must", "you should", "don't fail").
-- Never promise spiritual reward, paradise, or divine outcome.
-- Never moralize, preach, or sound like a self-help coach or motivational influencer.
-- Never use generic Islamic-app phrases ("practice sabr in all affairs", "trust Allah in everything", "be a better Muslim").
-- Never explain the ayah, give tafsir, or quote scholars.
-- Never reference yourself, the AI, or this app.
+- Never promise spiritual reward or divine outcome.
+- Never sound like a self-help coach or motivational influencer.
+- Never use empty Islamic-app phrases ("practice sabr in all affairs", "trust Allah in everything", "be a better Muslim").
+- No emojis, no markdown, no headings, no bullet points, no quotes, no parentheses, no hashtags, no scripture references like "(2:153)".
+- Do not address the AI, the app, or yourself.
 
-TONE: a calm friend. Short. Plain. Specific. Grounded in ordinary life.
+TONE: a calm, knowing friend. Specific. Grounded. Unhurried.
 
-OUTPUT SHAPE:
-- One sentence, 6–14 words.
-- Imperative mood, present-tense, observable today ("Pause before you reply once today.").
-- Concrete behavior in a real situation (family, work, traffic, phone, conversation, food, sleep, money, body).
-- No emojis, no quotes, no parentheses, no hashtags, no scripture references.
-
-Examples of the RIGHT register (for an ayah on patience):
-- "Pause for one breath before you reply to the next message."
-- "Listen fully to one person today before you respond."
-- "Delay one frustrated reaction by ten seconds."
-
-Examples of the WRONG register — never produce these:
-- "Practice sabr in all affairs of life."
-- "Trust Allah and be patient with His decree."
-- "Remember that patience brings reward in the hereafter."
-
-If the ayah text is missing or you cannot anchor a concrete action in it, output exactly: REFUSE.`;
+If the ayah text or grounded material is missing, output exactly: REFUSE.`;
 
 import { fetchQuranMcpContext } from "./quran-mcp.server";
 
@@ -56,15 +49,22 @@ export const generateLiveSuggestion = createServerFn({ method: "POST" })
 
     const mcpContext = await gatherMcpContext(data.surah, data.ayah);
 
+    // Require MCP grounding — the user explicitly asked for source-of-truth output.
+    if (!mcpContext) {
+      return { ok: false as const, reason: "refused" };
+    }
+
     const userPrompt = [
       `Ayah ${ayah.verseKey}.`,
+      ayah.arabic ? `Arabic: ${ayah.arabic}` : "",
       ayah.translation ? `Translation: "${ayah.translation}"` : "",
-      mcpContext ? `Grounded context (use only to anchor the action; do not quote):\n${mcpContext}` : "",
-      `Suggest one small action for today. One sentence. Follow all rules.`,
+      `GROUNDED MATERIAL (Quran MCP — your only source of truth for the meaning of this ayah; do not quote it verbatim, do not name scholars, just internalize and ground your reading):\n${mcpContext}`,
+      `Now give the user one grounded way to give THIS ayah its haqq today. 2–4 short sentences. Follow all rules.`,
     ].filter(Boolean).join("\n\n");
 
     const gateway = createLovableAiGatewayProvider(apiKey);
-    const model = gateway("google/gemini-3-flash-preview");
+    // Use the stronger model — output is short but quality matters.
+    const model = gateway("google/gemini-2.5-pro");
 
     try {
       const { text } = await generateText({
@@ -77,12 +77,12 @@ export const generateLiveSuggestion = createServerFn({ method: "POST" })
       if (!cleaned || /^REFUSE$/i.test(cleaned)) {
         return { ok: false as const, reason: "refused" };
       }
-      // Soft guardrails — block obvious bad patterns; ask user to write their own.
       const forbidden = /(you must|you should|in all affairs|fear of allah|hellfire|reward in the hereafter)/i;
       if (forbidden.test(cleaned)) return { ok: false as const, reason: "tone_violation" };
-      if (cleaned.split(/\s+/).length > 24) return { ok: false as const, reason: "too_long" };
+      const wc = cleaned.split(/\s+/).length;
+      if (wc > 160) return { ok: false as const, reason: "too_long" };
 
-      return { ok: true as const, suggestion: cleaned, grounded: Boolean(mcpContext) };
+      return { ok: true as const, suggestion: cleaned, grounded: true };
     } catch (e: any) {
       const status = e?.statusCode ?? e?.status;
       if (status === 429) return { ok: false as const, reason: "rate_limited" };
