@@ -32,7 +32,7 @@ export function AppShell({ children, className = "", framed = true }: Props) {
         <motion.main
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
           className={cn(
             // Mobile: full-bleed phone canvas
             "relative flex w-full flex-col",
