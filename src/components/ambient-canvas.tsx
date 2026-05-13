@@ -7,7 +7,7 @@ export function AmbientCanvas() {
     <div aria-hidden className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
       {/* Violet bloom — top left */}
       <div
-        className="absolute -left-[20%] -top-[15%] size-[70vmax] rounded-full opacity-60 blur-3xl animate-aurora"
+        className="absolute -left-[20%] -top-[15%] size-[70vmax] rounded-full opacity-60 blur-2xl"
         style={{
           background:
             "radial-gradient(closest-side, oklch(0.55 0.18 295 / 0.55), transparent 70%)",
@@ -15,18 +15,16 @@ export function AmbientCanvas() {
       />
       {/* Emerald bloom — right */}
       <div
-        className="absolute -right-[25%] top-[10%] size-[60vmax] rounded-full opacity-55 blur-3xl animate-aurora"
+        className="absolute -right-[25%] top-[10%] size-[60vmax] rounded-full opacity-55 blur-2xl"
         style={{
-          animationDelay: "-9s",
           background:
             "radial-gradient(closest-side, oklch(0.55 0.16 168 / 0.55), transparent 70%)",
         }}
       />
       {/* Gold bloom — bottom */}
       <div
-        className="absolute left-[20%] -bottom-[25%] size-[70vmax] rounded-full opacity-50 blur-3xl animate-aurora"
+        className="absolute left-[20%] -bottom-[25%] size-[70vmax] rounded-full opacity-50 blur-2xl"
         style={{
-          animationDelay: "-18s",
           background:
             "radial-gradient(closest-side, oklch(0.70 0.16 60 / 0.45), transparent 70%)",
         }}
