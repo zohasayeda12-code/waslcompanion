@@ -20,5 +20,10 @@ export const Route = createFileRoute("/_authenticated")({
     }
     return { auth: status };
   },
-  component: () => <Outlet />,
+  component: () => (
+    <>
+      <Outlet />
+      <BottomNav />
+    </>
+  ),
 });
