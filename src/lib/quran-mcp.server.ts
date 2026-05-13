@@ -4,7 +4,7 @@
 // Workers + the SDK's transport assumptions are flaky. Raw fetch keeps it
 // portable.
 
-const MCP_URL = "https://mcp.quran.ai/mcp";
+const MCP_URL = "https://mcp.quran.ai/";
 
 type JsonRpcRes<T = unknown> = { jsonrpc: "2.0"; id: number | string; result?: T; error?: { code: number; message: string } };
 
@@ -59,31 +59,6 @@ async function ensureInit() {
   } catch {}
 }
 
-async function listToolNames(): Promise<string[]> {
-  if (toolsCache && Date.now() - toolsCache.at < 60 * 60 * 1000) return toolsCache.names;
-  await ensureInit();
-  try {
-    const result = await rpc<{ tools: Array<{ name: string }> }>("tools/list");
-    const names = result.tools?.map((t) => t.name) ?? [];
-    toolsCache = { at: Date.now(), names };
-    return names;
-  } catch {
-    return [];
-  }
-}
-
-function pickTool(names: string[], candidates: string[]): string | null {
-  for (const c of candidates) {
-    const hit = names.find((n) => n.toLowerCase() === c.toLowerCase());
-    if (hit) return hit;
-  }
-  for (const c of candidates) {
-    const hit = names.find((n) => n.toLowerCase().includes(c.toLowerCase()));
-    if (hit) return hit;
-  }
-  return null;
-}
-
 function flattenContent(result: unknown): string {
   // MCP tool call result: { content: [{ type: "text", text: "..." }, ...] }
   const r = result as { content?: Array<{ type: string; text?: string }> };
@@ -98,7 +73,8 @@ function flattenContent(result: unknown): string {
 async function callTool(name: string, args: Record<string, unknown>): Promise<string> {
   await ensureInit();
   try {
-    const result = await rpc("tools/call", { name, arguments: args });
+    const result = await rpc<{ isError?: boolean }>("tools/call", { name, arguments: args });
+    if ((result as { isError?: boolean })?.isError) return "";
     return flattenContent(result);
   } catch (e) {
     console.warn(`MCP tool ${name} failed`, String(e));
@@ -109,29 +85,15 @@ async function callTool(name: string, args: Record<string, unknown>): Promise<st
 /** Fetch grounded context for an ayah from Quran MCP. Returns plain text or "". */
 export async function fetchQuranMcpContext(surah: number, ayah: number): Promise<string> {
   try {
-    const names = await listToolNames();
-    if (names.length === 0) return "";
-
+    await ensureInit();
     const verseKey = `${surah}:${ayah}`;
     const out: string[] = [];
 
-    const tafsirTool = pickTool(names, ["get_tafsir", "tafsir", "get_verse_tafsir", "verse_tafsir"]);
-    if (tafsirTool) {
-      const t = await callTool(tafsirTool, { verse_key: verseKey, surah, ayah, verse: verseKey });
-      if (t) out.push(`Tafsir:\n${t}`);
-    }
+    const tr = await callTool("fetch_translation", { ayahs: [verseKey] });
+    if (tr) out.push(`Translation:\n${tr}`);
 
-    const verseTool = pickTool(names, ["get_verse", "verse", "get_ayah", "ayah"]);
-    if (verseTool) {
-      const v = await callTool(verseTool, { verse_key: verseKey, surah, ayah, verse: verseKey });
-      if (v) out.push(`Verse:\n${v}`);
-    }
-
-    const surahTool = pickTool(names, ["get_chapter", "chapter", "get_surah", "surah"]);
-    if (surahTool) {
-      const s = await callTool(surahTool, { id: surah, chapter: surah, surah });
-      if (s) out.push(`Surah context:\n${s}`);
-    }
+    const tf = await callTool("fetch_tafsir", { ayahs: [verseKey], editions: ["en-ibn-kathir"] });
+    if (tf) out.push(`Tafsir (Ibn Kathir, abridged):\n${tf}`);
 
     return out.join("\n\n---\n\n").slice(0, 8000);
   } catch (e) {
