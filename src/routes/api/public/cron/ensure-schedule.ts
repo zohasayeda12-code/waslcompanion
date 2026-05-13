@@ -11,26 +11,31 @@ function unauthorized() {
 }
 
 function checkApiKey(request: Request): boolean {
-  const expected = process.env.SUPABASE_PUBLISHABLE_KEY;
-  if (!expected) return false;
+  const expected = process.env.CRON_SECRET;
+  if (!expected || expected.length < 16) return false;
   const provided =
     request.headers.get("apikey") ??
     request.headers.get("authorization")?.replace(/^Bearer\s+/i, "") ??
     "";
-  return provided === expected;
+  const a = Buffer.from(provided);
+  const b = Buffer.from(expected);
+  if (a.length !== b.length) return false;
+  try {
+    const { timingSafeEqual } = require("crypto") as typeof import("crypto");
+    return timingSafeEqual(a, b);
+  } catch {
+    return provided === expected;
+  }
 }
 
 async function ensureSchedule(request: Request) {
-  // Derive the cron target URL from the request itself, so it always points
-  // to the deployment currently serving traffic — survives remixes/renames
-  // without any hard-coded project ID.
   const url = new URL(request.url);
   const targetUrl = `${url.origin}/api/public/cron/reminders`;
-  const apiKey = process.env.SUPABASE_PUBLISHABLE_KEY ?? "";
+  const apiKey = process.env.CRON_SECRET ?? "";
 
   if (!apiKey) {
     return new Response(
-      JSON.stringify({ ok: false, error: "SUPABASE_PUBLISHABLE_KEY missing on server" }),
+      JSON.stringify({ ok: false, error: "CRON_SECRET missing on server" }),
       { status: 500, headers: { "content-type": "application/json" } },
     );
   }
