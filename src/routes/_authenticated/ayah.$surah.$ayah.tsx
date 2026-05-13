@@ -12,6 +12,7 @@ import { generateLiveSuggestion } from "@/lib/live-suggestion.functions";
 import { getJourneyState, advanceJourney } from "@/lib/journey.functions";
 import { toggleBookmark, isBookmarked, recordRevisit } from "@/lib/library.functions";
 import { setHighlight, getHighlight } from "@/lib/highlights.functions";
+import { saveReflection } from "@/lib/library.functions";
 
 const search = z.object({
   from: z.enum(["home", "quran", "bookmarks", "highlights", "reflections", "collections", "search", "notification", "revisited", "my-ayahs"]).optional(),
@@ -58,6 +59,8 @@ function AyahDetail() {
   const [carryFlow, setCarryFlow] = useState<null | { intentionId: string }>(null);
   // Tooltip when Next Ayah is blocked
   const [showBlocked, setShowBlocked] = useState(false);
+  // Soft reflection prompt before advancing to next ayah
+  const [advanceFlow, setAdvanceFlow] = useState(false);
 
   // 3-second delayed glow on Live icon
   useEffect(() => {
@@ -310,8 +313,7 @@ function AyahDetail() {
           <button
             onClick={async () => {
               if (nextAyahLocked) { setShowBlocked(true); return; }
-              await advanceFn({ data: { surah: s, ayah: a + 1 } });
-              navigate({ to: "/ayah/$surah/$ayah", params: { surah, ayah: String(a + 1) }, search: { from: "home" } });
+              setAdvanceFlow(true);
             }}
             aria-disabled={nextAyahLocked}
             className={`interactive flex w-full items-center justify-center gap-2 rounded-2xl py-3 text-sm font-medium ${
@@ -327,6 +329,19 @@ function AyahDetail() {
             </p>
           )}
         </div>
+      )}
+
+      {advanceFlow && (
+        <ReflectBeforeNextSheet
+          surah={s}
+          ayah={a}
+          onClose={() => setAdvanceFlow(false)}
+          onContinue={async () => {
+            setAdvanceFlow(false);
+            await advanceFn({ data: { surah: s, ayah: a + 1 } });
+            navigate({ to: "/ayah/$surah/$ayah", params: { surah, ayah: String(a + 1) }, search: { from: "home" } });
+          }}
+        />
       )}
 
       {livedFlow && (
@@ -740,6 +755,90 @@ function CarryForwardSheet({
         >
           {saving ? <Loader2 className="size-4 animate-spin" /> : "Save & carry forward"}
         </button>
+      </div>
+    </div>
+  );
+}
+
+function ReflectBeforeNextSheet({
+  surah,
+  ayah,
+  onClose,
+  onContinue,
+}: {
+  surah: number;
+  ayah: number;
+  onClose: () => void;
+  onContinue: () => void | Promise<void>;
+}) {
+  const saveFn = useServerFn(saveReflection);
+  const [text, setText] = useState("");
+  const [saving, setSaving] = useState(false);
+
+  const handleSkip = async () => {
+    setSaving(true);
+    try {
+      await onContinue();
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      const body = text.trim();
+      if (body) {
+        await saveFn({ data: { surah, ayah, body } });
+      }
+      await onContinue();
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center" role="dialog" aria-modal="true">
+      <div className="absolute inset-0 bg-background/70 backdrop-blur-sm" onClick={onClose} aria-hidden />
+      <div className="relative z-10 w-full max-w-md rounded-t-3xl sm:rounded-3xl border border-border/60 bg-card p-6 shadow-[var(--shadow-elevated)]">
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <p className="text-xs uppercase tracking-[0.2em] text-[color:var(--gold)]">Pause</p>
+            <h3 className="mt-1 text-base font-medium tracking-tight">Before you move on…</h3>
+            <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
+              What stayed with you from this ayah? Even a small thought is enough.
+            </p>
+          </div>
+          <button
+            onClick={onClose}
+            aria-label="Close"
+            className="interactive inline-flex size-8 items-center justify-center rounded-full bg-secondary/60 text-foreground/80"
+          >
+            <X className="size-4" />
+          </button>
+        </div>
+        <textarea
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+          placeholder="Optional. A word, a feeling, a realization."
+          className="mt-4 min-h-[110px] w-full rounded-2xl border border-border bg-background/60 p-3 text-sm"
+        />
+        <div className="mt-4 flex gap-2">
+          <button
+            onClick={handleSkip}
+            disabled={saving}
+            className="interactive flex-1 rounded-2xl bg-secondary py-3 text-sm disabled:opacity-50"
+          >
+            Skip
+          </button>
+          <button
+            onClick={handleSave}
+            disabled={saving}
+            className="interactive flex-1 rounded-2xl bg-[var(--gradient-primary)] py-3 text-sm font-medium text-primary-foreground disabled:opacity-50"
+          >
+            {saving ? <Loader2 className="mx-auto size-4 animate-spin" /> : text.trim() ? "Save & continue" : "Continue"}
+          </button>
+        </div>
       </div>
     </div>
   );
