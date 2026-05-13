@@ -12,6 +12,7 @@ import { generateLiveSuggestion } from "@/lib/live-suggestion.functions";
 import { getJourneyState, advanceJourney } from "@/lib/journey.functions";
 import { toggleBookmark, isBookmarked, recordRevisit } from "@/lib/library.functions";
 import { setHighlight, getHighlight } from "@/lib/highlights.functions";
+import { saveReflection } from "@/lib/library.functions";
 
 const search = z.object({
   from: z.enum(["home", "quran", "bookmarks", "highlights", "reflections", "collections", "search", "notification", "revisited", "my-ayahs"]).optional(),
@@ -58,6 +59,8 @@ function AyahDetail() {
   const [carryFlow, setCarryFlow] = useState<null | { intentionId: string }>(null);
   // Tooltip when Next Ayah is blocked
   const [showBlocked, setShowBlocked] = useState(false);
+  // Soft reflection prompt before advancing to next ayah
+  const [advanceFlow, setAdvanceFlow] = useState(false);
 
   // 3-second delayed glow on Live icon
   useEffect(() => {
@@ -310,8 +313,7 @@ function AyahDetail() {
           <button
             onClick={async () => {
               if (nextAyahLocked) { setShowBlocked(true); return; }
-              await advanceFn({ data: { surah: s, ayah: a + 1 } });
-              navigate({ to: "/ayah/$surah/$ayah", params: { surah, ayah: String(a + 1) }, search: { from: "home" } });
+              setAdvanceFlow(true);
             }}
             aria-disabled={nextAyahLocked}
             className={`interactive flex w-full items-center justify-center gap-2 rounded-2xl py-3 text-sm font-medium ${
@@ -327,6 +329,19 @@ function AyahDetail() {
             </p>
           )}
         </div>
+      )}
+
+      {advanceFlow && (
+        <ReflectBeforeNextSheet
+          surah={s}
+          ayah={a}
+          onClose={() => setAdvanceFlow(false)}
+          onContinue={async () => {
+            setAdvanceFlow(false);
+            await advanceFn({ data: { surah: s, ayah: a + 1 } });
+            navigate({ to: "/ayah/$surah/$ayah", params: { surah, ayah: String(a + 1) }, search: { from: "home" } });
+          }}
+        />
       )}
 
       {livedFlow && (
