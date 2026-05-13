@@ -476,7 +476,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      wasl_ensure_reminder_schedule: {
+        Args: { api_key: string; target_url: string }
+        Returns: Json
+      }
     }
     Enums: {
       highlight_color: "gold" | "blue" | "green" | "purple"
