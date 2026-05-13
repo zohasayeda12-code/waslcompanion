@@ -1,11 +1,10 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useWindowVirtualizer } from "@tanstack/react-virtual";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { z } from "zod";
 import { Eye, EyeOff, ChevronLeft, ChevronRight } from "lucide-react";
-
 
 import { AppShell } from "@/components/app-shell";
 import { MushafPage, type AyahHit } from "@/components/mushaf/MushafPage";
@@ -35,14 +34,13 @@ export const Route = createFileRoute("/_authenticated/quran/page/$page")({
 });
 
 function MushafReader() {
-  const { page: startPage } = Route.useParams();
-  const { restore } = Route.useSearch();
+  const { page } = Route.useParams();
   const navigate = useNavigate();
   const qc = useQueryClient();
 
   const [pureMode, setPureMode] = usePureMode();
+  const [direction, setDirection] = useState<1 | -1>(1);
 
-  // Hover (desktop) and long-press (mobile) anchor + active surface
   const [hoverHit, setHoverHit] = useState<AyahHit | null>(null);
   const [openHit, setOpenHit] = useState<AyahHit | null>(null);
   const [overlay, setOverlay] = useState<null | "reflection" | "highlight" | "live">(null);
@@ -63,78 +61,60 @@ function MushafReader() {
     [bookmarks],
   );
 
-  // Virtualized list of mushaf pages
-  const ESTIMATED_PAGE_HEIGHT = 920;
-  const virtualizer = useWindowVirtualizer({
-    count: TOTAL_PAGES,
-    estimateSize: () => ESTIMATED_PAGE_HEIGHT,
-    overscan: 1,
-    initialOffset: 0,
-  });
-
-  // Scroll to start page on first mount
-  const didInitialScroll = useRef(false);
+  // Persist last-read page on change
   useEffect(() => {
-    if (didInitialScroll.current) return;
-    didInitialScroll.current = true;
-    const idx = Math.max(0, startPage - 1);
-    requestAnimationFrame(() => {
-      virtualizer.scrollToIndex(idx, { align: "start", behavior: "auto" });
-      // Fine-tune with sessionStorage scrollY if returning from Ayah Detail
-      if (restore != null) {
-        requestAnimationFrame(() => {
-          window.scrollTo({ top: restore, behavior: "auto" });
-        });
-      }
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    lastPageFn({ data: { page } }).catch(() => {});
+    try {
+      sessionStorage.setItem("wasl.mushaf.pos", JSON.stringify({ page }));
+    } catch {}
+    // close any open overlays/toolbars when turning page
+    setHoverHit(null);
+    setOpenHit(null);
+    setOverlay(null);
+    window.scrollTo({ top: 0, behavior: "auto" });
+  }, [page, lastPageFn]);
 
-  // Compute current top page from virtualizer items, persist last-read + URL
-  const items = virtualizer.getVirtualItems();
-  const currentPage = items[0] ? items[0].index + 1 : startPage;
-  const persistedRef = useRef(startPage);
-  useEffect(() => {
-    if (currentPage === persistedRef.current) return;
-    persistedRef.current = currentPage;
-    // Update URL silently
+  const goTo = (next: number) => {
+    const target = Math.min(TOTAL_PAGES, Math.max(1, next));
+    if (target === page) return;
+    setDirection(target > page ? 1 : -1);
     navigate({
       to: "/quran/page/$page",
-      params: { page: String(currentPage) },
-      replace: true,
+      params: { page: String(target) },
       search: {},
     });
-    // Persist server-side (debounced via React effect throttling — fire and forget)
-    lastPageFn({ data: { page: currentPage } }).catch(() => {});
-    // sessionStorage for hard-refresh restore
-    try {
-      sessionStorage.setItem("wasl.mushaf.pos", JSON.stringify({ page: currentPage, scrollY: window.scrollY }));
-    } catch {}
-  }, [currentPage, lastPageFn, navigate]);
+  };
 
-  // Persist scroll position continuously (rAF-throttled)
+  // Prefetch neighbors (data hydrates inside MushafPage's useQuery cache)
+  // Keyboard arrows turn pages
   useEffect(() => {
-    let raf = 0;
-    const onScroll = () => {
-      if (raf) return;
-      raf = requestAnimationFrame(() => {
-        try {
-          sessionStorage.setItem(
-            "wasl.mushaf.pos",
-            JSON.stringify({ page: persistedRef.current, scrollY: window.scrollY }),
-          );
-        } catch {}
-        raf = 0;
-      });
+    const onKey = (e: KeyboardEvent) => {
+      if (e.target instanceof HTMLElement) {
+        const tag = e.target.tagName;
+        if (tag === "INPUT" || tag === "TEXTAREA" || e.target.isContentEditable) return;
+      }
+      if (e.key === "ArrowLeft") goTo(page + 1); // RTL: left = next
+      if (e.key === "ArrowRight") goTo(page - 1);
     };
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => {
-      window.removeEventListener("scroll", onScroll);
-      if (raf) cancelAnimationFrame(raf);
-    };
-  }, []);
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [page]);
 
-  // Toolbar anchor: open overrides hover
+  // Swipe navigation (mobile)
+  const touchStartX = useRef<number | null>(null);
+  const onTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+  };
+  const onTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartX.current == null) return;
+    const dx = e.changedTouches[0].clientX - touchStartX.current;
+    touchStartX.current = null;
+    if (Math.abs(dx) < 60) return;
+    // RTL: swipe left → next page, swipe right → previous
+    if (dx < 0) goTo(page + 1);
+    else goTo(page - 1);
+  };
+
   const toolbarHit = openHit ?? hoverHit;
   const isActive =
     !!active && toolbarHit ? active.surah === toolbarHit.surah && active.ayah === toolbarHit.ayah : false;
@@ -165,12 +145,6 @@ function MushafReader() {
       return;
     }
     if (action === "expand") {
-      try {
-        sessionStorage.setItem(
-          "wasl.mushaf.pos",
-          JSON.stringify({ page: persistedRef.current, scrollY: window.scrollY }),
-        );
-      } catch {}
       navigate({
         to: "/ayah/$surah/$ayah",
         params: { surah: String(surah), ayah: String(ayah) },
@@ -188,23 +162,19 @@ function MushafReader() {
         </Link>
         <div className="flex items-center gap-2 text-xs text-muted-foreground">
           <button
-            onClick={() => {
-              const p = Math.max(1, currentPage - 1);
-              virtualizer.scrollToIndex(p - 1, { align: "start", behavior: "smooth" });
-            }}
+            onClick={() => goTo(page - 1)}
+            disabled={page <= 1}
             aria-label="Previous page"
-            className="interactive inline-flex size-7 items-center justify-center rounded-full bg-secondary/60"
+            className="interactive inline-flex size-7 items-center justify-center rounded-full bg-secondary/60 disabled:opacity-40"
           >
             <ChevronLeft className="size-4" />
           </button>
-          <span className="tabular-nums">{currentPage} / {TOTAL_PAGES}</span>
+          <span className="tabular-nums">{page} / {TOTAL_PAGES}</span>
           <button
-            onClick={() => {
-              const p = Math.min(TOTAL_PAGES, currentPage + 1);
-              virtualizer.scrollToIndex(p - 1, { align: "start", behavior: "smooth" });
-            }}
+            onClick={() => goTo(page + 1)}
+            disabled={page >= TOTAL_PAGES}
             aria-label="Next page"
-            className="interactive inline-flex size-7 items-center justify-center rounded-full bg-secondary/60"
+            className="interactive inline-flex size-7 items-center justify-center rounded-full bg-secondary/60 disabled:opacity-40"
           >
             <ChevronRight className="size-4" />
           </button>
@@ -221,34 +191,27 @@ function MushafReader() {
         </div>
       </header>
 
-      {/* Virtualized mushaf */}
+      {/* Single mushaf page with page-turn animation */}
       <div
-        style={{
-          height: virtualizer.getTotalSize(),
-          width: "100%",
-          position: "relative",
-        }}
+        className="relative min-h-[70vh] overflow-hidden"
+        onTouchStart={onTouchStart}
+        onTouchEnd={onTouchEnd}
       >
-        {items.map((vi) => (
-          <div
-            key={vi.key}
-            ref={virtualizer.measureElement}
-            data-index={vi.index}
-            style={{
-              position: "absolute",
-              top: 0,
-              left: 0,
-              width: "100%",
-              transform: `translateY(${vi.start}px)`,
-            }}
+        <AnimatePresence mode="wait" initial={false}>
+          <motion.div
+            key={page}
+            initial={{ opacity: 0, x: direction === 1 ? 60 : -60 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: direction === 1 ? -60 : 60 }}
+            transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
           >
             <MushafPage
-              pageNumber={vi.index + 1}
+              pageNumber={page}
               onAyahHover={pureMode ? () => {} : (h) => setHoverHit(h)}
               onAyahLongPress={pureMode ? () => {} : (h) => setOpenHit(h)}
             />
-          </div>
-        ))}
+          </motion.div>
+        </AnimatePresence>
       </div>
 
       {/* Floating toolbar */}
@@ -260,7 +223,6 @@ function MushafReader() {
           onAction={handleAction}
           onClose={() => {
             setHoverHit(null);
-            // Don't close openHit unless overlay also closed
             if (!overlay) setOpenHit(null);
           }}
         />
