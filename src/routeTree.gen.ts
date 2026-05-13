@@ -24,6 +24,7 @@ import { Route as ApiAuthLogoutRouteImport } from './routes/api/auth/logout'
 import { Route as ApiAuthLoginRouteImport } from './routes/api/auth/login'
 import { Route as ApiPublicCronRemindersRouteImport } from './routes/api/public/cron/reminders'
 import { Route as ApiPublicCronEnsureScheduleRouteImport } from './routes/api/public/cron/ensure-schedule'
+import { Route as ApiPublicCronBootstrapOnceRouteImport } from './routes/api/public/cron/bootstrap-once'
 import { Route as AuthenticatedQuranPagePageRouteImport } from './routes/_authenticated/quran.page.$page'
 import { Route as AuthenticatedLiveSurahAyahRouteImport } from './routes/_authenticated/live.$surah.$ayah'
 import { Route as AuthenticatedAyahSurahAyahRouteImport } from './routes/_authenticated/ayah.$surah.$ayah'
@@ -103,6 +104,12 @@ const ApiPublicCronEnsureScheduleRoute =
     path: '/api/public/cron/ensure-schedule',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicCronBootstrapOnceRoute =
+  ApiPublicCronBootstrapOnceRouteImport.update({
+    id: '/api/public/cron/bootstrap-once',
+    path: '/api/public/cron/bootstrap-once',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const AuthenticatedQuranPagePageRoute =
   AuthenticatedQuranPagePageRouteImport.update({
     id: '/page/$page',
@@ -138,6 +145,7 @@ export interface FileRoutesByFullPath {
   '/ayah/$surah/$ayah': typeof AuthenticatedAyahSurahAyahRoute
   '/live/$surah/$ayah': typeof AuthenticatedLiveSurahAyahRoute
   '/quran/page/$page': typeof AuthenticatedQuranPagePageRoute
+  '/api/public/cron/bootstrap-once': typeof ApiPublicCronBootstrapOnceRoute
   '/api/public/cron/ensure-schedule': typeof ApiPublicCronEnsureScheduleRoute
   '/api/public/cron/reminders': typeof ApiPublicCronRemindersRoute
 }
@@ -157,6 +165,7 @@ export interface FileRoutesByTo {
   '/ayah/$surah/$ayah': typeof AuthenticatedAyahSurahAyahRoute
   '/live/$surah/$ayah': typeof AuthenticatedLiveSurahAyahRoute
   '/quran/page/$page': typeof AuthenticatedQuranPagePageRoute
+  '/api/public/cron/bootstrap-once': typeof ApiPublicCronBootstrapOnceRoute
   '/api/public/cron/ensure-schedule': typeof ApiPublicCronEnsureScheduleRoute
   '/api/public/cron/reminders': typeof ApiPublicCronRemindersRoute
 }
@@ -178,6 +187,7 @@ export interface FileRoutesById {
   '/_authenticated/ayah/$surah/$ayah': typeof AuthenticatedAyahSurahAyahRoute
   '/_authenticated/live/$surah/$ayah': typeof AuthenticatedLiveSurahAyahRoute
   '/_authenticated/quran/page/$page': typeof AuthenticatedQuranPagePageRoute
+  '/api/public/cron/bootstrap-once': typeof ApiPublicCronBootstrapOnceRoute
   '/api/public/cron/ensure-schedule': typeof ApiPublicCronEnsureScheduleRoute
   '/api/public/cron/reminders': typeof ApiPublicCronRemindersRoute
 }
@@ -199,6 +209,7 @@ export interface FileRouteTypes {
     | '/ayah/$surah/$ayah'
     | '/live/$surah/$ayah'
     | '/quran/page/$page'
+    | '/api/public/cron/bootstrap-once'
     | '/api/public/cron/ensure-schedule'
     | '/api/public/cron/reminders'
   fileRoutesByTo: FileRoutesByTo
@@ -218,6 +229,7 @@ export interface FileRouteTypes {
     | '/ayah/$surah/$ayah'
     | '/live/$surah/$ayah'
     | '/quran/page/$page'
+    | '/api/public/cron/bootstrap-once'
     | '/api/public/cron/ensure-schedule'
     | '/api/public/cron/reminders'
   id:
@@ -238,6 +250,7 @@ export interface FileRouteTypes {
     | '/_authenticated/ayah/$surah/$ayah'
     | '/_authenticated/live/$surah/$ayah'
     | '/_authenticated/quran/page/$page'
+    | '/api/public/cron/bootstrap-once'
     | '/api/public/cron/ensure-schedule'
     | '/api/public/cron/reminders'
   fileRoutesById: FileRoutesById
@@ -249,6 +262,7 @@ export interface RootRouteChildren {
   OauthCallbackRoute: typeof OauthCallbackRoute
   ApiAuthLoginRoute: typeof ApiAuthLoginRoute
   ApiAuthLogoutRoute: typeof ApiAuthLogoutRoute
+  ApiPublicCronBootstrapOnceRoute: typeof ApiPublicCronBootstrapOnceRoute
   ApiPublicCronEnsureScheduleRoute: typeof ApiPublicCronEnsureScheduleRoute
   ApiPublicCronRemindersRoute: typeof ApiPublicCronRemindersRoute
 }
@@ -360,6 +374,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicCronEnsureScheduleRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/cron/bootstrap-once': {
+      id: '/api/public/cron/bootstrap-once'
+      path: '/api/public/cron/bootstrap-once'
+      fullPath: '/api/public/cron/bootstrap-once'
+      preLoaderRoute: typeof ApiPublicCronBootstrapOnceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/quran/page/$page': {
       id: '/_authenticated/quran/page/$page'
       path: '/page/$page'
@@ -430,6 +451,7 @@ const rootRouteChildren: RootRouteChildren = {
   OauthCallbackRoute: OauthCallbackRoute,
   ApiAuthLoginRoute: ApiAuthLoginRoute,
   ApiAuthLogoutRoute: ApiAuthLogoutRoute,
+  ApiPublicCronBootstrapOnceRoute: ApiPublicCronBootstrapOnceRoute,
   ApiPublicCronEnsureScheduleRoute: ApiPublicCronEnsureScheduleRoute,
   ApiPublicCronRemindersRoute: ApiPublicCronRemindersRoute,
 }
