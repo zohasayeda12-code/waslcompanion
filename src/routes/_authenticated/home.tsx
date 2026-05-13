@@ -1,11 +1,10 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery } from "@tanstack/react-query";
 import { motion } from "motion/react";
 import { LogOut } from "lucide-react";
 import { useEffect } from "react";
 import { AppShell } from "@/components/app-shell";
-import { GlassCard } from "@/components/glass-card";
 import { GlowChip } from "@/components/glow-chip";
 import { HijriBanner } from "@/components/hijri-banner";
 import { getJourneyState } from "@/lib/journey.functions";
@@ -45,8 +44,19 @@ function HomeScreen() {
     })();
   }, [saveSubFn, getKeyFn]);
 
-  const surah = journey?.current_surah ?? 1;
-  const ayah = journey?.current_ayah ?? 1;
+  // If there is an active intention, the Home card becomes that ayah.
+  // Otherwise fall back to the sequential journey position.
+  const surah = active?.surah ?? journey?.current_surah ?? 1;
+  const ayah = active?.ayah ?? journey?.current_ayah ?? 1;
+
+  const statusLabel =
+    active?.status === "carried"
+      ? "Carrying this ayah"
+      : active?.status === "awaiting_response"
+      ? "Living this ayah"
+      : active
+      ? "Current intention"
+      : null;
 
   const { data: ayahData } = useQuery({
     queryKey: ["ayah", surah, ayah],
@@ -124,6 +134,13 @@ function HomeScreen() {
             className="interactive-card block w-full rounded-[2rem] text-left"
           >
             <div className="px-[clamp(1.25rem,5.5vw,1.75rem)] py-[clamp(1.75rem,7vw,2.25rem)]">
+              {active && statusLabel && (
+                <div className="mb-5 flex items-center gap-2">
+                  <GlowChip tone="emerald" pulse>
+                    {statusLabel}
+                  </GlowChip>
+                </div>
+              )}
               <p
                 className="text-[clamp(1.6rem,7.5vw,2.15rem)] leading-[1.85] font-medium tracking-tight text-foreground"
                 style={{ fontFamily: "var(--font-display)", direction: "rtl" }}
@@ -138,34 +155,29 @@ function HomeScreen() {
               <p className="mt-5 text-[10px] uppercase tracking-[0.24em] text-muted-foreground">
                 {ayahData?.surahName ?? `Surah ${surah}`} · {surah}:{ayah}
               </p>
+              {active && (
+                <div className="mt-5 border-t border-white/[0.06] pt-4">
+                  <p className="text-sm leading-relaxed text-foreground/80">
+                    {active.text}
+                  </p>
+                  {active.reminder_at && (
+                    <p className="mt-2 text-[10px] uppercase tracking-[0.24em] text-muted-foreground">
+                      Reminder ·{" "}
+                      {new Date(active.reminder_at).toLocaleString(undefined, {
+                        month: "short",
+                        day: "numeric",
+                        hour: "numeric",
+                        minute: "2-digit",
+                      })}
+                    </p>
+                  )}
+                </div>
+              )}
             </div>
           </button>
         </article>
       </motion.section>
 
-      {/* 4. Carrying intention */}
-      {active && (
-        <Link
-          to="/ayah/$surah/$ayah"
-          params={{ surah: String(active.surah), ayah: String(active.ayah) }}
-          search={{ from: "home" }}
-          className="mt-5 block"
-        >
-          <GlassCard tone="default" interactive className="!p-4">
-            <div className="flex items-center gap-3">
-              <GlowChip tone="emerald" pulse>
-                Carrying intention
-              </GlowChip>
-              <span className="ml-auto text-xs text-muted-foreground">
-                {active.surah}:{active.ayah}
-              </span>
-            </div>
-            <p className="mt-3 text-sm leading-relaxed text-foreground/85">
-              {active.text}
-            </p>
-          </GlassCard>
-        </Link>
-      )}
     </AppShell>
   );
 }
