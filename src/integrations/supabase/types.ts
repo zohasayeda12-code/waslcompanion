@@ -485,7 +485,7 @@ export type Database = {
       }
     }
     Enums: {
-      highlight_color: "gold" | "blue" | "green" | "purple"
+      highlight_color: "gold" | "blue" | "green" | "purple" | "rose"
       intention_kind: "ai" | "custom"
       intention_status:
         | "pending"
@@ -621,7 +621,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      highlight_color: ["gold", "blue", "green", "purple"],
+      highlight_color: ["gold", "blue", "green", "purple", "rose"],
       intention_kind: ["ai", "custom"],
       intention_status: [
         "pending",

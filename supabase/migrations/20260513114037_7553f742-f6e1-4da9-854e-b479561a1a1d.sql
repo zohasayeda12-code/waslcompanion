@@ -1,0 +1,1 @@
+ALTER TYPE public.highlight_color ADD VALUE IF NOT EXISTS 'rose';
