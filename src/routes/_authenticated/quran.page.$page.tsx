@@ -205,7 +205,7 @@ function MushafReader() {
           >
             <MushafPage
               pageNumber={page}
-              onAyahHover={pureMode ? () => {} : (h) => setHoverHit(h)}
+              onAyahClick={pureMode ? () => {} : (h) => setOpenHit(h)}
               onAyahLongPress={pureMode ? () => {} : (h) => setOpenHit(h)}
             />
           </motion.div>
@@ -220,7 +220,6 @@ function MushafReader() {
           isActiveIntention={isActive}
           onAction={handleAction}
           onClose={() => {
-            setHoverHit(null);
             if (!overlay) setOpenHit(null);
           }}
         />
