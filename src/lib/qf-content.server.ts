@@ -202,7 +202,7 @@ export async function fetchPage(pageNumber: number): Promise<MushafPagePayload> 
   const cached = pageCache.get(pageNumber);
   if (cached && cached.expiresAt > Date.now()) return cached.payload;
 
-  const url = `/verses/by_page/${pageNumber}?language=en&words=true&per_page=50&fields=text_uthmani,page_number,juz_number&word_fields=line_number,page_number`;
+  const url = `/verses/by_page/${pageNumber}?language=en&per_page=50&fields=text_uthmani,page_number,juz_number`;
   const res = await qfFetch(url);
   if (!res.ok) {
     const t = await res.text().catch(() => "");
