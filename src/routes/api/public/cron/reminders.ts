@@ -104,14 +104,33 @@ async function run() {
   return { scanned, sent, failed, skipped };
 }
 
+function checkApiKey(request: Request): boolean {
+  const expected = process.env.SUPABASE_PUBLISHABLE_KEY;
+  if (!expected) return false;
+  const provided =
+    request.headers.get("apikey") ??
+    request.headers.get("authorization")?.replace(/^Bearer\s+/i, "") ??
+    "";
+  return provided === expected;
+}
+
+function unauthorized() {
+  return new Response(JSON.stringify({ error: "unauthorized" }), {
+    status: 401,
+    headers: { "content-type": "application/json" },
+  });
+}
+
 export const Route = createFileRoute("/api/public/cron/reminders")({
   server: {
     handlers: {
-      POST: async () => {
+      POST: async ({ request }) => {
+        if (!checkApiKey(request)) return unauthorized();
         const r = await run();
         return new Response(JSON.stringify(r), { headers: { "content-type": "application/json" } });
       },
-      GET: async () => {
+      GET: async ({ request }) => {
+        if (!checkApiKey(request)) return unauthorized();
         const r = await run();
         return new Response(JSON.stringify(r), { headers: { "content-type": "application/json" } });
       },
