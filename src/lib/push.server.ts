@@ -1,8 +1,7 @@
 import { buildPushPayload, type PushSubscription } from "@block65/webcrypto-web-push";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 
-const VAPID_PUBLIC =
-  "BBwyIvizd0SsaJOMhIZErZK-hGORHKXZYF5pKo8vo4HI04DYjOd3Sm72D3ewQ5Ijbf_Cw1qRhqw_5jG8N_wyHVU";
+const VAPID_PUBLIC = process.env.VAPID_PUBLIC_KEY ?? "";
 
 export type PushPayload = { title: string; body: string; url?: string; tag?: string };
 
