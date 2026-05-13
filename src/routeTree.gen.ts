@@ -22,6 +22,7 @@ import { Route as AuthenticatedHomeRouteImport } from './routes/_authenticated/h
 import { Route as ApiAuthLogoutRouteImport } from './routes/api/auth/logout'
 import { Route as ApiAuthLoginRouteImport } from './routes/api/auth/login'
 import { Route as ApiPublicCronRemindersRouteImport } from './routes/api/public/cron/reminders'
+import { Route as ApiPublicCronEnsureScheduleRouteImport } from './routes/api/public/cron/ensure-schedule'
 import { Route as AuthenticatedLiveSurahAyahRouteImport } from './routes/_authenticated/live.$surah.$ayah'
 import { Route as AuthenticatedAyahSurahAyahRouteImport } from './routes/_authenticated/ayah.$surah.$ayah'
 
@@ -89,6 +90,12 @@ const ApiPublicCronRemindersRoute = ApiPublicCronRemindersRouteImport.update({
   path: '/api/public/cron/reminders',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicCronEnsureScheduleRoute =
+  ApiPublicCronEnsureScheduleRouteImport.update({
+    id: '/api/public/cron/ensure-schedule',
+    path: '/api/public/cron/ensure-schedule',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const AuthenticatedLiveSurahAyahRoute =
   AuthenticatedLiveSurahAyahRouteImport.update({
     id: '/live/$surah/$ayah',
@@ -116,6 +123,7 @@ export interface FileRoutesByFullPath {
   '/api/auth/logout': typeof ApiAuthLogoutRoute
   '/ayah/$surah/$ayah': typeof AuthenticatedAyahSurahAyahRoute
   '/live/$surah/$ayah': typeof AuthenticatedLiveSurahAyahRoute
+  '/api/public/cron/ensure-schedule': typeof ApiPublicCronEnsureScheduleRoute
   '/api/public/cron/reminders': typeof ApiPublicCronRemindersRoute
 }
 export interface FileRoutesByTo {
@@ -132,6 +140,7 @@ export interface FileRoutesByTo {
   '/api/auth/logout': typeof ApiAuthLogoutRoute
   '/ayah/$surah/$ayah': typeof AuthenticatedAyahSurahAyahRoute
   '/live/$surah/$ayah': typeof AuthenticatedLiveSurahAyahRoute
+  '/api/public/cron/ensure-schedule': typeof ApiPublicCronEnsureScheduleRoute
   '/api/public/cron/reminders': typeof ApiPublicCronRemindersRoute
 }
 export interface FileRoutesById {
@@ -150,6 +159,7 @@ export interface FileRoutesById {
   '/api/auth/logout': typeof ApiAuthLogoutRoute
   '/_authenticated/ayah/$surah/$ayah': typeof AuthenticatedAyahSurahAyahRoute
   '/_authenticated/live/$surah/$ayah': typeof AuthenticatedLiveSurahAyahRoute
+  '/api/public/cron/ensure-schedule': typeof ApiPublicCronEnsureScheduleRoute
   '/api/public/cron/reminders': typeof ApiPublicCronRemindersRoute
 }
 export interface FileRouteTypes {
@@ -168,6 +178,7 @@ export interface FileRouteTypes {
     | '/api/auth/logout'
     | '/ayah/$surah/$ayah'
     | '/live/$surah/$ayah'
+    | '/api/public/cron/ensure-schedule'
     | '/api/public/cron/reminders'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -184,6 +195,7 @@ export interface FileRouteTypes {
     | '/api/auth/logout'
     | '/ayah/$surah/$ayah'
     | '/live/$surah/$ayah'
+    | '/api/public/cron/ensure-schedule'
     | '/api/public/cron/reminders'
   id:
     | '__root__'
@@ -201,6 +213,7 @@ export interface FileRouteTypes {
     | '/api/auth/logout'
     | '/_authenticated/ayah/$surah/$ayah'
     | '/_authenticated/live/$surah/$ayah'
+    | '/api/public/cron/ensure-schedule'
     | '/api/public/cron/reminders'
   fileRoutesById: FileRoutesById
 }
@@ -211,6 +224,7 @@ export interface RootRouteChildren {
   OauthCallbackRoute: typeof OauthCallbackRoute
   ApiAuthLoginRoute: typeof ApiAuthLoginRoute
   ApiAuthLogoutRoute: typeof ApiAuthLogoutRoute
+  ApiPublicCronEnsureScheduleRoute: typeof ApiPublicCronEnsureScheduleRoute
   ApiPublicCronRemindersRoute: typeof ApiPublicCronRemindersRoute
 }
 
@@ -307,6 +321,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicCronRemindersRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/cron/ensure-schedule': {
+      id: '/api/public/cron/ensure-schedule'
+      path: '/api/public/cron/ensure-schedule'
+      fullPath: '/api/public/cron/ensure-schedule'
+      preLoaderRoute: typeof ApiPublicCronEnsureScheduleRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/live/$surah/$ayah': {
       id: '/_authenticated/live/$surah/$ayah'
       path: '/live/$surah/$ayah'
@@ -357,6 +378,7 @@ const rootRouteChildren: RootRouteChildren = {
   OauthCallbackRoute: OauthCallbackRoute,
   ApiAuthLoginRoute: ApiAuthLoginRoute,
   ApiAuthLogoutRoute: ApiAuthLogoutRoute,
+  ApiPublicCronEnsureScheduleRoute: ApiPublicCronEnsureScheduleRoute,
   ApiPublicCronRemindersRoute: ApiPublicCronRemindersRoute,
 }
 export const routeTree = rootRouteImport
