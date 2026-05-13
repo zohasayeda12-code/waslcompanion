@@ -3,6 +3,7 @@ import { z } from "zod";
 import { generateText } from "ai";
 import { createLovableAiGatewayProvider } from "./ai-gateway.server";
 import { fetchAyah } from "./qf-content.server";
+import { requireUserId } from "./current-user.server";
 
 const SYSTEM_PROMPT = `You are a calm companion inside Wasl, a Quran app.
 
