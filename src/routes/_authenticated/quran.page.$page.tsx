@@ -41,7 +41,6 @@ function MushafReader() {
   const [pureMode, setPureMode] = usePureMode();
   const [direction, setDirection] = useState<1 | -1>(1);
 
-  const [hoverHit, setHoverHit] = useState<AyahHit | null>(null);
   const [openHit, setOpenHit] = useState<AyahHit | null>(null);
   const [overlay, setOverlay] = useState<null | "reflection" | "highlight" | "live">(null);
 
@@ -68,7 +67,6 @@ function MushafReader() {
       sessionStorage.setItem("wasl.mushaf.pos", JSON.stringify({ page }));
     } catch {}
     // close any open overlays/toolbars when turning page
-    setHoverHit(null);
     setOpenHit(null);
     setOverlay(null);
     window.scrollTo({ top: 0, behavior: "auto" });
@@ -115,7 +113,7 @@ function MushafReader() {
     else goTo(page - 1);
   };
 
-  const toolbarHit = openHit ?? hoverHit;
+  const toolbarHit = openHit;
   const isActive =
     !!active && toolbarHit ? active.surah === toolbarHit.surah && active.ayah === toolbarHit.ayah : false;
   const isBm = toolbarHit ? bookmarkSet.has(`${toolbarHit.surah}:${toolbarHit.ayah}`) : false;
@@ -141,7 +139,7 @@ function MushafReader() {
     if (action === "bookmark") {
       await toggleBookmarkFn({ data: { surah, ayah } });
       qc.invalidateQueries({ queryKey: ["bookmarks-list"] });
-      setHoverHit(null);
+      setOpenHit(null);
       return;
     }
     if (action === "expand") {
@@ -207,7 +205,7 @@ function MushafReader() {
           >
             <MushafPage
               pageNumber={page}
-              onAyahHover={pureMode ? () => {} : (h) => setHoverHit(h)}
+              onAyahClick={pureMode ? () => {} : (h) => setOpenHit(h)}
               onAyahLongPress={pureMode ? () => {} : (h) => setOpenHit(h)}
             />
           </motion.div>
@@ -222,7 +220,6 @@ function MushafReader() {
           isActiveIntention={isActive}
           onAction={handleAction}
           onClose={() => {
-            setHoverHit(null);
             if (!overlay) setOpenHit(null);
           }}
         />
