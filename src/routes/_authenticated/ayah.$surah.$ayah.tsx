@@ -551,6 +551,201 @@ function ConfirmDialog({ when, onClose }: { when: string; onClose: () => void })
   );
 }
 
+const CELEBRATE_MESSAGES = [
+  "Alhamdulillah. Small consistent steps matter.",
+  "May this ayah slowly become part of you.",
+  "Even small efforts are beloved.",
+  "One lived ayah is precious.",
+  "May Allah make it settle gently in your life.",
+];
+
+function LivedFlow({
+  phase,
+  intentionId,
+  onAdvancePhase,
+  onCloseStay,
+  onDoneAdvance,
+}: {
+  phase: "celebrate" | "reflect";
+  intentionId: string;
+  onAdvancePhase: () => void;
+  onCloseStay: () => void;
+  onDoneAdvance: () => void;
+}) {
+  const markLivedFn = useServerFn(markLived);
+  const [reflection, setReflection] = useState("");
+  const [saving, setSaving] = useState(false);
+
+  const message = useMemo(
+    () => CELEBRATE_MESSAGES[Math.floor(Math.random() * CELEBRATE_MESSAGES.length)],
+    []
+  );
+
+  if (phase === "celebrate") {
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-6" role="dialog" aria-modal="true">
+        <div className="absolute inset-0 bg-background/70 backdrop-blur-sm" onClick={onCloseStay} aria-hidden />
+        <div className="relative z-10 w-full max-w-sm rounded-3xl border border-border/60 bg-card p-7 text-center shadow-[var(--shadow-elevated)]">
+          <div className="mx-auto mb-4 inline-flex size-12 items-center justify-center rounded-full bg-[oklch(0.74_0.14_168_/_0.15)] text-[color:var(--emerald)]">
+            <Heart className="size-5" />
+          </div>
+          <p className="text-base leading-relaxed text-foreground/90">{message}</p>
+          <button
+            onClick={onAdvancePhase}
+            className="interactive mt-6 inline-flex h-11 w-full items-center justify-center rounded-2xl bg-[var(--gradient-primary)] text-sm font-medium text-primary-foreground shadow-[var(--shadow-soft)]"
+          >
+            Continue
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // Reflect phase
+  const completeAndAdvance = async (withReflection: boolean) => {
+    setSaving(true);
+    try {
+      await markLivedFn({
+        data: {
+          intentionId,
+          reflection: withReflection && reflection.trim() ? reflection.trim() : undefined,
+        },
+      });
+      onDoneAdvance();
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  // Closing via × marks the intention completed but stays on this ayah.
+  const completeAndStay = async () => {
+    setSaving(true);
+    try {
+      await markLivedFn({
+        data: {
+          intentionId,
+          reflection: reflection.trim() ? reflection.trim() : undefined,
+        },
+      });
+      onCloseStay();
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center" role="dialog" aria-modal="true">
+      <div className="absolute inset-0 bg-background/70 backdrop-blur-sm" onClick={completeAndStay} aria-hidden />
+      <div className="relative z-10 w-full max-w-md rounded-t-3xl sm:rounded-3xl border border-border/60 bg-card p-6 shadow-[var(--shadow-elevated)]">
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <p className="text-xs uppercase tracking-[0.2em] text-[color:var(--gold)]">Reflection</p>
+            <h3 className="mt-1 text-base font-medium tracking-tight">Would you like to reflect on this ayah?</h3>
+          </div>
+          <button
+            onClick={completeAndStay}
+            aria-label="Close"
+            className="interactive inline-flex size-8 items-center justify-center rounded-full bg-secondary/60 text-foreground/80"
+          >
+            <X className="size-4" />
+          </button>
+        </div>
+        <textarea
+          value={reflection}
+          onChange={(e) => setReflection(e.target.value)}
+          placeholder="Optional. A few words on how this ayah landed."
+          className="mt-4 min-h-[120px] w-full rounded-2xl border border-border bg-background/60 p-3 text-sm"
+        />
+        <div className="mt-4 flex gap-2">
+          <button
+            onClick={() => completeAndAdvance(false)}
+            disabled={saving}
+            className="interactive flex-1 rounded-2xl bg-secondary py-3 text-sm disabled:opacity-50"
+          >
+            Skip
+          </button>
+          <button
+            onClick={() => completeAndAdvance(true)}
+            disabled={saving}
+            className="interactive flex-1 rounded-2xl bg-[var(--gradient-primary)] py-3 text-sm font-medium text-primary-foreground disabled:opacity-50"
+          >
+            {saving ? <Loader2 className="mx-auto size-4 animate-spin" /> : "Continue"}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function CarryForwardSheet({
+  intentionId,
+  onClose,
+  onSaved,
+}: {
+  intentionId: string;
+  onClose: () => void;
+  onSaved: () => void;
+}) {
+  const carryFn = useServerFn(carryForward);
+  const defaultDate = useMemo(() => {
+    const d = new Date();
+    d.setDate(d.getDate() + 1);
+    d.setHours(9, 0, 0, 0);
+    const pad = (n: number) => String(n).padStart(2, "0");
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  }, []);
+  const [reminderLocal, setReminderLocal] = useState(defaultDate);
+  const [saving, setSaving] = useState(false);
+
+  const save = async () => {
+    setSaving(true);
+    try {
+      const reminderAt = reminderLocal ? new Date(reminderLocal).toISOString() : undefined;
+      await carryFn({ data: { intentionId, reminderAt } });
+      onSaved();
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center" role="dialog" aria-modal="true">
+      <div className="absolute inset-0 bg-background/70 backdrop-blur-sm" onClick={onClose} aria-hidden />
+      <div className="relative z-10 w-full max-w-md rounded-t-3xl sm:rounded-3xl border border-border/60 bg-card p-6 shadow-[var(--shadow-elevated)]">
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <p className="text-xs uppercase tracking-[0.2em] text-[color:var(--gold)]">Carry forward</p>
+            <h3 className="mt-1 text-base font-medium tracking-tight">When should this ayah find you again?</h3>
+          </div>
+          <button
+            onClick={onClose}
+            aria-label="Close"
+            className="interactive inline-flex size-8 items-center justify-center rounded-full bg-secondary/60 text-foreground/80"
+          >
+            <X className="size-4" />
+          </button>
+        </div>
+        <label className="mt-5 block text-xs uppercase tracking-[0.18em] text-muted-foreground">
+          Remind me at
+        </label>
+        <input
+          type="datetime-local"
+          value={reminderLocal}
+          onChange={(e) => setReminderLocal(e.target.value)}
+          className="mt-2 w-full rounded-2xl border border-border bg-background/60 px-3 py-2.5 text-sm"
+        />
+        <button
+          onClick={save}
+          disabled={saving || !reminderLocal}
+          className="interactive mt-5 inline-flex h-12 w-full items-center justify-center rounded-2xl bg-[var(--gradient-primary)] text-sm font-medium text-primary-foreground shadow-[var(--shadow-soft)] disabled:opacity-50"
+        >
+          {saving ? <Loader2 className="size-4 animate-spin" /> : "Save & carry forward"}
+        </button>
+      </div>
+    </div>
+  );
+}
+
 function BottomSheet({
   title,
   onClose,
