@@ -18,13 +18,16 @@ type Props = {
   pageNumber: number;
   onAyahClick: (hit: AyahHit) => void;
   onAyahLongPress: (hit: AyahHit) => void;
+  onAyahDoubleTap?: (hit: AyahHit) => void;
+  marker?: { surah: number; ayah: number } | null;
+  resumeKey?: { surah: number; ayah: number } | null;
 };
 
 const ARABIC_DIGITS = ["٠", "١", "٢", "٣", "٤", "٥", "٦", "٧", "٨", "٩"];
 const toArabicNumber = (n: number) =>
   String(n).split("").map((d) => ARABIC_DIGITS[Number(d)] ?? d).join("");
 
-export function MushafPage({ pageNumber, onAyahClick, onAyahLongPress }: Props) {
+export function MushafPage({ pageNumber, onAyahClick, onAyahLongPress, onAyahDoubleTap, marker, resumeKey }: Props) {
   const pageFn = useServerFn(getMushafPage);
   const bookmarksFn = useServerFn(listBookmarks);
   const highlightsFn = useServerFn(listHighlights);
@@ -154,6 +157,8 @@ export function MushafPage({ pageNumber, onAyahClick, onAyahLongPress }: Props) 
                       const key = `${v.surah}:${v.ayah}`;
                       const hl = highlightMap.get(key);
                       const isBookmarked = bookmarkSet.has(key);
+                      const isMarked = !!marker && marker.surah === v.surah && marker.ayah === v.ayah;
+                      const isResume = !!resumeKey && resumeKey.surah === v.surah && resumeKey.ayah === v.ayah;
                       return (
                         <AyahInline
                           key={key}
@@ -162,8 +167,11 @@ export function MushafPage({ pageNumber, onAyahClick, onAyahLongPress }: Props) 
                           text={v.textUthmani}
                           highlight={hl}
                           bookmarked={isBookmarked}
+                          marked={isMarked}
+                          resume={isResume}
                           onAyahClick={onAyahClick}
                           onAyahLongPress={onAyahLongPress}
+                          onAyahDoubleTap={onAyahDoubleTap}
                         />
                       );
                     })}
@@ -184,33 +192,55 @@ function AyahInline({
   text,
   highlight,
   bookmarked,
+  marked,
+  resume,
   onAyahClick,
   onAyahLongPress,
+  onAyahDoubleTap,
 }: {
   surah: number;
   ayah: number;
   text: string;
   highlight?: string;
   bookmarked: boolean;
+  marked?: boolean;
+  resume?: boolean;
   onAyahClick: (hit: AyahHit) => void;
   onAyahLongPress: (hit: AyahHit) => void;
+  onAyahDoubleTap?: (hit: AyahHit) => void;
 }) {
   const ref = useRef<HTMLSpanElement | null>(null);
+  const lastTapRef = useRef<number>(0);
   const longPress = useLongPress(() => {
     if (ref.current) onAyahLongPress({ surah, ayah, el: ref.current });
   });
 
+  // Scroll the resume target into view on mount/change.
+  useLayoutEffect(() => {
+    if (resume && ref.current) {
+      ref.current.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  }, [resume]);
+
   const colorClass = highlight ? `hl-${highlight}` : "";
+  const stateClass = `${marked ? " ayah-marked" : ""}${resume ? " ayah-resume" : ""}`;
 
   return (
     <>
       <span
         ref={ref}
-        className={`ayah-span ${colorClass}`}
+        className={`ayah-span ${colorClass}${stateClass}`}
         data-surah={surah}
         data-ayah={ayah}
         onClick={(e) => {
           e.stopPropagation();
+          const now = Date.now();
+          if (onAyahDoubleTap && now - lastTapRef.current < 320) {
+            lastTapRef.current = 0;
+            if (ref.current) onAyahDoubleTap({ surah, ayah, el: ref.current });
+            return;
+          }
+          lastTapRef.current = now;
           if (ref.current) onAyahClick({ surah, ayah, el: ref.current });
         }}
         {...longPress}
@@ -220,6 +250,13 @@ function AyahInline({
       <span className="ayah-end" aria-hidden>
         {toArabicNumber(ayah)}
       </span>
+      {marked && (
+        <span
+          className="mushaf-marker-ribbon"
+          aria-label={`Reading marker at ${surah}:${ayah}`}
+          title="Reading marker"
+        />
+      )}
       {bookmarked && (
         <span
           className="mushaf-bookmark-dot"

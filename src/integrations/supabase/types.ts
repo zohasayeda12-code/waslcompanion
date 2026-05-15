@@ -223,6 +223,7 @@ export type Database = {
           current_surah: number
           last_mushaf_page: number
           paused_journey: Json | null
+          reading_marker: Json | null
           updated_at: string
           user_id: string
         }
@@ -231,6 +232,7 @@ export type Database = {
           current_surah?: number
           last_mushaf_page?: number
           paused_journey?: Json | null
+          reading_marker?: Json | null
           updated_at?: string
           user_id: string
         }
@@ -239,6 +241,7 @@ export type Database = {
           current_surah?: number
           last_mushaf_page?: number
           paused_journey?: Json | null
+          reading_marker?: Json | null
           updated_at?: string
           user_id?: string
         }

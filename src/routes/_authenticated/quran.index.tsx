@@ -35,15 +35,29 @@ function QuranHub() {
     queryFn: () => journeyFn(),
   });
 
-  const lastPage = journey?.last_mushaf_page ?? 1;
-  const lastSurah = journey?.current_surah ?? 1;
-  const lastAyah = journey?.current_ayah ?? 1;
+  const marker = (journey as any)?.reading_marker as
+    | { surah: number; ayah: number; page: number }
+    | null
+    | undefined;
+
+  const lastPage = marker?.page ?? journey?.last_mushaf_page ?? 1;
+  const lastSurah = marker?.surah ?? journey?.current_surah ?? 1;
+  const lastAyah = marker?.ayah ?? journey?.current_ayah ?? 1;
+  const hasMarker = !!marker;
 
   const goToPage = (page: number) => {
     navigate({
       to: "/quran/page/$page",
       params: { page: String(page) },
       search: {},
+    });
+  };
+
+  const continueReading = () => {
+    navigate({
+      to: "/quran/page/$page",
+      params: { page: String(lastPage) },
+      search: hasMarker ? { marker: `${lastSurah}:${lastAyah}` } : {},
     });
   };
 
@@ -68,7 +82,7 @@ function QuranHub() {
 
       {/* Continue Reading — the "thread marker" */}
       <button
-        onClick={() => goToPage(lastPage)}
+        onClick={continueReading}
         className="block w-full text-left"
         aria-label={`Continue reading from page ${lastPage}, ayah ${lastSurah}:${lastAyah}`}
       >
@@ -87,7 +101,7 @@ function QuranHub() {
             </div>
             <div className="min-w-0 flex-1">
               <div className="text-[10px] font-medium uppercase tracking-[0.18em] text-muted-foreground/80">
-                Continue reading
+                {hasMarker ? "Return to your marker" : "Continue reading"}
               </div>
               <div className="mt-1 flex items-baseline gap-2">
                 <span

@@ -14,7 +14,7 @@ import { IntentionSheet } from "@/components/mushaf/IntentionSheet";
 import { HighlightPicker } from "@/components/mushaf/HighlightPicker";
 import { TranslationPopover } from "@/components/mushaf/TranslationPopover";
 
-import { setLastMushafPage } from "@/lib/journey.functions";
+import { setLastMushafPage, setReadingMarker, getJourneyState } from "@/lib/journey.functions";
 import { getActiveIntention } from "@/lib/intentions.functions";
 import { toggleBookmark, listBookmarks } from "@/lib/library.functions";
 import { usePureMode } from "@/hooks/use-pure-mode";
@@ -24,6 +24,7 @@ const PAGE_PARAM = z.coerce.number().int().min(1).max(TOTAL_PAGES);
 
 const searchSchema = z.object({
   restore: z.coerce.number().optional(),
+  marker: z.string().optional(), // "surah:ayah"
 });
 
 export const Route = createFileRoute("/_authenticated/quran/page/$page")({
@@ -36,6 +37,7 @@ export const Route = createFileRoute("/_authenticated/quran/page/$page")({
 
 function MushafReader() {
   const { page } = Route.useParams();
+  const search = Route.useSearch();
   const navigate = useNavigate();
   const qc = useQueryClient();
 
@@ -44,22 +46,48 @@ function MushafReader() {
 
   const [openHit, setOpenHit] = useState<AyahHit | null>(null);
   const [overlay, setOverlay] = useState<null | "reflection" | "highlight" | "live" | "translation">(null);
+  const [markerToast, setMarkerToast] = useState<string | null>(null);
 
   const lastPageFn = useServerFn(setLastMushafPage);
   const activeFn = useServerFn(getActiveIntention);
   const toggleBookmarkFn = useServerFn(toggleBookmark);
   const bookmarksFn = useServerFn(listBookmarks);
+  const setMarkerFn = useServerFn(setReadingMarker);
+  const journeyFn = useServerFn(getJourneyState);
 
   const { data: active } = useQuery({ queryKey: ["active-intention"], queryFn: () => activeFn() });
   const { data: bookmarks = [] } = useQuery({
     queryKey: ["bookmarks-list"],
     queryFn: () => bookmarksFn(),
   });
+  const { data: journey } = useQuery({
+    queryKey: ["journey-state"],
+    queryFn: () => journeyFn(),
+  });
+
+  const marker = (journey as any)?.reading_marker ?? null;
+
+  // Resume target from ?marker=surah:ayah
+  const resumeKey = useMemo(() => {
+    if (!search.marker) return null;
+    const [s, a] = search.marker.split(":").map((n: string) => Number(n));
+    if (!s || !a) return null;
+    return { surah: s, ayah: a };
+  }, [search.marker]);
 
   const bookmarkSet = useMemo(
     () => new Set(bookmarks.map((b: any) => `${b.surah}:${b.ayah}`)),
     [bookmarks],
   );
+
+  const placeMarker = async (hit: AyahHit) => {
+    setMarkerToast(`Marker placed at ${hit.surah}:${hit.ayah}`);
+    window.setTimeout(() => setMarkerToast(null), 2200);
+    try {
+      await setMarkerFn({ data: { surah: hit.surah, ayah: hit.ayah, page } });
+      qc.invalidateQueries({ queryKey: ["journey-state"] });
+    } catch {}
+  };
 
   // Persist last-read page on change
   useEffect(() => {
@@ -212,9 +240,31 @@ function MushafReader() {
             <MushafPage
               pageNumber={page}
               onAyahClick={pureMode ? () => {} : (h) => setOpenHit(h)}
-              onAyahLongPress={pureMode ? () => {} : (h) => setOpenHit(h)}
+              onAyahLongPress={pureMode ? placeMarker : placeMarker}
+              onAyahDoubleTap={placeMarker}
+              marker={marker && marker.page === page ? { surah: marker.surah, ayah: marker.ayah } : null}
+              resumeKey={resumeKey}
             />
           </motion.div>
+        </AnimatePresence>
+
+        {/* Soft marker confirmation */}
+        <AnimatePresence>
+          {markerToast && (
+            <motion.div
+              key={markerToast}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 4 }}
+              transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+              className="pointer-events-none fixed inset-x-0 bottom-24 z-40 mx-auto flex justify-center"
+            >
+              <div className="rounded-full border border-white/10 bg-background/70 px-4 py-2 text-[12.5px] tracking-wide text-foreground/85 shadow-[0_8px_30px_oklch(0_0_0_/_0.35)] backdrop-blur-xl">
+                <span className="mr-2 inline-block size-1.5 translate-y-[-1px] rounded-full bg-[var(--gold)]" />
+                {markerToast}
+              </div>
+            </motion.div>
+          )}
         </AnimatePresence>
       </div>
 

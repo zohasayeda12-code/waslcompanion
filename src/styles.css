@@ -473,3 +473,50 @@ body.pure-mode .ayah-span:hover { background-color: transparent !important; }
 body.pure-mode .mushaf-bookmark-dot,
 body.pure-mode .mushaf-active-glow { display: none !important; }
 
+
+/* Reading marker — single-instance ribbon/thread placed where the user paused */
+.mushaf-marker-ribbon {
+  display: inline-block;
+  width: 0.34em;
+  height: 1.05em;
+  margin-inline: 0.18em;
+  vertical-align: -0.18em;
+  border-radius: 0 0 2px 2px;
+  background: linear-gradient(
+    180deg,
+    color-mix(in oklab, var(--gold) 90%, transparent) 0%,
+    color-mix(in oklab, var(--gold) 60%, transparent) 60%,
+    color-mix(in oklab, var(--gold) 0%, transparent) 100%
+  );
+  box-shadow: 0 0 8px color-mix(in oklab, var(--gold) 35%, transparent);
+  position: relative;
+}
+.mushaf-marker-ribbon::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -0.18em;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 0.17em solid transparent;
+  border-right: 0.17em solid transparent;
+  border-top: 0.18em solid color-mix(in oklab, var(--gold) 55%, transparent);
+}
+.ayah-marked {
+  background-color: color-mix(in oklab, var(--gold) 8%, transparent);
+  border-radius: 4px;
+}
+
+/* "You were here" — resume ripple. Plays once on mount. */
+@keyframes ayah-resume-glow {
+  0%   { background-color: color-mix(in oklab, var(--gold) 0%,  transparent); box-shadow: 0 0 0 0 color-mix(in oklab, var(--gold) 0%, transparent); }
+  25%  { background-color: color-mix(in oklab, var(--gold) 22%, transparent); box-shadow: 0 0 18px 4px color-mix(in oklab, var(--gold) 18%, transparent); }
+  100% { background-color: color-mix(in oklab, var(--gold) 8%,  transparent); box-shadow: 0 0 0 0 color-mix(in oklab, var(--gold) 0%, transparent); }
+}
+.ayah-resume {
+  animation: ayah-resume-glow 1.8s ease-out 0.15s 1 both;
+  border-radius: 4px;
+}
+
+body.pure-mode .mushaf-marker-ribbon { display: none !important; }
