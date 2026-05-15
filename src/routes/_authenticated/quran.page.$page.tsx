@@ -240,9 +240,31 @@ function MushafReader() {
             <MushafPage
               pageNumber={page}
               onAyahClick={pureMode ? () => {} : (h) => setOpenHit(h)}
-              onAyahLongPress={pureMode ? () => {} : (h) => setOpenHit(h)}
+              onAyahLongPress={pureMode ? placeMarker : placeMarker}
+              onAyahDoubleTap={placeMarker}
+              marker={marker && marker.page === page ? { surah: marker.surah, ayah: marker.ayah } : null}
+              resumeKey={resumeKey}
             />
           </motion.div>
+        </AnimatePresence>
+
+        {/* Soft marker confirmation */}
+        <AnimatePresence>
+          {markerToast && (
+            <motion.div
+              key={markerToast}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 4 }}
+              transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+              className="pointer-events-none fixed inset-x-0 bottom-24 z-40 mx-auto flex justify-center"
+            >
+              <div className="rounded-full border border-white/10 bg-background/70 px-4 py-2 text-[12.5px] tracking-wide text-foreground/85 shadow-[0_8px_30px_oklch(0_0_0_/_0.35)] backdrop-blur-xl">
+                <span className="mr-2 inline-block size-1.5 translate-y-[-1px] rounded-full bg-[var(--gold)]" />
+                {markerToast}
+              </div>
+            </motion.div>
+          )}
         </AnimatePresence>
       </div>
 
