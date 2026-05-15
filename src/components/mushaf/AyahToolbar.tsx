@@ -18,6 +18,7 @@ export function AyahToolbar({ anchor, bookmarked, isActiveIntention, onAction, o
   const { refs, floatingStyles, placement } = useFloating({
     placement: "top",
     strategy: "fixed",
+    transform: false,
     elements: { reference: anchor },
     middleware: [offset(6), flip({ fallbackPlacements: ["bottom"] }), shift({ padding: 8 }), arrow({ element: arrowRef })],
     whileElementsMounted: autoUpdate,
