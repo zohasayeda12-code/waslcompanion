@@ -161,8 +161,8 @@ function MushafReader() {
     <AppShell>
       {/* Header */}
       <header className="sticky top-0 z-30 -mx-4 mb-2 flex items-center justify-between gap-3 bg-background/70 px-4 py-2 backdrop-blur-md">
-        <Link to="/home" className="text-sm text-muted-foreground hover:text-foreground">
-          ← Home
+        <Link to="/quran" className="text-sm text-muted-foreground hover:text-foreground">
+          ← Quran
         </Link>
         <div className="flex items-center gap-2 text-xs text-muted-foreground">
           <button
