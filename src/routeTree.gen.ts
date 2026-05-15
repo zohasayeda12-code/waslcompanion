@@ -20,6 +20,7 @@ import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authentic
 import { Route as AuthenticatedMyAyahsRouteImport } from './routes/_authenticated/my-ayahs'
 import { Route as AuthenticatedIntentionsRouteImport } from './routes/_authenticated/intentions'
 import { Route as AuthenticatedHomeRouteImport } from './routes/_authenticated/home'
+import { Route as AuthenticatedQuranIndexRouteImport } from './routes/_authenticated/quran.index'
 import { Route as ApiAuthLogoutRouteImport } from './routes/api/auth/logout'
 import { Route as ApiAuthLoginRouteImport } from './routes/api/auth/login'
 import { Route as ApiPublicCronRemindersRouteImport } from './routes/api/public/cron/reminders'
@@ -82,6 +83,11 @@ const AuthenticatedHomeRoute = AuthenticatedHomeRouteImport.update({
   path: '/home',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedQuranIndexRoute = AuthenticatedQuranIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AuthenticatedQuranRoute,
+} as any)
 const ApiAuthLogoutRoute = ApiAuthLogoutRouteImport.update({
   id: '/api/auth/logout',
   path: '/api/auth/logout',
@@ -135,6 +141,7 @@ export interface FileRoutesByFullPath {
   '/oauth/callback': typeof OauthCallbackRoute
   '/api/auth/login': typeof ApiAuthLoginRoute
   '/api/auth/logout': typeof ApiAuthLogoutRoute
+  '/quran/': typeof AuthenticatedQuranIndexRoute
   '/ayah/$surah/$ayah': typeof AuthenticatedAyahSurahAyahRoute
   '/live/$surah/$ayah': typeof AuthenticatedLiveSurahAyahRoute
   '/quran/page/$page': typeof AuthenticatedQuranPagePageRoute
@@ -148,12 +155,12 @@ export interface FileRoutesByTo {
   '/intentions': typeof AuthenticatedIntentionsRoute
   '/my-ayahs': typeof AuthenticatedMyAyahsRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
-  '/quran': typeof AuthenticatedQuranRouteWithChildren
   '/search': typeof AuthenticatedSearchRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/oauth/callback': typeof OauthCallbackRoute
   '/api/auth/login': typeof ApiAuthLoginRoute
   '/api/auth/logout': typeof ApiAuthLogoutRoute
+  '/quran': typeof AuthenticatedQuranIndexRoute
   '/ayah/$surah/$ayah': typeof AuthenticatedAyahSurahAyahRoute
   '/live/$surah/$ayah': typeof AuthenticatedLiveSurahAyahRoute
   '/quran/page/$page': typeof AuthenticatedQuranPagePageRoute
@@ -175,6 +182,7 @@ export interface FileRoutesById {
   '/oauth/callback': typeof OauthCallbackRoute
   '/api/auth/login': typeof ApiAuthLoginRoute
   '/api/auth/logout': typeof ApiAuthLogoutRoute
+  '/_authenticated/quran/': typeof AuthenticatedQuranIndexRoute
   '/_authenticated/ayah/$surah/$ayah': typeof AuthenticatedAyahSurahAyahRoute
   '/_authenticated/live/$surah/$ayah': typeof AuthenticatedLiveSurahAyahRoute
   '/_authenticated/quran/page/$page': typeof AuthenticatedQuranPagePageRoute
@@ -196,6 +204,7 @@ export interface FileRouteTypes {
     | '/oauth/callback'
     | '/api/auth/login'
     | '/api/auth/logout'
+    | '/quran/'
     | '/ayah/$surah/$ayah'
     | '/live/$surah/$ayah'
     | '/quran/page/$page'
@@ -209,12 +218,12 @@ export interface FileRouteTypes {
     | '/intentions'
     | '/my-ayahs'
     | '/onboarding'
-    | '/quran'
     | '/search'
     | '/settings'
     | '/oauth/callback'
     | '/api/auth/login'
     | '/api/auth/logout'
+    | '/quran'
     | '/ayah/$surah/$ayah'
     | '/live/$surah/$ayah'
     | '/quran/page/$page'
@@ -235,6 +244,7 @@ export interface FileRouteTypes {
     | '/oauth/callback'
     | '/api/auth/login'
     | '/api/auth/logout'
+    | '/_authenticated/quran/'
     | '/_authenticated/ayah/$surah/$ayah'
     | '/_authenticated/live/$surah/$ayah'
     | '/_authenticated/quran/page/$page'
@@ -332,6 +342,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedHomeRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/quran/': {
+      id: '/_authenticated/quran/'
+      path: '/'
+      fullPath: '/quran/'
+      preLoaderRoute: typeof AuthenticatedQuranIndexRouteImport
+      parentRoute: typeof AuthenticatedQuranRoute
+    }
     '/api/auth/logout': {
       id: '/api/auth/logout'
       path: '/api/auth/logout'
@@ -385,10 +402,12 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedQuranRouteChildren {
+  AuthenticatedQuranIndexRoute: typeof AuthenticatedQuranIndexRoute
   AuthenticatedQuranPagePageRoute: typeof AuthenticatedQuranPagePageRoute
 }
 
 const AuthenticatedQuranRouteChildren: AuthenticatedQuranRouteChildren = {
+  AuthenticatedQuranIndexRoute: AuthenticatedQuranIndexRoute,
   AuthenticatedQuranPagePageRoute: AuthenticatedQuranPagePageRoute,
 }
 
@@ -436,13 +455,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
