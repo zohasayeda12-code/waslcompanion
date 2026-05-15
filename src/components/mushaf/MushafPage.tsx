@@ -157,6 +157,8 @@ export function MushafPage({ pageNumber, onAyahClick, onAyahLongPress, onAyahDou
                       const key = `${v.surah}:${v.ayah}`;
                       const hl = highlightMap.get(key);
                       const isBookmarked = bookmarkSet.has(key);
+                      const isMarked = !!marker && marker.surah === v.surah && marker.ayah === v.ayah;
+                      const isResume = !!resumeKey && resumeKey.surah === v.surah && resumeKey.ayah === v.ayah;
                       return (
                         <AyahInline
                           key={key}
@@ -165,8 +167,11 @@ export function MushafPage({ pageNumber, onAyahClick, onAyahLongPress, onAyahDou
                           text={v.textUthmani}
                           highlight={hl}
                           bookmarked={isBookmarked}
+                          marked={isMarked}
+                          resume={isResume}
                           onAyahClick={onAyahClick}
                           onAyahLongPress={onAyahLongPress}
+                          onAyahDoubleTap={onAyahDoubleTap}
                         />
                       );
                     })}
