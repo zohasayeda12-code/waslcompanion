@@ -254,6 +254,17 @@ function MushafReader() {
           }}
         />
       )}
+      {openHit && overlay === "translation" && (
+        <TranslationPopover
+          anchor={openHit.el}
+          surah={openHit.surah}
+          ayah={openHit.ayah}
+          onClose={() => {
+            setOverlay(null);
+            setOpenHit(null);
+          }}
+        />
+      )}
       {openHit && overlay === "live" && (
         <IntentionSheet
           surah={openHit.surah}
