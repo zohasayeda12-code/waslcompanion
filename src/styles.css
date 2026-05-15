@@ -365,16 +365,21 @@
   --mushaf-ink: oklch(0.96 0.012 95);
 }
 
+@import url("https://fonts.googleapis.com/css2?family=Amiri+Quran&family=Scheherazade+New:wght@400;700&display=swap");
+
 .font-mushaf {
   font-family: "Amiri Quran", "KFGQPC HAFS Uthmanic Script", "Scheherazade New", serif;
   font-feature-settings: "liga", "calt", "ss01";
+  font-variant-ligatures: common-ligatures contextual;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
 }
 
 .mushaf-page {
   background: var(--mushaf-paper);
   color: var(--mushaf-ink);
   border: 1px solid oklch(0 0 0 / 0.08);
-  border-radius: 1rem;
+  border-radius: 0.75rem;
   box-shadow: var(--shadow-soft);
   position: relative;
 }
@@ -389,22 +394,71 @@
   mix-blend-mode: overlay;
 }
 
+/* Mushaf body — dense, justified composition like a real Madani page */
+.mushaf-body {
+  text-align: justify;
+  text-align-last: center;
+  text-justify: inter-word;
+  word-spacing: 0.02em;
+  hanging-punctuation: first last;
+}
+
 .ayah-span {
   display: inline;
-  border-radius: 0.25rem;
-  padding: 0 0.05em;
+  border-radius: 0.2rem;
+  padding: 0;
   cursor: pointer;
   transition: background-color 140ms ease;
 }
 .ayah-span:hover { background-color: oklch(0 0 0 / 0.04); }
 .dark .ayah-span:hover { background-color: oklch(1 0 0 / 0.05); }
 
+/* Ayah-end marker: small rosette-style circle with the number inside */
 .ayah-end {
-  display: inline-block;
-  margin: 0 0.15em;
-  font-size: 0.85em;
-  color: color-mix(in oklab, var(--gold) 70%, var(--mushaf-ink));
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.25em;
+  height: 1.25em;
+  margin: 0 0.18em;
+  font-family: "Scheherazade New", serif;
+  font-size: 0.55em;
+  line-height: 1;
+  color: color-mix(in oklab, var(--gold) 55%, var(--mushaf-ink));
+  border: 1.25px solid color-mix(in oklab, var(--gold) 55%, transparent);
+  border-radius: 9999px;
+  background: radial-gradient(circle, color-mix(in oklab, var(--gold) 12%, transparent) 0%, transparent 70%);
   font-feature-settings: normal;
+  vertical-align: middle;
+  user-select: none;
+}
+
+/* Surah header band inside the page (centered cartouche above the first ayah) */
+.surah-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  margin: 0.6rem auto 0.5rem;
+  padding: 0.5rem 1rem;
+  border-top: 1px solid color-mix(in oklab, var(--gold) 35%, transparent);
+  border-bottom: 1px solid color-mix(in oklab, var(--gold) 35%, transparent);
+  text-align: center;
+  direction: rtl;
+}
+.surah-header-name {
+  font-family: "Amiri Quran", "Scheherazade New", serif;
+  font-size: 1.05em;
+  letter-spacing: 0.02em;
+  color: color-mix(in oklab, var(--gold) 50%, var(--mushaf-ink));
+}
+.bismillah {
+  font-family: "Amiri Quran", "Scheherazade New", serif;
+  font-size: 1.1em;
+  text-align: center;
+  margin: 0.15rem 0 0.45rem;
+  color: var(--mushaf-ink);
+  direction: rtl;
 }
 
 .hl-gold   { background-color: color-mix(in oklab, var(--hl-gold)   18%, transparent); }

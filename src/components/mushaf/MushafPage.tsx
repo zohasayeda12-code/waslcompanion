@@ -1,11 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { useLayoutEffect, useMemo, useRef, useState } from "react";
 import { Loader2 } from "lucide-react";
 import { getMushafPage } from "@/lib/qf-content.functions";
 import { listBookmarks } from "@/lib/library.functions";
 import { listHighlights } from "@/lib/highlights.functions";
 import { useLongPress } from "@/hooks/use-long-press";
+import { SURAH_NAMES_AR } from "@/lib/surah-names";
 
 export type AyahHit = {
   surah: number;
@@ -59,7 +60,7 @@ export function MushafPage({ pageNumber, onAyahClick, onAyahLongPress }: Props) 
   // Auto-fit text inside the fixed mushaf frame (like a real book page).
   const frameRef = useRef<HTMLDivElement | null>(null);
   const contentRef = useRef<HTMLDivElement | null>(null);
-  const [fontPx, setFontPx] = useState(30);
+  const [fontPx, setFontPx] = useState(28);
 
   useLayoutEffect(() => {
     if (!frameRef.current || !contentRef.current) return;
@@ -67,10 +68,9 @@ export function MushafPage({ pageNumber, onAyahClick, onAyahLongPress }: Props) 
       const frame = frameRef.current;
       const content = contentRef.current;
       if (!frame || !content) return;
-      let lo = 14;
-      let hi = 40;
-      // Binary search the largest font size where content fits the frame.
-      for (let i = 0; i < 8; i++) {
+      let lo = 18;
+      let hi = 44;
+      for (let i = 0; i < 9; i++) {
         const mid = (lo + hi) / 2;
         content.style.fontSize = `${mid}px`;
         if (content.scrollHeight <= frame.clientHeight) lo = mid;
@@ -84,10 +84,25 @@ export function MushafPage({ pageNumber, onAyahClick, onAyahLongPress }: Props) 
     return () => ro.disconnect();
   }, [page, pageNumber]);
 
+  // Group consecutive verses by surah so we can drop a header + bismillah at boundaries.
+  type V = NonNullable<typeof page>["verses"][number];
+  const groups = useMemo(() => {
+    if (!page) return [] as { surah: number; verses: V[] }[];
+    const out: { surah: number; verses: V[] }[] = [];
+    for (const v of page.verses) {
+      const last = out[out.length - 1];
+      if (last && last.surah === v.surah) last.verses.push(v);
+      else out.push({ surah: v.surah, verses: [v] });
+    }
+    return out;
+  }, [page]);
+
   return (
-    <article className="mushaf-page mx-auto flex w-full max-w-[40rem] flex-col px-6 pb-6 pt-5 md:px-10 md:pb-10 md:pt-7"
-      style={{ height: "calc(100dvh - 7.5rem)" }}>
-      <header className="mb-4 flex items-center justify-between text-[10px] uppercase tracking-[0.22em] text-[color:var(--muted-foreground)]">
+    <article
+      className="mushaf-page mx-auto flex w-full max-w-[44rem] flex-col px-4 pb-4 pt-3 md:px-7 md:pb-6 md:pt-4"
+      style={{ height: "calc(100dvh - 7.5rem)" }}
+    >
+      <header className="mb-2 flex items-center justify-between text-[10px] uppercase tracking-[0.22em] text-[color:var(--muted-foreground)]">
         <span>Page {pageNumber}</span>
         {page?.juz && <span>Juz {page.juz}</span>}
       </header>
@@ -109,24 +124,51 @@ export function MushafPage({ pageNumber, onAyahClick, onAyahLongPress }: Props) 
         <div ref={frameRef} className="relative flex-1 overflow-hidden">
           <div
             ref={contentRef}
-            className="font-mushaf text-right"
-            style={{ direction: "rtl", fontSize: `${fontPx}px`, lineHeight: 2.05 }}
+            className="font-mushaf mushaf-body"
+            style={{
+              direction: "rtl",
+              fontSize: `${fontPx}px`,
+              lineHeight: 1.85,
+            }}
           >
-            {page.verses.map((v) => {
-              const key = `${v.surah}:${v.ayah}`;
-              const hl = highlightMap.get(key);
-              const isBookmarked = bookmarkSet.has(key);
+            {groups.map((g, gi) => {
+              // Show a surah header + bismillah when the surah starts on this page.
+              const startsHere = g.verses[0]?.ayah === 1;
+              const showBismillah = startsHere && g.surah !== 1 && g.surah !== 9;
               return (
-                <AyahInline
-                  key={key}
-                  surah={v.surah}
-                  ayah={v.ayah}
-                  text={v.textUthmani}
-                  highlight={hl}
-                  bookmarked={isBookmarked}
-                  onAyahClick={onAyahClick}
-                  onAyahLongPress={onAyahLongPress}
-                />
+                <div key={`${g.surah}-${gi}`}>
+                  {startsHere && (
+                    <div className="surah-header">
+                      <span className="surah-header-name">
+                        سُورَةُ {SURAH_NAMES_AR[g.surah]}
+                      </span>
+                    </div>
+                  )}
+                  {showBismillah && (
+                    <div className="bismillah">
+                      بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ
+                    </div>
+                  )}
+                  <p className="m-0">
+                    {g.verses.map((v) => {
+                      const key = `${v.surah}:${v.ayah}`;
+                      const hl = highlightMap.get(key);
+                      const isBookmarked = bookmarkSet.has(key);
+                      return (
+                        <AyahInline
+                          key={key}
+                          surah={v.surah}
+                          ayah={v.ayah}
+                          text={v.textUthmani}
+                          highlight={hl}
+                          bookmarked={isBookmarked}
+                          onAyahClick={onAyahClick}
+                          onAyahLongPress={onAyahLongPress}
+                        />
+                      );
+                    })}
+                  </p>
+                </div>
               );
             })}
           </div>
@@ -176,7 +218,7 @@ function AyahInline({
         {text}
       </span>
       <span className="ayah-end" aria-hidden>
-        ۝{toArabicNumber(ayah)}
+        {toArabicNumber(ayah)}
       </span>
       {bookmarked && (
         <span
@@ -184,8 +226,8 @@ function AyahInline({
           aria-label="Bookmarked"
           style={{
             display: "inline-block",
-            width: "0.35em",
-            height: "0.35em",
+            width: "0.3em",
+            height: "0.3em",
             marginInline: "0.1em",
             borderRadius: "9999px",
             background: "var(--gold)",
