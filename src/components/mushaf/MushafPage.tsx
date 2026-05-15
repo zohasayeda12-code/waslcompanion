@@ -27,7 +27,7 @@ const ARABIC_DIGITS = ["٠", "١", "٢", "٣", "٤", "٥", "٦", "٧", "٨", "٩
 const toArabicNumber = (n: number) =>
   String(n).split("").map((d) => ARABIC_DIGITS[Number(d)] ?? d).join("");
 
-export function MushafPage({ pageNumber, onAyahClick, onAyahLongPress }: Props) {
+export function MushafPage({ pageNumber, onAyahClick, onAyahLongPress, onAyahDoubleTap, marker, resumeKey }: Props) {
   const pageFn = useServerFn(getMushafPage);
   const bookmarksFn = useServerFn(listBookmarks);
   const highlightsFn = useServerFn(listHighlights);
