@@ -82,7 +82,7 @@ function QuranHub() {
 
       {/* Continue Reading — the "thread marker" */}
       <button
-        onClick={() => goToPage(lastPage)}
+        onClick={continueReading}
         className="block w-full text-left"
         aria-label={`Continue reading from page ${lastPage}, ayah ${lastSurah}:${lastAyah}`}
       >
