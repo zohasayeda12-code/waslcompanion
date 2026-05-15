@@ -1,4 +1,4 @@
-import { useFloating, offset, flip, shift, arrow, autoUpdate } from "@floating-ui/react";
+import { useFloating, offset, flip, shift, arrow, autoUpdate, FloatingPortal } from "@floating-ui/react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useRef } from "react";
 import { Bookmark, Heart, Highlighter, Languages, Maximize2, NotebookPen } from "lucide-react";
@@ -48,7 +48,8 @@ export function AyahToolbar({ anchor, bookmarked, isActiveIntention, onAction, o
   }, [anchor, onClose, refs.floating]);
 
   return (
-    <AnimatePresence>
+    <FloatingPortal>
+      <AnimatePresence>
       {anchor && (
         <motion.div
           ref={refs.setFloating}
@@ -87,7 +88,8 @@ export function AyahToolbar({ anchor, bookmarked, isActiveIntention, onAction, o
           </div>
         </motion.div>
       )}
-    </AnimatePresence>
+      </AnimatePresence>
+    </FloatingPortal>
   );
 }
 

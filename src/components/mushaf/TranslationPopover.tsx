@@ -1,4 +1,4 @@
-import { useFloating, offset, flip, shift, autoUpdate } from "@floating-ui/react";
+import { useFloating, offset, flip, shift, autoUpdate, FloatingPortal } from "@floating-ui/react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useRef } from "react";
@@ -52,7 +52,8 @@ export function TranslationPopover({ anchor, surah, ayah, onClose }: Props) {
   }, [anchor, onClose]);
 
   return (
-    <AnimatePresence>
+    <FloatingPortal>
+      <AnimatePresence>
       <motion.div
         ref={(node) => {
           refs.setFloating(node);
@@ -79,6 +80,7 @@ export function TranslationPopover({ anchor, surah, ayah, onClose }: Props) {
           )}
         </div>
       </motion.div>
-    </AnimatePresence>
+      </AnimatePresence>
+    </FloatingPortal>
   );
 }
