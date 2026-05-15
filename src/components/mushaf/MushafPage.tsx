@@ -85,9 +85,10 @@ export function MushafPage({ pageNumber, onAyahClick, onAyahLongPress }: Props) 
   }, [page, pageNumber]);
 
   // Group consecutive verses by surah so we can drop a header + bismillah at boundaries.
+  type V = NonNullable<typeof page>["verses"][number];
   const groups = useMemo(() => {
-    if (!page) return [] as { surah: number; verses: typeof page.verses }[];
-    const out: { surah: number; verses: typeof page.verses }[] = [];
+    if (!page) return [] as { surah: number; verses: V[] }[];
+    const out: { surah: number; verses: V[] }[] = [];
     for (const v of page.verses) {
       const last = out[out.length - 1];
       if (last && last.surah === v.surah) last.verses.push(v);
