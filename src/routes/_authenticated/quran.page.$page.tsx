@@ -12,6 +12,7 @@ import { AyahToolbar, type ToolbarAction } from "@/components/mushaf/AyahToolbar
 import { ReflectionPopover } from "@/components/mushaf/ReflectionPopover";
 import { IntentionSheet } from "@/components/mushaf/IntentionSheet";
 import { HighlightPicker } from "@/components/mushaf/HighlightPicker";
+import { TranslationPopover } from "@/components/mushaf/TranslationPopover";
 
 import { setLastMushafPage } from "@/lib/journey.functions";
 import { getActiveIntention } from "@/lib/intentions.functions";
@@ -42,7 +43,7 @@ function MushafReader() {
   const [direction, setDirection] = useState<1 | -1>(1);
 
   const [openHit, setOpenHit] = useState<AyahHit | null>(null);
-  const [overlay, setOverlay] = useState<null | "reflection" | "highlight" | "live">(null);
+  const [overlay, setOverlay] = useState<null | "reflection" | "highlight" | "live" | "translation">(null);
 
   const lastPageFn = useServerFn(setLastMushafPage);
   const activeFn = useServerFn(getActiveIntention);
@@ -134,6 +135,11 @@ function MushafReader() {
     if (action === "live") {
       setOpenHit(toolbarHit);
       setOverlay("live");
+      return;
+    }
+    if (action === "translation") {
+      setOpenHit(toolbarHit);
+      setOverlay("translation");
       return;
     }
     if (action === "bookmark") {
@@ -239,6 +245,17 @@ function MushafReader() {
       )}
       {openHit && overlay === "highlight" && (
         <HighlightPicker
+          anchor={openHit.el}
+          surah={openHit.surah}
+          ayah={openHit.ayah}
+          onClose={() => {
+            setOverlay(null);
+            setOpenHit(null);
+          }}
+        />
+      )}
+      {openHit && overlay === "translation" && (
+        <TranslationPopover
           anchor={openHit.el}
           surah={openHit.surah}
           ayah={openHit.ayah}
