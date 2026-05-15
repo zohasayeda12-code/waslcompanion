@@ -18,6 +18,9 @@ type Props = {
   pageNumber: number;
   onAyahClick: (hit: AyahHit) => void;
   onAyahLongPress: (hit: AyahHit) => void;
+  onAyahDoubleTap?: (hit: AyahHit) => void;
+  marker?: { surah: number; ayah: number } | null;
+  resumeKey?: { surah: number; ayah: number } | null;
 };
 
 const ARABIC_DIGITS = ["٠", "١", "٢", "٣", "٤", "٥", "٦", "٧", "٨", "٩"];
