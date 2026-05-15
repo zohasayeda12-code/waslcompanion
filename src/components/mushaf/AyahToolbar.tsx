@@ -1,9 +1,9 @@
 import { useFloating, offset, flip, shift, arrow, autoUpdate } from "@floating-ui/react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useRef } from "react";
-import { Bookmark, Heart, Highlighter, Maximize2, NotebookPen } from "lucide-react";
+import { Bookmark, Heart, Highlighter, Languages, Maximize2, NotebookPen } from "lucide-react";
 
-export type ToolbarAction = "reflection" | "live" | "bookmark" | "expand" | "highlight";
+export type ToolbarAction = "reflection" | "live" | "bookmark" | "expand" | "highlight" | "translation";
 
 type Props = {
   anchor: HTMLElement | null;
@@ -73,6 +73,9 @@ export function AyahToolbar({ anchor, bookmarked, isActiveIntention, onAction, o
               glow={isActiveIntention}
             >
               <Heart className="size-4" />
+            </ToolbarButton>
+            <ToolbarButton label="Translation" onClick={() => onAction("translation")}>
+              <Languages className="size-4" />
             </ToolbarButton>
             <ToolbarButton label={bookmarked ? "Remove bookmark" : "Bookmark"} onClick={() => onAction("bookmark")}>
               <Bookmark className={`size-4 ${bookmarked ? "fill-current text-[color:var(--gold)]" : ""}`} />
