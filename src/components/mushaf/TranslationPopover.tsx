@@ -24,10 +24,10 @@ export function TranslationPopover({ anchor, surah, ayah, onClose }: Props) {
   const { refs, floatingStyles } = useFloating({
     placement: "bottom",
     strategy: "fixed",
+    elements: { reference: anchor },
     middleware: [offset(8), flip({ fallbackPlacements: ["top"] }), shift({ padding: 8 })],
     whileElementsMounted: autoUpdate,
   });
-  useEffect(() => refs.setReference(anchor), [anchor, refs]);
 
   const ref = useRef<HTMLDivElement | null>(null);
   useEffect(() => {
