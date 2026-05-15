@@ -35,15 +35,29 @@ function QuranHub() {
     queryFn: () => journeyFn(),
   });
 
-  const lastPage = journey?.last_mushaf_page ?? 1;
-  const lastSurah = journey?.current_surah ?? 1;
-  const lastAyah = journey?.current_ayah ?? 1;
+  const marker = (journey as any)?.reading_marker as
+    | { surah: number; ayah: number; page: number }
+    | null
+    | undefined;
+
+  const lastPage = marker?.page ?? journey?.last_mushaf_page ?? 1;
+  const lastSurah = marker?.surah ?? journey?.current_surah ?? 1;
+  const lastAyah = marker?.ayah ?? journey?.current_ayah ?? 1;
+  const hasMarker = !!marker;
 
   const goToPage = (page: number) => {
     navigate({
       to: "/quran/page/$page",
       params: { page: String(page) },
       search: {},
+    });
+  };
+
+  const continueReading = () => {
+    navigate({
+      to: "/quran/page/$page",
+      params: { page: String(lastPage) },
+      search: hasMarker ? { marker: `${lastSurah}:${lastAyah}` } : {},
     });
   };
 
