@@ -37,6 +37,7 @@ export const Route = createFileRoute("/_authenticated/quran/page/$page")({
 
 function MushafReader() {
   const { page } = Route.useParams();
+  const search = Route.useSearch();
   const navigate = useNavigate();
   const qc = useQueryClient();
 
@@ -45,22 +46,48 @@ function MushafReader() {
 
   const [openHit, setOpenHit] = useState<AyahHit | null>(null);
   const [overlay, setOverlay] = useState<null | "reflection" | "highlight" | "live" | "translation">(null);
+  const [markerToast, setMarkerToast] = useState<string | null>(null);
 
   const lastPageFn = useServerFn(setLastMushafPage);
   const activeFn = useServerFn(getActiveIntention);
   const toggleBookmarkFn = useServerFn(toggleBookmark);
   const bookmarksFn = useServerFn(listBookmarks);
+  const setMarkerFn = useServerFn(setReadingMarker);
+  const journeyFn = useServerFn(getJourneyState);
 
   const { data: active } = useQuery({ queryKey: ["active-intention"], queryFn: () => activeFn() });
   const { data: bookmarks = [] } = useQuery({
     queryKey: ["bookmarks-list"],
     queryFn: () => bookmarksFn(),
   });
+  const { data: journey } = useQuery({
+    queryKey: ["journey-state"],
+    queryFn: () => journeyFn(),
+  });
+
+  const marker = (journey as any)?.reading_marker ?? null;
+
+  // Resume target from ?marker=surah:ayah
+  const resumeKey = useMemo(() => {
+    if (!search.marker) return null;
+    const [s, a] = search.marker.split(":").map((n) => Number(n));
+    if (!s || !a) return null;
+    return { surah: s, ayah: a };
+  }, [search.marker]);
 
   const bookmarkSet = useMemo(
     () => new Set(bookmarks.map((b: any) => `${b.surah}:${b.ayah}`)),
     [bookmarks],
   );
+
+  const placeMarker = async (hit: AyahHit) => {
+    setMarkerToast(`Marker placed at ${hit.surah}:${hit.ayah}`);
+    window.setTimeout(() => setMarkerToast(null), 2200);
+    try {
+      await setMarkerFn({ data: { surah: hit.surah, ayah: hit.ayah, page } });
+      qc.invalidateQueries({ queryKey: ["journey-state"] });
+    } catch {}
+  };
 
   // Persist last-read page on change
   useEffect(() => {
