@@ -15,16 +15,13 @@ type Props = {
 
 export function AyahToolbar({ anchor, bookmarked, isActiveIntention, onAction, onClose }: Props) {
   const arrowRef = useRef<SVGSVGElement | null>(null);
-  const { refs, floatingStyles, context, placement } = useFloating({
+  const { refs, floatingStyles, placement } = useFloating({
     placement: "top",
     strategy: "fixed",
+    elements: { reference: anchor },
     middleware: [offset(6), flip({ fallbackPlacements: ["bottom"] }), shift({ padding: 8 }), arrow({ element: arrowRef })],
     whileElementsMounted: autoUpdate,
   });
-
-  useEffect(() => {
-    refs.setReference(anchor);
-  }, [anchor, refs]);
 
   // Close on outside click / Escape
   useEffect(() => {
