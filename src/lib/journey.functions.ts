@@ -7,10 +7,48 @@ export const getJourneyState = createServerFn({ method: "GET" }).handler(async (
   const userId = await requireUserId();
   const { data } = await supabaseAdmin
     .from("journey_state")
-    .select("current_surah, current_ayah, paused_journey, last_mushaf_page")
+    .select("current_surah, current_ayah, paused_journey, last_mushaf_page, reading_marker")
     .eq("user_id", userId)
     .maybeSingle();
-  return data ?? { current_surah: 1, current_ayah: 1, paused_journey: null, last_mushaf_page: 1 };
+  return (
+    data ?? {
+      current_surah: 1,
+      current_ayah: 1,
+      paused_journey: null,
+      last_mushaf_page: 1,
+      reading_marker: null as { surah: number; ayah: number; page: number } | null,
+    }
+  );
+});
+
+export const setReadingMarker = createServerFn({ method: "POST" })
+  .inputValidator((d) =>
+    z
+      .object({
+        surah: z.number().int().min(1).max(114),
+        ayah: z.number().int().min(1),
+        page: z.number().int().min(1).max(604),
+      })
+      .parse(d),
+  )
+  .handler(async ({ data }) => {
+    const userId = await requireUserId();
+    await supabaseAdmin
+      .from("journey_state")
+      .upsert({
+        user_id: userId,
+        reading_marker: { surah: data.surah, ayah: data.ayah, page: data.page },
+      });
+    return { ok: true };
+  });
+
+export const clearReadingMarker = createServerFn({ method: "POST" }).handler(async () => {
+  const userId = await requireUserId();
+  await supabaseAdmin
+    .from("journey_state")
+    .update({ reading_marker: null })
+    .eq("user_id", userId);
+  return { ok: true };
 });
 
 /**
