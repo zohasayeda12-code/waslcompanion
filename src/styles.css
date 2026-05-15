@@ -515,7 +515,7 @@ body.pure-mode .mushaf-active-glow { display: none !important; }
   100% { background-color: color-mix(in oklab, var(--gold) 8%,  transparent); box-shadow: 0 0 0 0 color-mix(in oklab, var(--gold) 0%, transparent); }
 }
 .ayah-resume {
-  animation: ayah-resume-glow 1.8s ease-out 0.15s 1 both;
+  animation: ayah-resume-glow 1.4s ease-out 0.15s 3 both;
   border-radius: 4px;
 }
 
