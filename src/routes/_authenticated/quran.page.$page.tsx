@@ -14,7 +14,7 @@ import { IntentionSheet } from "@/components/mushaf/IntentionSheet";
 import { HighlightPicker } from "@/components/mushaf/HighlightPicker";
 import { TranslationPopover } from "@/components/mushaf/TranslationPopover";
 
-import { setLastMushafPage } from "@/lib/journey.functions";
+import { setLastMushafPage, setReadingMarker, getJourneyState } from "@/lib/journey.functions";
 import { getActiveIntention } from "@/lib/intentions.functions";
 import { toggleBookmark, listBookmarks } from "@/lib/library.functions";
 import { usePureMode } from "@/hooks/use-pure-mode";
@@ -24,6 +24,7 @@ const PAGE_PARAM = z.coerce.number().int().min(1).max(TOTAL_PAGES);
 
 const searchSchema = z.object({
   restore: z.coerce.number().optional(),
+  marker: z.string().optional(), // "surah:ayah"
 });
 
 export const Route = createFileRoute("/_authenticated/quran/page/$page")({
