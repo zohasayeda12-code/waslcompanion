@@ -18,7 +18,7 @@ export function AyahToolbar({ anchor, bookmarked, isActiveIntention, onAction, o
   const { refs, floatingStyles, context, placement } = useFloating({
     placement: "top",
     strategy: "fixed",
-    middleware: [offset(10), flip(), shift({ padding: 8 }), arrow({ element: arrowRef })],
+    middleware: [offset(6), flip({ fallbackPlacements: ["bottom"] }), shift({ padding: 8 }), arrow({ element: arrowRef })],
     whileElementsMounted: autoUpdate,
   });
 
@@ -62,9 +62,9 @@ export function AyahToolbar({ anchor, bookmarked, isActiveIntention, onAction, o
           className="z-50"
           context-placement={placement}
         >
-          <div className="glass-strong flex items-center gap-1 rounded-full px-1.5 py-1">
+          <div className="glass-strong flex items-center gap-0.5 rounded-full px-1 py-0.5 shadow-[var(--shadow-elevated)]">
             <ToolbarButton label="Reflection" onClick={() => onAction("reflection")}>
-              <NotebookPen className="size-4" />
+              <NotebookPen className="size-3.5" />
             </ToolbarButton>
             <ToolbarButton
               label="Live this ayah"
@@ -72,19 +72,19 @@ export function AyahToolbar({ anchor, bookmarked, isActiveIntention, onAction, o
               accent="rose"
               glow={isActiveIntention}
             >
-              <Heart className="size-4" />
+              <Heart className="size-3.5" />
             </ToolbarButton>
             <ToolbarButton label="Translation" onClick={() => onAction("translation")}>
-              <Languages className="size-4" />
+              <Languages className="size-3.5" />
             </ToolbarButton>
             <ToolbarButton label={bookmarked ? "Remove bookmark" : "Bookmark"} onClick={() => onAction("bookmark")}>
-              <Bookmark className={`size-4 ${bookmarked ? "fill-current text-[color:var(--gold)]" : ""}`} />
+              <Bookmark className={`size-3.5 ${bookmarked ? "fill-current text-[color:var(--gold)]" : ""}`} />
             </ToolbarButton>
             <ToolbarButton label="Expand" onClick={() => onAction("expand")}>
-              <Maximize2 className="size-4" />
+              <Maximize2 className="size-3.5" />
             </ToolbarButton>
             <ToolbarButton label="Highlight" onClick={() => onAction("highlight")}>
-              <Highlighter className="size-4" />
+              <Highlighter className="size-3.5" />
             </ToolbarButton>
           </div>
         </motion.div>
@@ -112,7 +112,7 @@ function ToolbarButton({
       aria-label={label}
       title={label}
       onClick={onClick}
-      className={`interactive relative inline-flex size-8 items-center justify-center rounded-full text-foreground/85 hover:text-foreground ${
+      className={`interactive relative inline-flex size-7 items-center justify-center rounded-full text-foreground/85 hover:text-foreground ${
         accent === "rose" ? "text-[color:var(--rose)]" : ""
       }`}
     >

@@ -24,7 +24,7 @@ export function TranslationPopover({ anchor, surah, ayah, onClose }: Props) {
   const { refs, floatingStyles } = useFloating({
     placement: "bottom",
     strategy: "fixed",
-    middleware: [offset(12), flip(), shift({ padding: 8 })],
+    middleware: [offset(8), flip({ fallbackPlacements: ["top"] }), shift({ padding: 8 })],
     whileElementsMounted: autoUpdate,
   });
   useEffect(() => refs.setReference(anchor), [anchor, refs]);
@@ -62,20 +62,17 @@ export function TranslationPopover({ anchor, surah, ayah, onClose }: Props) {
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: 4 }}
         transition={{ duration: 0.15 }}
-        className="z-50 w-[min(24rem,calc(100vw-1.5rem))]"
+        className="z-50 w-[min(22rem,calc(100vw-2rem))]"
       >
-        <div className="rounded-2xl border border-border/60 bg-popover/95 p-4 shadow-[var(--shadow-elevated)] backdrop-blur-md">
-          <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
-            Translation · {surah}:{ayah}
-          </p>
+        <div className="rounded-xl border border-border/40 bg-background/80 px-3.5 py-2.5 shadow-[var(--shadow-elevated)] backdrop-blur-md">
           {isLoading ? (
-            <div className="mt-3 flex items-center gap-2 text-xs text-muted-foreground">
-              <Loader2 className="h-3.5 w-3.5 animate-spin" /> loading…
+            <div className="flex items-center gap-2 text-[11px] text-muted-foreground">
+              <Loader2 className="h-3 w-3 animate-spin" /> loading…
             </div>
           ) : error ? (
-            <p className="mt-2 text-sm text-muted-foreground">Couldn't load translation.</p>
+            <p className="text-[12px] text-muted-foreground">Couldn't load translation.</p>
           ) : (
-            <p className="mt-2 text-sm leading-relaxed text-foreground/90">
+            <p className="text-[13px] leading-relaxed text-foreground/85">
               {data?.translation || "No translation available."}
             </p>
           )}
