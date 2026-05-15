@@ -112,7 +112,7 @@ function ToolbarButton({
       aria-label={label}
       title={label}
       onClick={onClick}
-      className={`interactive relative inline-flex size-8 items-center justify-center rounded-full text-foreground/85 hover:text-foreground ${
+      className={`interactive relative inline-flex size-7 items-center justify-center rounded-full text-foreground/85 hover:text-foreground ${
         accent === "rose" ? "text-[color:var(--rose)]" : ""
       }`}
     >
