@@ -70,7 +70,7 @@ function MushafReader() {
   // Resume target from ?marker=surah:ayah
   const resumeKey = useMemo(() => {
     if (!search.marker) return null;
-    const [s, a] = search.marker.split(":").map((n) => Number(n));
+    const [s, a] = search.marker.split(":").map((n: string) => Number(n));
     if (!s || !a) return null;
     return { surah: s, ayah: a };
   }, [search.marker]);
