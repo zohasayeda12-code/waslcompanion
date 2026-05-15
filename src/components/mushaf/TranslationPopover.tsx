@@ -54,32 +54,32 @@ export function TranslationPopover({ anchor, surah, ayah, onClose }: Props) {
   return (
     <FloatingPortal>
       <AnimatePresence>
-      <motion.div
-        ref={(node) => {
-          refs.setFloating(node);
-          ref.current = node;
-        }}
-        style={floatingStyles}
-        initial={{ opacity: 0, y: 4 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: 4 }}
-        transition={{ duration: 0.15 }}
-        className="z-50 w-[min(22rem,calc(100vw-2rem))]"
-      >
-        <div className="rounded-xl border border-border/40 bg-background/80 px-3.5 py-2.5 shadow-[var(--shadow-elevated)] backdrop-blur-md">
-          {isLoading ? (
-            <div className="flex items-center gap-2 text-[11px] text-muted-foreground">
-              <Loader2 className="h-3 w-3 animate-spin" /> loading…
-            </div>
-          ) : error ? (
-            <p className="text-[12px] text-muted-foreground">Couldn't load translation.</p>
-          ) : (
-            <p className="text-[13px] leading-relaxed text-foreground/85">
-              {data?.translation || "No translation available."}
-            </p>
-          )}
-        </div>
-      </motion.div>
+        <motion.div
+          ref={(node) => {
+            refs.setFloating(node);
+            ref.current = node;
+          }}
+          style={floatingStyles}
+          initial={{ opacity: 0, y: 4 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: 4 }}
+          transition={{ duration: 0.15 }}
+          className="z-50 w-[min(22rem,calc(100vw-2rem))]"
+        >
+          <div className="rounded-xl border border-border/40 bg-background/80 px-3.5 py-2.5 shadow-[var(--shadow-elevated)] backdrop-blur-md">
+            {isLoading ? (
+              <div className="flex items-center gap-2 text-[11px] text-muted-foreground">
+                <Loader2 className="h-3 w-3 animate-spin" /> loading…
+              </div>
+            ) : error ? (
+              <p className="text-[12px] text-muted-foreground">Couldn't load translation.</p>
+            ) : (
+              <p className="text-[13px] leading-relaxed text-foreground/85">
+                {data?.translation || "No translation available."}
+              </p>
+            )}
+          </div>
+        </motion.div>
       </AnimatePresence>
     </FloatingPortal>
   );
