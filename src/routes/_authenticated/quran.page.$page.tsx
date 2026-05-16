@@ -4,7 +4,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { z } from "zod";
-import { Eye, EyeOff, ChevronLeft, ChevronRight } from "lucide-react";
+import { Eye, EyeOff, ChevronLeft, ChevronRight, Sun, Moon } from "lucide-react";
 
 import { AppShell } from "@/components/app-shell";
 import { MushafPage, type AyahHit } from "@/components/mushaf/MushafPage";
@@ -18,6 +18,8 @@ import { setLastMushafPage, setReadingMarker, getJourneyState } from "@/lib/jour
 import { getActiveIntention } from "@/lib/intentions.functions";
 import { toggleBookmark, listBookmarks } from "@/lib/library.functions";
 import { usePureMode } from "@/hooks/use-pure-mode";
+import { useMushafTheme } from "@/hooks/use-mushaf-theme";
+import { useImmersiveWhen } from "@/hooks/use-immersive";
 
 const TOTAL_PAGES = 604;
 const PAGE_PARAM = z.coerce.number().int().min(1).max(TOTAL_PAGES);
@@ -42,11 +44,15 @@ function MushafReader() {
   const qc = useQueryClient();
 
   const [pureMode, setPureMode] = usePureMode();
+  const [mushafTheme, setMushafTheme] = useMushafTheme();
   const [direction, setDirection] = useState<1 | -1>(1);
 
   const [openHit, setOpenHit] = useState<AyahHit | null>(null);
   const [overlay, setOverlay] = useState<null | "reflection" | "highlight" | "live" | "translation">(null);
   const [markerToast, setMarkerToast] = useState<string | null>(null);
+
+  // Auto-hide bottom nav while any contextual reading UI is open.
+  useImmersiveWhen(!!openHit || !!overlay);
 
   const lastPageFn = useServerFn(setLastMushafPage);
   const activeFn = useServerFn(getActiveIntention);
@@ -211,10 +217,18 @@ function MushafReader() {
             <ChevronRight className="size-4" />
           </button>
           <button
+            onClick={() => setMushafTheme(mushafTheme === "night" ? "day" : "night")}
+            aria-label={mushafTheme === "night" ? "Switch to Day Mushaf" : "Switch to Night Mushaf"}
+            title={mushafTheme === "night" ? "Day Mushaf" : "Night Mushaf"}
+            className="interactive ml-2 inline-flex size-7 items-center justify-center rounded-full bg-secondary/60"
+          >
+            {mushafTheme === "night" ? <Sun className="size-4" /> : <Moon className="size-4" />}
+          </button>
+          <button
             onClick={() => setPureMode(!pureMode)}
             aria-label={pureMode ? "Exit Pure Quran Mode" : "Pure Quran Mode"}
             title={pureMode ? "Exit Pure Quran Mode" : "Pure Quran Mode"}
-            className={`interactive ml-2 inline-flex size-7 items-center justify-center rounded-full ${
+            className={`interactive inline-flex size-7 items-center justify-center rounded-full ${
               pureMode ? "bg-primary/20 text-primary" : "bg-secondary/60"
             }`}
           >

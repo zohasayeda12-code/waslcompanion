@@ -66,7 +66,7 @@ export function TranslationPopover({ anchor, surah, ayah, onClose }: Props) {
           transition={{ duration: 0.15 }}
           className="z-50 w-[min(22rem,calc(100vw-2rem))]"
         >
-          <div className="rounded-xl border border-border/40 bg-background/80 px-3.5 py-2.5 shadow-[var(--shadow-elevated)] backdrop-blur-md">
+          <div className="mushaf-overlay rounded-2xl px-4 py-3">
             {isLoading ? (
               <div className="flex items-center gap-2 text-[11px] text-muted-foreground">
                 <Loader2 className="h-3 w-3 animate-spin" /> loading…

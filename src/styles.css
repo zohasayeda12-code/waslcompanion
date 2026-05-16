@@ -520,3 +520,90 @@ body.pure-mode .mushaf-active-glow { display: none !important; }
 }
 
 body.pure-mode .mushaf-marker-ribbon { display: none !important; }
+
+/* === Mushaf Day Mode ===
+ * Warm parchment paper, ink-brown text, muted olive-gold rosettes.
+ * Scoped: only mushaf surfaces flip; the rest of the night canvas stays.
+ */
+body.mushaf-day {
+  --mushaf-paper: oklch(0.955 0.022 82);   /* warm parchment */
+  --mushaf-ink:   oklch(0.30 0.035 55);    /* deep ink-brown */
+  --mushaf-rule:  oklch(0.55 0.06 70);     /* muted olive-gold for borders */
+}
+body.mushaf-day .mushaf-page {
+  background:
+    radial-gradient(120% 80% at 50% 0%, oklch(0.97 0.018 85) 0%, transparent 60%),
+    var(--mushaf-paper);
+  border: 1px solid color-mix(in oklab, var(--mushaf-ink) 12%, transparent);
+  box-shadow:
+    0 1px 0 oklch(1 0 0 / 0.6) inset,
+    0 2px 6px oklch(0.2 0.04 60 / 0.18),
+    0 24px 50px -24px oklch(0.2 0.04 60 / 0.35);
+}
+body.mushaf-day .mushaf-page::before { opacity: 0.07; mix-blend-mode: multiply; }
+body.mushaf-day .ayah-span:hover { background-color: oklch(0.30 0.05 60 / 0.06); }
+body.mushaf-day .ayah-end {
+  color: color-mix(in oklab, oklch(0.55 0.10 70) 80%, var(--mushaf-ink));
+  border-color: color-mix(in oklab, oklch(0.55 0.10 70) 55%, transparent);
+  background: radial-gradient(circle, color-mix(in oklab, oklch(0.55 0.10 70) 14%, transparent) 0%, transparent 70%);
+}
+body.mushaf-day .surah-header {
+  border-color: color-mix(in oklab, oklch(0.55 0.10 70) 45%, transparent);
+}
+body.mushaf-day .surah-header-name { color: oklch(0.45 0.08 65); }
+body.mushaf-day .mushaf-marker-ribbon {
+  background: linear-gradient(180deg,
+    oklch(0.62 0.13 60) 0%,
+    oklch(0.55 0.10 60 / 0.7) 60%,
+    oklch(0.55 0.10 60 / 0) 100%);
+  box-shadow: 0 0 6px oklch(0.55 0.10 60 / 0.35);
+}
+body.mushaf-day .mushaf-marker-ribbon::after {
+  border-top-color: oklch(0.55 0.10 60 / 0.7);
+}
+
+/* === Immersive Mode ===
+ * Triggered while contextual reading UI (toolbar/translation/reflection/live)
+ * is open. Fades the bottom nav out so the page becomes the focus.
+ */
+.immersive-fade {
+  transition: opacity 220ms var(--ease-out-expo),
+              transform 280ms var(--ease-out-expo),
+              filter 220ms ease;
+}
+body.immersive .immersive-fade {
+  opacity: 0;
+  transform: translateY(120%);
+  pointer-events: none;
+  filter: blur(2px);
+}
+
+/* === Contextual overlay surface ===
+ * Used by the floating toolbar and ayah overlays so they sit visibly
+ * ABOVE the mushaf page instead of blending into it.
+ */
+.mushaf-overlay {
+  background: linear-gradient(160deg,
+    oklch(0.28 0.04 268 / 0.92),
+    oklch(0.22 0.035 268 / 0.88));
+  border: 1px solid oklch(0.82 0.14 82 / 0.22);
+  box-shadow:
+    0 0 0 1px oklch(0 0 0 / 0.30),
+    0 24px 60px -16px oklch(0 0 0 / 0.55),
+    0 0 24px -6px oklch(0.82 0.14 82 / 0.18);
+  backdrop-filter: blur(22px) saturate(1.15);
+  -webkit-backdrop-filter: blur(22px) saturate(1.15);
+  color: oklch(0.97 0.012 95);
+}
+body.mushaf-day .mushaf-overlay {
+  background: linear-gradient(160deg,
+    oklch(0.99 0.015 85 / 0.96),
+    oklch(0.94 0.022 80 / 0.92));
+  border: 1px solid oklch(0.55 0.10 70 / 0.28);
+  box-shadow:
+    0 0 0 1px oklch(0.30 0.04 60 / 0.08),
+    0 22px 50px -16px oklch(0.30 0.04 60 / 0.30),
+    0 0 18px -4px oklch(0.55 0.10 70 / 0.20);
+  color: oklch(0.28 0.035 55);
+}
+body.mushaf-day .mushaf-overlay .text-muted-foreground { color: oklch(0.40 0.03 55); }
