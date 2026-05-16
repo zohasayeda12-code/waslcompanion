@@ -18,6 +18,8 @@ import { setLastMushafPage, setReadingMarker, getJourneyState } from "@/lib/jour
 import { getActiveIntention } from "@/lib/intentions.functions";
 import { toggleBookmark, listBookmarks } from "@/lib/library.functions";
 import { usePureMode } from "@/hooks/use-pure-mode";
+import { useMushafTheme } from "@/hooks/use-mushaf-theme";
+import { useImmersiveWhen } from "@/hooks/use-immersive";
 
 const TOTAL_PAGES = 604;
 const PAGE_PARAM = z.coerce.number().int().min(1).max(TOTAL_PAGES);
