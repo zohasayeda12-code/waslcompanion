@@ -80,9 +80,9 @@ export function AyahToolbar({ anchor, bookmarked, isActiveIntention, onAction, o
             className="z-50"
             context-placement={placement}
           >
-            <div className="glass-strong flex items-center gap-0.5 rounded-full px-1 py-0.5 shadow-[var(--shadow-elevated)]">
+            <div className="mushaf-overlay flex items-center gap-0.5 rounded-full px-1.5 py-1">
               <ToolbarButton label="Reflection" onClick={() => onAction("reflection")}>
-                <NotebookPen className="size-3.5" />
+                <NotebookPen className="size-[17px]" strokeWidth={1.9} />
               </ToolbarButton>
               <ToolbarButton
                 label="Live this ayah"
@@ -90,24 +90,25 @@ export function AyahToolbar({ anchor, bookmarked, isActiveIntention, onAction, o
                 accent="rose"
                 glow={isActiveIntention}
               >
-                <Heart className="size-3.5" />
+                <Heart className="size-[17px]" strokeWidth={1.9} />
               </ToolbarButton>
               <ToolbarButton label="Translation" onClick={() => onAction("translation")}>
-                <Languages className="size-3.5" />
+                <Languages className="size-[17px]" strokeWidth={1.9} />
               </ToolbarButton>
               <ToolbarButton
                 label={bookmarked ? "Remove bookmark" : "Bookmark"}
                 onClick={() => onAction("bookmark")}
               >
                 <Bookmark
-                  className={`size-3.5 ${bookmarked ? "fill-current text-[color:var(--gold)]" : ""}`}
+                  className={`size-[17px] ${bookmarked ? "fill-current text-[color:var(--gold)]" : ""}`}
+                  strokeWidth={1.9}
                 />
               </ToolbarButton>
               <ToolbarButton label="Expand" onClick={() => onAction("expand")}>
-                <Maximize2 className="size-3.5" />
+                <Maximize2 className="size-[17px]" strokeWidth={1.9} />
               </ToolbarButton>
               <ToolbarButton label="Highlight" onClick={() => onAction("highlight")}>
-                <Highlighter className="size-3.5" />
+                <Highlighter className="size-[17px]" strokeWidth={1.9} />
               </ToolbarButton>
             </div>
           </motion.div>
