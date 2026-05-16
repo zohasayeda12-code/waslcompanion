@@ -94,7 +94,7 @@ export function ReflectionPopover({ anchor, surah, ayah, onClose }: Props) {
         transition={{ duration: 0.15 }}
         className="z-50 w-[min(22rem,calc(100vw-1.5rem))]"
       >
-        <div className="rounded-2xl border border-border/60 bg-popover p-4 shadow-[var(--shadow-elevated)] backdrop-blur-md">
+        <div className="mushaf-overlay rounded-2xl p-4">
           <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">Reflection · {surah}:{ayah}</p>
 
           {isLoading ? (
