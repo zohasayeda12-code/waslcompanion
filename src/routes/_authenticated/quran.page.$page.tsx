@@ -217,10 +217,18 @@ function MushafReader() {
             <ChevronRight className="size-4" />
           </button>
           <button
+            onClick={() => setMushafTheme(mushafTheme === "night" ? "day" : "night")}
+            aria-label={mushafTheme === "night" ? "Switch to Day Mushaf" : "Switch to Night Mushaf"}
+            title={mushafTheme === "night" ? "Day Mushaf" : "Night Mushaf"}
+            className="interactive ml-2 inline-flex size-7 items-center justify-center rounded-full bg-secondary/60"
+          >
+            {mushafTheme === "night" ? <Sun className="size-4" /> : <Moon className="size-4" />}
+          </button>
+          <button
             onClick={() => setPureMode(!pureMode)}
             aria-label={pureMode ? "Exit Pure Quran Mode" : "Pure Quran Mode"}
             title={pureMode ? "Exit Pure Quran Mode" : "Pure Quran Mode"}
-            className={`interactive ml-2 inline-flex size-7 items-center justify-center rounded-full ${
+            className={`interactive inline-flex size-7 items-center justify-center rounded-full ${
               pureMode ? "bg-primary/20 text-primary" : "bg-secondary/60"
             }`}
           >
