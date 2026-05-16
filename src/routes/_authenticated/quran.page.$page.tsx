@@ -44,11 +44,15 @@ function MushafReader() {
   const qc = useQueryClient();
 
   const [pureMode, setPureMode] = usePureMode();
+  const [mushafTheme, setMushafTheme] = useMushafTheme();
   const [direction, setDirection] = useState<1 | -1>(1);
 
   const [openHit, setOpenHit] = useState<AyahHit | null>(null);
   const [overlay, setOverlay] = useState<null | "reflection" | "highlight" | "live" | "translation">(null);
   const [markerToast, setMarkerToast] = useState<string | null>(null);
+
+  // Auto-hide bottom nav while any contextual reading UI is open.
+  useImmersiveWhen(!!openHit || !!overlay);
 
   const lastPageFn = useServerFn(setLastMushafPage);
   const activeFn = useServerFn(getActiveIntention);
