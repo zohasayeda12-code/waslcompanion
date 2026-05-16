@@ -72,7 +72,7 @@ export function HighlightPicker({ anchor, surah, ayah, onClose }: Props) {
         transition={{ duration: 0.12 }}
         className="z-50"
       >
-        <div className="rounded-2xl border border-border/60 bg-popover p-2 shadow-[var(--shadow-elevated)] backdrop-blur-md">
+        <div className="mushaf-overlay rounded-2xl p-2">
           <div className="flex items-center gap-1">
             {SWATCHES.map((s) => (
               <button
