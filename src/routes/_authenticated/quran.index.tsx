@@ -193,7 +193,7 @@ function Row({
       onClick={onClick}
       className={cn(
         "interactive group flex w-full items-center gap-3 rounded-2xl",
-        "border border-white/[0.06] bg-white/[0.025] px-3.5 py-3",
+        "border border-white/[0.06] bg-white/[0.025] px-3.5 py-3 md:py-2.5",
         "hover:border-white/[0.12] hover:bg-white/[0.045]",
         "transition-colors",
       )}
