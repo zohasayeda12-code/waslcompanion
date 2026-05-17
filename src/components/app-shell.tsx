@@ -40,15 +40,17 @@ export function AppShell({ children, className = "", framed = true }: Props) {
             "pt-[max(env(safe-area-inset-top),1.25rem)]",
             "pb-[calc(max(env(safe-area-inset-bottom),1rem)+5.5rem)]",
             "min-h-[100dvh]",
-            // Tablet/desktop: floating device
+            // Tablet/desktop: floating reading canvas. Widens with the
+            // viewport so large screens feel intentionally framed rather
+            // than a phone trapped in a void — without becoming a dashboard.
             framed && [
-              "md:max-w-[440px]",
+              "md:max-w-[520px] lg:max-w-[720px] xl:max-w-[840px] 2xl:max-w-[920px]",
               "md:min-h-[min(880px,90dvh)]",
               "md:rounded-[2.25rem]",
               "md:border md:border-white/10",
               "md:bg-white/[0.03] md:backdrop-blur-xl",
               "md:shadow-[var(--shadow-floating)]",
-              "md:px-7 md:py-8",
+              "md:px-8 md:py-8 lg:px-12 lg:py-10 xl:px-16",
               // Inner highlight edge to sell the depth
               "md:before:pointer-events-none md:before:absolute md:before:inset-0",
               "md:before:rounded-[inherit] md:before:[box-shadow:inset_0_1px_0_oklch(1_0_0_/_0.10),inset_0_-1px_0_oklch(0_0_0_/_0.30)]",
