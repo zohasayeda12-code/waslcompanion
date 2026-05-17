@@ -2,6 +2,7 @@ import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
 import { getAuthStatus } from "@/lib/auth.functions";
 import { getProfile } from "@/lib/profile.functions";
 import { BottomNav } from "@/components/bottom-nav";
+import { SideRail } from "@/components/side-rail";
 
 export const Route = createFileRoute("/_authenticated")({
   beforeLoad: async ({ location }) => {
