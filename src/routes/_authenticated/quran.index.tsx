@@ -165,7 +165,7 @@ function QuranHub() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -4 }}
             transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}
-            className="flex flex-col gap-2"
+            className="grid grid-cols-1 gap-2 md:grid-cols-2 md:gap-x-4 md:gap-y-2.5"
           >
             {mode === "surah" ? <SurahList onOpen={goToPage} /> : <JuzList onOpen={goToPage} />}
           </motion.div>
