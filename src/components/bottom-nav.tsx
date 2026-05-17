@@ -40,20 +40,18 @@ export function BottomNav() {
     <nav
       aria-label="Primary"
       className={cn(
-        "immersive-fade fixed inset-x-0 bottom-0 z-40 flex justify-center",
+        "immersive-fade fixed inset-x-0 bottom-0 z-40 flex justify-center md:hidden",
         "pb-[max(env(safe-area-inset-bottom),0.5rem)] pt-2",
-        "md:pb-6 lg:pb-8",
         "pointer-events-none",
       )}
     >
       <div
         className={cn(
           "pointer-events-auto mx-3 flex w-full max-w-[420px] items-center justify-around",
-          "md:max-w-[480px] lg:max-w-[520px]",
           "rounded-full border border-white/[0.08]",
           "bg-[oklch(0.16_0.025_280_/_0.72)] backdrop-blur-xl",
           "shadow-[0_10px_40px_-10px_oklch(0_0_0_/_0.6)]",
-          "px-2 py-1.5 md:px-3 md:py-2",
+          "px-2 py-1.5",
         )}
       >
         {items.map((it) => {
