@@ -24,6 +24,7 @@ export const Route = createFileRoute("/_authenticated")({
   component: () => (
     <>
       <Outlet />
+      <SideRail />
       <BottomNav />
     </>
   ),
