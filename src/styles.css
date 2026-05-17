@@ -578,6 +578,19 @@ body.immersive .immersive-fade {
   filter: blur(2px);
 }
 
+/* Desktop side rail: soften (don't disappear) during contextual reading. */
+.immersive-soften {
+  transition: opacity 240ms var(--ease-out-expo), filter 240ms ease;
+}
+body.immersive .immersive-soften {
+  opacity: 0.28;
+  filter: blur(1px) saturate(0.85);
+}
+body.immersive .immersive-soften:hover {
+  opacity: 0.9;
+  filter: none;
+}
+
 /* === Contextual overlay surface ===
  * Used by the floating toolbar and ayah overlays so they sit visibly
  * ABOVE the mushaf page instead of blending into it.
