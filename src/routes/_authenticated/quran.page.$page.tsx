@@ -198,7 +198,7 @@ function MushafReader() {
       {/* Header — glass bar aligned to the mushaf page width */}
       <div className="sticky top-0 z-30 -mx-4 mb-3 px-4 pt-2 pb-1">
         <header
-          className="mx-auto flex w-full max-w-[44rem] items-center justify-between gap-3 rounded-2xl border border-white/[0.06] bg-white/[0.04] px-3 py-1.5 shadow-[0_8px_30px_-12px_oklch(0_0_0_/_0.5)] backdrop-blur-xl"
+          className="mx-auto flex w-full max-w-[52rem] items-center justify-between gap-3 rounded-2xl border border-white/[0.06] bg-white/[0.04] px-3 py-1.5 shadow-[0_8px_30px_-12px_oklch(0_0_0_/_0.5)] backdrop-blur-xl"
         >
           <Link
             to="/quran"
