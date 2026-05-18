@@ -146,7 +146,7 @@ function OnboardingScreen() {
         <motion.p
           {...fade}
           transition={{ duration: 0.5, delay: 0.18, ease: [0.22, 1, 0.36, 1] }}
-          className="mt-10 max-w-md text-balance text-base leading-relaxed text-muted-foreground md:mt-12 md:text-lg"
+          className="mt-5 max-w-md text-balance text-base leading-relaxed text-muted-foreground md:mt-6 md:text-lg"
         >
           A calm companion for your daily journey with the Quran — gentle,
           focused, and made to feel close.
@@ -167,7 +167,7 @@ function OnboardingScreen() {
       <motion.footer
         {...fade}
         transition={{ duration: 0.5, delay: 0.28, ease: [0.22, 1, 0.36, 1] }}
-        className="mx-auto flex w-full max-w-[44rem] flex-col items-center gap-4 pb-[max(env(safe-area-inset-bottom),0.5rem)] pt-6 md:pt-10"
+        className="mx-auto flex w-full max-w-[44rem] flex-col items-center gap-4 pb-[max(env(safe-area-inset-bottom),0.5rem)] pt-2 md:pt-4"
       >
         {configured === false ? (
           <NotConfigured />
