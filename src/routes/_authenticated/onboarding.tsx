@@ -81,19 +81,6 @@ function Onboarding() {
           transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
           className="flex flex-1 flex-col items-center justify-center text-center"
         >
-          {step === "welcome" && (
-            <>
-              <h1 className="text-[clamp(2.25rem,9vw,3.25rem)] font-medium tracking-tight">
-                One ayah <span className="text-aurora">at a time.</span>
-              </h1>
-              <p className="mt-6 max-w-sm text-balance text-base text-muted-foreground">
-                Read. Reflect. Live the ayah.
-              </p>
-              <p className="mt-4 max-w-sm text-balance text-base text-muted-foreground">
-                No rush. No race.
-              </p>
-            </>
-          )}
           {step === "notifications" && (
             <>
               <h1 className="text-[clamp(2rem,8vw,3rem)] font-medium tracking-tight">
