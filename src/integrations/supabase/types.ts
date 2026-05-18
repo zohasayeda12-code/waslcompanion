@@ -119,21 +119,21 @@ export type Database = {
       highlights: {
         Row: {
           ayah: number
-          color: Database["public"]["Enums"]["highlight_color"]
+          color: string
           surah: number
           updated_at: string
           user_id: string
         }
         Insert: {
           ayah: number
-          color: Database["public"]["Enums"]["highlight_color"]
+          color: string
           surah: number
           updated_at?: string
           user_id: string
         }
         Update: {
           ayah?: number
-          color?: Database["public"]["Enums"]["highlight_color"]
+          color?: string
           surah?: number
           updated_at?: string
           user_id?: string
@@ -154,13 +154,12 @@ export type Database = {
           carry_forward_count: number
           created_at: string
           id: string
-          kind: Database["public"]["Enums"]["intention_kind"]
+          kind: string
           lived_at: string | null
-          parent_id: string | null
           reflection_id: string | null
           reminder_at: string | null
           reminder_sent_at: string | null
-          status: Database["public"]["Enums"]["intention_status"]
+          status: string
           surah: number
           text: string
           updated_at: string
@@ -171,13 +170,12 @@ export type Database = {
           carry_forward_count?: number
           created_at?: string
           id?: string
-          kind: Database["public"]["Enums"]["intention_kind"]
+          kind: string
           lived_at?: string | null
-          parent_id?: string | null
           reflection_id?: string | null
           reminder_at?: string | null
           reminder_sent_at?: string | null
-          status?: Database["public"]["Enums"]["intention_status"]
+          status?: string
           surah: number
           text: string
           updated_at?: string
@@ -188,13 +186,12 @@ export type Database = {
           carry_forward_count?: number
           created_at?: string
           id?: string
-          kind?: Database["public"]["Enums"]["intention_kind"]
+          kind?: string
           lived_at?: string | null
-          parent_id?: string | null
           reflection_id?: string | null
           reminder_at?: string | null
           reminder_sent_at?: string | null
-          status?: Database["public"]["Enums"]["intention_status"]
+          status?: string
           surah?: number
           text?: string
           updated_at?: string
@@ -202,10 +199,10 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "intentions_parent_id_fkey"
-            columns: ["parent_id"]
+            foreignKeyName: "intentions_reflection_id_fkey"
+            columns: ["reflection_id"]
             isOneToOne: false
-            referencedRelation: "intentions"
+            referencedRelation: "reflections_local"
             referencedColumns: ["id"]
           },
           {
@@ -257,34 +254,31 @@ export type Database = {
       }
       notification_log: {
         Row: {
-          attempted_at: string
-          delivery_details: Json
+          created_at: string
+          delivery_details: Json | null
           failure_reason: string | null
           id: string
           intention_id: string | null
-          opened_at: string | null
           sent_at: string | null
           status: string
           user_id: string | null
         }
         Insert: {
-          attempted_at?: string
-          delivery_details?: Json
+          created_at?: string
+          delivery_details?: Json | null
           failure_reason?: string | null
           id?: string
           intention_id?: string | null
-          opened_at?: string | null
           sent_at?: string | null
-          status?: string
+          status: string
           user_id?: string | null
         }
         Update: {
-          attempted_at?: string
-          delivery_details?: Json
+          created_at?: string
+          delivery_details?: Json | null
           failure_reason?: string | null
           id?: string
           intention_id?: string | null
-          opened_at?: string | null
           sent_at?: string | null
           status?: string
           user_id?: string | null
@@ -314,7 +308,6 @@ export type Database = {
           onboarded_at: string | null
           qf_initial_sync_started_at: string | null
           qf_initial_synced_at: string | null
-          qf_user_id: string | null
           updated_at: string
         }
         Insert: {
@@ -324,7 +317,6 @@ export type Database = {
           onboarded_at?: string | null
           qf_initial_sync_started_at?: string | null
           qf_initial_synced_at?: string | null
-          qf_user_id?: string | null
           updated_at?: string
         }
         Update: {
@@ -334,7 +326,6 @@ export type Database = {
           onboarded_at?: string | null
           qf_initial_sync_started_at?: string | null
           qf_initial_synced_at?: string | null
-          qf_user_id?: string | null
           updated_at?: string
         }
         Relationships: []
@@ -455,7 +446,7 @@ export type Database = {
           operation: string
           payload: Json | null
           resource: string
-          user_id: string
+          user_id: string | null
         }
         Insert: {
           created_at?: string
@@ -464,7 +455,7 @@ export type Database = {
           operation: string
           payload?: Json | null
           resource: string
-          user_id: string
+          user_id?: string | null
         }
         Update: {
           created_at?: string
@@ -473,30 +464,27 @@ export type Database = {
           operation?: string
           payload?: Json | null
           resource?: string
-          user_id?: string
+          user_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "sync_failures_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      wasl_ensure_reminder_schedule: {
-        Args: { api_key: string; target_url: string }
-        Returns: Json
-      }
+      [_ in never]: never
     }
     Enums: {
-      highlight_color: "gold" | "blue" | "green" | "purple" | "rose"
-      intention_kind: "ai" | "custom"
-      intention_status:
-        | "pending"
-        | "awaiting_response"
-        | "lived"
-        | "carried"
-        | "paused"
-        | "removed"
+      [_ in never]: never
     }
     CompositeTypes: {
       [_ in never]: never
@@ -623,17 +611,6 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {
-      highlight_color: ["gold", "blue", "green", "purple", "rose"],
-      intention_kind: ["ai", "custom"],
-      intention_status: [
-        "pending",
-        "awaiting_response",
-        "lived",
-        "carried",
-        "paused",
-        "removed",
-      ],
-    },
+    Enums: {},
   },
 } as const
