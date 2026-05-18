@@ -30,12 +30,27 @@ export const removePushSubscriptions = createServerFn({ method: "POST" }).handle
  */
 export const getDisplayName = createServerFn({ method: "GET" }).handler(async () => {
   try {
-    const res = await qfUserFetch("/auth/v1/userinfo");
-    const bodyText = await res.text();
-    console.log("[getDisplayName] userinfo", res.status, bodyText.slice(0, 500));
-    if (!res.ok) return { name: null as string | null };
+    const session = await getWaslSession();
+    const token = session.data?.accessToken;
+    if (!token) return { name: null as string | null };
+
+    // QF uses Ory Hydra — the OIDC userinfo endpoint lives on the OAuth host.
+    const oauthOrigin = new URL(qfConfig.authUrl).origin;
+    const tryUrls = [`${oauthOrigin}/userinfo`, `${oauthOrigin}/oauth2/userinfo`];
+
     let data: Record<string, unknown> = {};
-    try { data = JSON.parse(bodyText) as Record<string, unknown>; } catch {}
+    for (const url of tryUrls) {
+      const res = await fetch(url, {
+        headers: { Authorization: `Bearer ${token}`, Accept: "application/json" },
+      });
+      const bodyText = await res.text();
+      console.log("[getDisplayName]", url, res.status, bodyText.slice(0, 300));
+      if (res.ok) {
+        try { data = JSON.parse(bodyText) as Record<string, unknown>; } catch {}
+        break;
+      }
+    }
+
     const pick = (k: string) => (typeof data[k] === "string" ? (data[k] as string) : "");
     const full =
       pick("name") ||
@@ -52,7 +67,7 @@ export const getDisplayName = createServerFn({ method: "GET" }).handler(async ()
       const email = pick("email");
       if (email && email.includes("@")) first = email.split("@")[0];
     }
-    console.log("[getDisplayName] resolved name:", first, "keys:", Object.keys(data));
+    console.log("[getDisplayName] resolved:", first, "keys:", Object.keys(data));
     return { name: first || null };
   } catch (e) {
     console.error("[getDisplayName] error", e);
