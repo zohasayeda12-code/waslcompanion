@@ -50,6 +50,7 @@ function MushafReader() {
   const [openHit, setOpenHit] = useState<AyahHit | null>(null);
   const [overlay, setOverlay] = useState<null | "reflection" | "highlight" | "live" | "translation">(null);
   const [markerToast, setMarkerToast] = useState<string | null>(null);
+  const [highlightAnchor, setHighlightAnchor] = useState<HTMLElement | null>(null);
 
   // Auto-hide bottom nav while any contextual reading UI is open.
   useImmersiveWhen(!!openHit || !!overlay);
