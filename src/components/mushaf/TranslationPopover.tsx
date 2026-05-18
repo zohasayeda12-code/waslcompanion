@@ -64,17 +64,17 @@ export function TranslationPopover({ anchor, surah, ayah, onClose }: Props) {
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: 4 }}
           transition={{ duration: 0.15 }}
-          className="z-50 w-[min(22rem,calc(100vw-2rem))]"
+          className="z-50 w-[min(26rem,calc(100vw-2rem))]"
         >
-          <div className="mushaf-overlay rounded-2xl px-4 py-3">
+          <div className="mushaf-overlay mushaf-overlay-solid rounded-2xl px-4 py-3.5">
             {isLoading ? (
-              <div className="flex items-center gap-2 text-[11px] text-muted-foreground">
-                <Loader2 className="h-3 w-3 animate-spin" /> loading…
+              <div className="flex items-center gap-2 text-[12px] text-muted-foreground">
+                <Loader2 className="h-3.5 w-3.5 animate-spin" /> loading…
               </div>
             ) : error ? (
-              <p className="text-[12px] text-muted-foreground">Couldn't load translation.</p>
+              <p className="text-[13px] text-muted-foreground">Couldn't load translation.</p>
             ) : (
-              <p className="text-[13px] leading-relaxed text-foreground/85">
+              <p className="text-[15px] leading-relaxed text-foreground sm:text-base">
                 {data?.translation || "No translation available."}
               </p>
             )}

@@ -254,13 +254,14 @@ function AyahInline({
         <span
           className="mushaf-marker-ribbon"
           aria-label={`Reading marker at ${surah}:${ayah}`}
-          title="Reading marker"
+          title="Reading marker — your place in this page. Double-tap any ayah (or long-press) to move it."
         />
       )}
       {bookmarked && (
         <span
           className="mushaf-bookmark-dot"
-          aria-label="Bookmarked"
+          aria-label="Bookmarked ayah"
+          title="Bookmarked — saved to your library. Tap the ayah and use the bookmark icon to remove."
           style={{
             display: "inline-block",
             width: "0.3em",
@@ -269,6 +270,7 @@ function AyahInline({
             borderRadius: "9999px",
             background: "var(--gold)",
             verticalAlign: "super",
+            cursor: "help",
           }}
         />
       )}{" "}

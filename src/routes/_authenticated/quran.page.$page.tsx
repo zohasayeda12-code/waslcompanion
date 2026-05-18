@@ -229,7 +229,7 @@ function MushafReader() {
             <button
               onClick={() => setMushafTheme(mushafTheme === "night" ? "day" : "night")}
               aria-label={mushafTheme === "night" ? "Switch to Day Mushaf" : "Switch to Night Mushaf"}
-              title={mushafTheme === "night" ? "Day Mushaf" : "Night Mushaf"}
+              title={mushafTheme === "night" ? "Day Mushaf — warm parchment for daylight reading." : "Night Mushaf — soft dark page that's gentle on the eyes."}
               className="interactive inline-flex size-7 items-center justify-center rounded-full bg-white/[0.04] hover:bg-white/[0.08]"
             >
               {mushafTheme === "night" ? <Sun className="size-4" /> : <Moon className="size-4" />}
@@ -237,7 +237,7 @@ function MushafReader() {
             <button
               onClick={() => setPureMode(!pureMode)}
               aria-label={pureMode ? "Exit Mushaf Mode" : "Mushaf Mode"}
-              title={pureMode ? "Exit Mushaf Mode — return to reflections, highlights, and overlays" : "Mushaf Mode — read without reflections, highlights, or overlays"}
+              title={pureMode ? "Exit Mushaf Mode — return to reflections, highlights, and overlays." : "Mushaf Mode — read without reflections, highlights, or overlays. Double-tap any ayah to set your reading marker."}
               className={`interactive inline-flex size-7 items-center justify-center rounded-full ${
                 pureMode
                   ? "bg-[color:var(--gold)]/15 text-[color:var(--gold)] shadow-[0_0_0_1px_color-mix(in_oklab,var(--gold)_25%,transparent)]"

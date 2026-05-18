@@ -608,6 +608,14 @@ body.immersive .immersive-soften:hover {
   -webkit-backdrop-filter: blur(22px) saturate(1.15);
   color: oklch(0.97 0.012 95);
 }
+.mushaf-overlay.mushaf-overlay-solid {
+  background: oklch(0.20 0.03 268);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+body.mushaf-day .mushaf-overlay.mushaf-overlay-solid {
+  background: oklch(0.98 0.018 85);
+}
 body.mushaf-day .mushaf-overlay {
   background: linear-gradient(160deg,
     oklch(0.99 0.015 85 / 0.96),

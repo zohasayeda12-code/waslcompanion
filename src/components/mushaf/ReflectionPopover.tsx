@@ -1,4 +1,4 @@
-import { useFloating, offset, flip, shift, autoUpdate } from "@floating-ui/react";
+import { useFloating, offset, flip, shift, autoUpdate, FloatingPortal } from "@floating-ui/react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useRef, useState } from "react";
@@ -59,10 +59,12 @@ export function ReflectionPopover({ anchor, surah, ayah, onClose }: Props) {
 
   const { refs, floatingStyles } = useFloating({
     placement: "bottom",
-    middleware: [offset(12), flip(), shift({ padding: 8 })],
+    strategy: "fixed",
+    transform: false,
+    elements: { reference: anchor },
+    middleware: [offset(12), flip({ fallbackPlacements: ["top"] }), shift({ padding: 8 })],
     whileElementsMounted: autoUpdate,
   });
-  useEffect(() => refs.setReference(anchor), [anchor, refs]);
 
   const ref = useRef<HTMLDivElement | null>(null);
   useEffect(() => {
@@ -81,19 +83,20 @@ export function ReflectionPopover({ anchor, surah, ayah, onClose }: Props) {
   }, [anchor, onClose]);
 
   return (
-    <AnimatePresence>
-      <motion.div
-        ref={(node) => {
-          refs.setFloating(node);
-          ref.current = node;
-        }}
-        style={floatingStyles}
-        initial={{ opacity: 0, y: 4 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: 4 }}
-        transition={{ duration: 0.15 }}
-        className="z-50 w-[min(22rem,calc(100vw-1.5rem))]"
-      >
+    <FloatingPortal>
+      <AnimatePresence>
+        <motion.div
+          ref={(node) => {
+            refs.setFloating(node);
+            ref.current = node;
+          }}
+          style={floatingStyles}
+          initial={{ opacity: 0, y: 4 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: 4 }}
+          transition={{ duration: 0.15 }}
+          className="z-50 w-[min(22rem,calc(100vw-1.5rem))]"
+        >
         <div className="mushaf-overlay rounded-2xl p-4">
           <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">Reflection · {surah}:{ayah}</p>
 
@@ -154,7 +157,8 @@ export function ReflectionPopover({ anchor, surah, ayah, onClose }: Props) {
             </>
           )}
         </div>
-      </motion.div>
-    </AnimatePresence>
+        </motion.div>
+      </AnimatePresence>
+    </FloatingPortal>
   );
 }
