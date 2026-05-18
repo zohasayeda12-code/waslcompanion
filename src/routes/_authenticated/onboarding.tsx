@@ -136,7 +136,7 @@ function Onboarding() {
                 No guilt. No pressure.
               </p>
               <div className="mt-10 flex w-full max-w-xs flex-col gap-3">
-                <PrimaryButton
+                <GlassCTA
                   onClick={async () => {
                     if ("Notification" in window)
                       await Notification.requestPermission();
@@ -145,16 +145,15 @@ function Onboarding() {
                   }}
                 >
                   Allow reminders
-                </PrimaryButton>
-                <PrimaryButton
-                  variant="glass"
+                </GlassCTA>
+                <GlassCTA
                   onClick={() => {
                     setNotificationPref("maybe_later");
                     next();
                   }}
                 >
                   Maybe later
-                </PrimaryButton>
+                </GlassCTA>
               </div>
             </>
           )}
