@@ -409,12 +409,6 @@
   padding: 0;
   cursor: pointer;
   transition: background-color 140ms ease;
-  /* Mobile: ensure a single tap fires onClick instead of starting a text
-     selection or waiting on the 300ms click delay. */
-  touch-action: manipulation;
-  -webkit-tap-highlight-color: transparent;
-  -webkit-user-select: none;
-  user-select: none;
 }
 .ayah-span:hover { background-color: oklch(0 0 0 / 0.04); }
 .dark .ayah-span:hover { background-color: oklch(1 0 0 / 0.05); }
