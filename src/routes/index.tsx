@@ -167,7 +167,7 @@ function OnboardingScreen() {
       <motion.footer
         {...fade}
         transition={{ duration: 0.5, delay: 0.28, ease: [0.22, 1, 0.36, 1] }}
-        className="flex flex-col items-center gap-4 pb-[max(env(safe-area-inset-bottom),0.5rem)]"
+        className="mx-auto flex w-full max-w-[44rem] flex-col items-center gap-7 pb-[max(env(safe-area-inset-bottom),0.5rem)] pt-6 md:gap-8 md:pt-10"
       >
         {configured === false ? (
           <NotConfigured />
@@ -176,16 +176,25 @@ function OnboardingScreen() {
             <a
               href={loginHref}
               onClick={() => setRedirecting(true)}
-              className="group relative isolate inline-flex h-16 w-full max-w-[22rem] items-center justify-center gap-2.5 rounded-2xl border border-white/10 bg-white/[0.04] px-8 py-4 text-base font-medium tracking-tight text-foreground backdrop-blur-md transition-all duration-200 ease-[var(--ease-spring)] hover:bg-white/[0.07] active:scale-[0.97]"
+              className="group relative isolate inline-flex h-16 w-full max-w-[22rem] items-center justify-center gap-2.5 overflow-hidden rounded-2xl border border-white/10 bg-white/[0.035] px-8 py-4 text-base font-medium tracking-tight text-foreground/95 backdrop-blur-md transition-all duration-300 ease-[var(--ease-spring)] hover:-translate-y-[1px] hover:border-white/15 hover:bg-white/[0.06] active:translate-y-0 active:scale-[0.985]"
               style={{
                 boxShadow:
-                  "inset 0 1px 0 oklch(1 0 0 / 0.08), 0 6px 24px oklch(0.74 0.13 168 / 0.14)",
+                  "inset 0 1px 0 oklch(1 0 0 / 0.07), 0 1px 0 oklch(0 0 0 / 0.4), 0 10px 30px -12px oklch(0 0 0 / 0.5)",
               }}
             >
+              {/* inner glow on hover — quiet and contained */}
+              <span
+                aria-hidden
+                className="pointer-events-none absolute inset-0 rounded-[inherit] opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+                style={{
+                  background:
+                    "radial-gradient(120% 80% at 50% 0%, oklch(0.85 0.10 82 / 0.10), transparent 65%)",
+                }}
+              />
               <span className="relative z-10">Continue with Quran.Foundation</span>
               <svg
                 viewBox="0 0 24 24"
-                className="relative z-10 size-[18px] opacity-70 transition-transform group-hover:translate-x-0.5"
+                className="relative z-10 size-[18px] opacity-60 transition-all duration-300 group-hover:translate-x-0.5 group-hover:opacity-90"
                 fill="none"
                 stroke="currentColor"
                 strokeWidth="2"
@@ -196,13 +205,13 @@ function OnboardingScreen() {
                 <path d="m12 5 7 7-7 7" />
               </svg>
             </a>
-            <p className="text-center text-xs text-muted-foreground">
+            <p className="text-center text-xs text-muted-foreground/80">
               New here?{" "}
               <a
                 href="https://quran.foundation"
                 target="_blank"
                 rel="noreferrer"
-                className="font-medium text-[color:var(--gold)] hover:underline"
+                className="font-medium text-[color:var(--gold)]/90 hover:underline"
               >
                 Create a Quran.Foundation account
               </a>
