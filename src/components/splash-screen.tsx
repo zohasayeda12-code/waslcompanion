@@ -13,17 +13,15 @@ import { useEffect, useMemo, useState } from "react";
  * Duration: ~1.6s, shown once per browser session.
  */
 export function SplashScreen() {
-  const [visible, setVisible] = useState(() => {
-    if (typeof window === "undefined") return false;
-    return !sessionStorage.getItem("wasl_splash_shown");
-  });
+  const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    if (!visible) return;
+    if (sessionStorage.getItem("wasl_splash_shown")) return;
     sessionStorage.setItem("wasl_splash_shown", "1");
-    const t = setTimeout(() => setVisible(false), 1600);
+    setVisible(true);
+    const t = setTimeout(() => setVisible(false), 5000);
     return () => clearTimeout(t);
-  }, [visible]);
+  }, []);
 
   // Stable particle field
   const particles = useMemo(
