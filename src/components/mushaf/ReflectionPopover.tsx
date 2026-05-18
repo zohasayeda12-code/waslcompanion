@@ -83,19 +83,20 @@ export function ReflectionPopover({ anchor, surah, ayah, onClose }: Props) {
   }, [anchor, onClose]);
 
   return (
-    <AnimatePresence>
-      <motion.div
-        ref={(node) => {
-          refs.setFloating(node);
-          ref.current = node;
-        }}
-        style={floatingStyles}
-        initial={{ opacity: 0, y: 4 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: 4 }}
-        transition={{ duration: 0.15 }}
-        className="z-50 w-[min(22rem,calc(100vw-1.5rem))]"
-      >
+    <FloatingPortal>
+      <AnimatePresence>
+        <motion.div
+          ref={(node) => {
+            refs.setFloating(node);
+            ref.current = node;
+          }}
+          style={floatingStyles}
+          initial={{ opacity: 0, y: 4 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: 4 }}
+          transition={{ duration: 0.15 }}
+          className="z-50 w-[min(22rem,calc(100vw-1.5rem))]"
+        >
         <div className="mushaf-overlay rounded-2xl p-4">
           <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">Reflection · {surah}:{ayah}</p>
 
