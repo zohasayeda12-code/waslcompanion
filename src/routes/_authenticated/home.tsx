@@ -188,13 +188,7 @@ function HomeScreen() {
                   </p>
                   {active.reminder_at && (
                     <p className="mt-2 text-[10px] uppercase tracking-[0.24em] text-muted-foreground">
-                      Reminder ·{" "}
-                      {new Date(active.reminder_at).toLocaleString(undefined, {
-                        month: "short",
-                        day: "numeric",
-                        hour: "numeric",
-                        minute: "2-digit",
-                      })}
+                      {reminderPhrase(active.reminder_at)}
                     </p>
                   )}
                 </div>
