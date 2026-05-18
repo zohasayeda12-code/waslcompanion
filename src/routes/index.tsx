@@ -77,17 +77,27 @@ function OnboardingScreen() {
 
   return (
     <AppShell framed={false} className="justify-between">
+      {/* Ultra-subtle ambient noise — almost imperceptible film grain */}
+      <div
+        aria-hidden
+        className="pointer-events-none fixed inset-0 -z-[5] opacity-[0.035] mix-blend-overlay"
+        style={{
+          backgroundImage:
+            "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='0.55'/></svg>\")",
+        }}
+      />
+
       <header className="flex items-center justify-between pt-2">
-        <span className="text-sm font-medium tracking-[0.18em] text-muted-foreground uppercase">
+        <span className="text-[11px] font-medium tracking-[0.32em] text-muted-foreground/60 uppercase">
           Wasl
         </span>
         <span
           aria-hidden
-          className="inline-block size-2 rounded-full bg-[color:var(--gold)]"
+          className="inline-block size-1.5 rounded-full bg-[color:var(--gold)]/70"
         />
       </header>
 
-      <section className="flex flex-1 flex-col items-center justify-center text-center md:py-12">
+      <section className="mx-auto flex w-full max-w-[44rem] flex-1 flex-col items-center justify-center text-center md:py-16">
         <motion.div
           initial={{ opacity: 0, scale: 0.96 }}
           animate={{ opacity: 1, scale: 1 }}
