@@ -64,7 +64,7 @@ export function TranslationPopover({ anchor, surah, ayah, onClose }: Props) {
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: 4 }}
           transition={{ duration: 0.15 }}
-          className="z-50 w-[min(26rem,calc(100vw-2rem))]"
+          className="z-50 w-[min(40rem,calc(100vw-1.5rem))] sm:w-[min(36rem,calc(100vw-2rem))] md:w-[min(42rem,calc(100vw-3rem))]"
         >
           <div className="mushaf-overlay mushaf-overlay-solid rounded-2xl px-4 py-3.5">
             {isLoading ? (
