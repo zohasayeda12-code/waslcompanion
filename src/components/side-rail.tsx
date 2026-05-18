@@ -1,5 +1,5 @@
 import { Link, useLocation } from "@tanstack/react-router";
-import { Home, BookOpen, Bookmark, Settings, LogOut, User } from "lucide-react";
+import { Home, BookOpen, Bookmark, Settings, LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 type Item = {
