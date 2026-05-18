@@ -102,8 +102,8 @@ export function MushafPage({ pageNumber, onAyahClick, onAyahLongPress, onAyahDou
 
   return (
     <article
-      className="mushaf-page mx-auto flex w-full max-w-[52rem] flex-col px-4 pb-4 pt-3 md:px-8 md:pb-6 md:pt-5"
-      style={{ height: "calc(100dvh - 7.5rem)" }}
+      className="mushaf-page mushaf-page--joined mx-auto flex w-full max-w-[52rem] flex-col px-4 pb-4 pt-3 md:px-8 md:pb-6 md:pt-5"
+      style={{ height: "calc(100dvh - 8.5rem)" }}
     >
       <header className="mb-2 flex items-center justify-between text-[10px] uppercase tracking-[0.22em] text-[color:var(--muted-foreground)]">
         <span>Page {pageNumber}</span>
