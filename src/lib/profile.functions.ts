@@ -39,9 +39,14 @@ export const getDisplayName = createServerFn({ method: "GET" }).handler(async ()
       pick("preferred_username") ||
       pick("nickname") ||
       pick("first_name") ||
+      pick("username") ||
       "";
-    const first = full.trim().split(/\s+/)[0] || null;
-    return { name: first };
+    let first = full.trim().split(/\s+/)[0] || "";
+    if (!first) {
+      const email = pick("email");
+      if (email && email.includes("@")) first = email.split("@")[0];
+    }
+    return { name: first || null };
   } catch {
     return { name: null as string | null };
   }
