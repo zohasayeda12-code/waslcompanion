@@ -48,10 +48,10 @@ export function SplashScreen() {
           className="fixed inset-0 z-[100] flex flex-col items-center justify-center overflow-hidden"
           style={{ background: "var(--gradient-night-canvas)" }}
         >
-          {/* aurora veil */}
+          {/* aurora veil — very subtle so background stays dark */}
           <div
             aria-hidden
-            className="pointer-events-none absolute inset-0 opacity-70 blur-3xl"
+            className="pointer-events-none absolute inset-0 opacity-25 blur-3xl"
             style={{ background: "var(--gradient-aurora)" }}
           />
 
