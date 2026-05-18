@@ -145,7 +145,7 @@ function HomeScreen() {
                 </div>
               )}
               <p
-                className="text-[clamp(1.6rem,7.5vw,2.15rem)] leading-[1.85] font-medium tracking-tight text-foreground"
+                className="text-right text-[clamp(1.6rem,7.5vw,2.15rem)] leading-[1.85] font-medium tracking-tight text-foreground"
                 style={{ fontFamily: "var(--font-display)", direction: "rtl" }}
               >
                 {ayahData?.arabic || "···"}
