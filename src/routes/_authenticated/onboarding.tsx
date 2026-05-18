@@ -7,6 +7,37 @@ import { PrimaryButton } from "@/components/primary-button";
 import { GlassCard } from "@/components/glass-card";
 import { completeOnboarding } from "@/lib/profile.functions";
 import { cn } from "@/lib/utils";
+import type { ComponentProps, ReactNode } from "react";
+
+function GlassCTA({
+  children,
+  className,
+  ...rest
+}: ComponentProps<"button"> & { children: ReactNode }) {
+  return (
+    <button
+      {...rest}
+      className={cn(
+        "group relative isolate inline-flex h-14 w-full items-center justify-center overflow-hidden rounded-2xl border border-white/10 bg-white/[0.035] px-8 py-4 text-base font-medium tracking-tight text-foreground/95 backdrop-blur-md transition-all duration-300 ease-[var(--ease-spring)] hover:-translate-y-[1px] hover:border-white/15 hover:bg-white/[0.06] active:translate-y-0 active:scale-[0.985] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+        className,
+      )}
+      style={{
+        boxShadow:
+          "inset 0 1px 0 oklch(1 0 0 / 0.07), 0 1px 0 oklch(0 0 0 / 0.4), 0 10px 30px -12px oklch(0 0 0 / 0.5)",
+      }}
+    >
+      <span
+        aria-hidden
+        className="pointer-events-none absolute inset-0 rounded-[inherit] opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+        style={{
+          background:
+            "radial-gradient(120% 80% at 50% 0%, oklch(0.85 0.10 82 / 0.10), transparent 65%)",
+        }}
+      />
+      <span className="relative z-10">{children}</span>
+    </button>
+  );
+}
 
 export const Route = createFileRoute("/_authenticated/onboarding")({
   head: () => ({
@@ -83,14 +114,12 @@ function Onboarding() {
         >
           {step === "welcome" && (
             <>
-              <h1 className="text-[clamp(2.25rem,9vw,3.25rem)] font-medium tracking-tight">
-                One ayah <span className="text-aurora">at a time.</span>
+              <h1 className="text-[clamp(3rem,12vw,5rem)] font-medium tracking-tight leading-[1.05]">
+                <span className="text-aurora italic">Wasl</span>
               </h1>
               <p className="mt-6 max-w-sm text-balance text-base text-muted-foreground">
-                Read. Reflect. Live the ayah.
-              </p>
-              <p className="mt-4 max-w-sm text-balance text-base text-muted-foreground">
-                No rush. No race.
+                a quiet companion for building your connection with the Quran —
+                by living one ayah at a time.
               </p>
             </>
           )}
@@ -107,7 +136,7 @@ function Onboarding() {
                 No guilt. No pressure.
               </p>
               <div className="mt-10 flex w-full max-w-xs flex-col gap-3">
-                <PrimaryButton
+                <GlassCTA
                   onClick={async () => {
                     if ("Notification" in window)
                       await Notification.requestPermission();
@@ -116,16 +145,15 @@ function Onboarding() {
                   }}
                 >
                   Allow reminders
-                </PrimaryButton>
-                <PrimaryButton
-                  variant="glass"
+                </GlassCTA>
+                <GlassCTA
                   onClick={() => {
                     setNotificationPref("maybe_later");
                     next();
                   }}
                 >
                   Maybe later
-                </PrimaryButton>
+                </GlassCTA>
               </div>
             </>
           )}
@@ -150,11 +178,9 @@ function Onboarding() {
       <footer className="pt-4">
         <div className="md:mx-auto md:w-full md:max-w-xs">
           {step === "first-ayah" ? (
-            <PrimaryButton variant="gold" onClick={() => finish()} className="!text-white">
-              Begin
-            </PrimaryButton>
+            <GlassCTA onClick={() => finish()}>Begin</GlassCTA>
           ) : step === "notifications" ? null : (
-            <PrimaryButton onClick={next}>Continue</PrimaryButton>
+            <GlassCTA onClick={next}>Continue</GlassCTA>
           )}
         </div>
       </footer>
