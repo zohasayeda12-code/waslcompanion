@@ -157,7 +157,9 @@ export function ReflectionPopover({ anchor, surah, ayah, onClose }: Props) {
             </>
           )}
         </div>
-      </motion.div>
-    </AnimatePresence>
+        </motion.div>
+      </AnimatePresence>
+    </FloatingPortal>
   );
+}
 }
