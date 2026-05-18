@@ -1,8 +1,18 @@
 import { useMemo, useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, ArrowUpRight } from "lucide-react";
+import { Link } from "@tanstack/react-router";
 import { cn } from "@/lib/utils";
 import { computeDailySunnah, getHijriToday, type SunnahKind } from "@/lib/hijri-sunnah";
+
+// Maps a recitation suggestion to a concrete Quran target, when applicable.
+// Friday → Sūrah al-Kahf (18:1). Ramaḍān/default → null (let the existing
+// "continue where you left off" Home card handle the journey position).
+function recitationTarget(label: string | undefined): { surah: number; ayah: number } | null {
+  if (!label) return null;
+  if (/kahf/i.test(label)) return { surah: 18, ayah: 1 };
+  return null;
+}
 
 /**
  * HijriBanner — today's Hijri date + a gentle "what is today good for?".
