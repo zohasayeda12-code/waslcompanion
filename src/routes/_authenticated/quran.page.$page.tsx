@@ -193,49 +193,61 @@ function MushafReader() {
 
   return (
     <AppShell>
-      {/* Header */}
-      <header className="sticky top-0 z-30 -mx-4 mb-2 flex items-center justify-between gap-3 bg-background/70 px-4 py-2 backdrop-blur-md">
-        <Link to="/quran" className="text-sm text-muted-foreground hover:text-foreground">
-          ← Quran
-        </Link>
-        <div className="flex items-center gap-2 text-xs text-muted-foreground">
-          <button
-            onClick={() => goTo(page - 1)}
-            disabled={page <= 1}
-            aria-label="Previous page"
-            className="interactive inline-flex size-7 items-center justify-center rounded-full bg-secondary/60 disabled:opacity-40"
+      {/* Header — glass bar aligned to the mushaf page width */}
+      <div className="sticky top-0 z-30 -mx-4 mb-3 px-4 pt-2 pb-1">
+        <header
+          className="mx-auto flex w-full max-w-[44rem] items-center justify-between gap-3 rounded-2xl border border-white/[0.06] bg-white/[0.04] px-3 py-1.5 shadow-[0_8px_30px_-12px_oklch(0_0_0_/_0.5)] backdrop-blur-xl"
+        >
+          <Link
+            to="/quran"
+            className="interactive inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[12.5px] text-muted-foreground hover:text-foreground"
           >
             <ChevronLeft className="size-4" />
-          </button>
-          <span className="tabular-nums">{page} / {TOTAL_PAGES}</span>
-          <button
-            onClick={() => goTo(page + 1)}
-            disabled={page >= TOTAL_PAGES}
-            aria-label="Next page"
-            className="interactive inline-flex size-7 items-center justify-center rounded-full bg-secondary/60 disabled:opacity-40"
-          >
-            <ChevronRight className="size-4" />
-          </button>
-          <button
-            onClick={() => setMushafTheme(mushafTheme === "night" ? "day" : "night")}
-            aria-label={mushafTheme === "night" ? "Switch to Day Mushaf" : "Switch to Night Mushaf"}
-            title={mushafTheme === "night" ? "Day Mushaf" : "Night Mushaf"}
-            className="interactive ml-2 inline-flex size-7 items-center justify-center rounded-full bg-secondary/60"
-          >
-            {mushafTheme === "night" ? <Sun className="size-4" /> : <Moon className="size-4" />}
-          </button>
-          <button
-            onClick={() => setPureMode(!pureMode)}
-            aria-label={pureMode ? "Exit Pure Quran Mode" : "Pure Quran Mode"}
-            title={pureMode ? "Exit Pure Quran Mode" : "Pure Quran Mode"}
-            className={`interactive inline-flex size-7 items-center justify-center rounded-full ${
-              pureMode ? "bg-primary/20 text-primary" : "bg-secondary/60"
-            }`}
-          >
-            {pureMode ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
-          </button>
-        </div>
-      </header>
+            Quran
+          </Link>
+          <div className="flex items-center gap-1.5 text-[11.5px] text-muted-foreground">
+            <button
+              onClick={() => goTo(page - 1)}
+              disabled={page <= 1}
+              aria-label="Previous page"
+              className="interactive inline-flex size-7 items-center justify-center rounded-full bg-white/[0.04] hover:bg-white/[0.08] disabled:opacity-40"
+            >
+              <ChevronLeft className="size-4" />
+            </button>
+            <span className="min-w-[3.2rem] text-center tabular-nums">{page} / {TOTAL_PAGES}</span>
+            <button
+              onClick={() => goTo(page + 1)}
+              disabled={page >= TOTAL_PAGES}
+              aria-label="Next page"
+              className="interactive inline-flex size-7 items-center justify-center rounded-full bg-white/[0.04] hover:bg-white/[0.08] disabled:opacity-40"
+            >
+              <ChevronRight className="size-4" />
+            </button>
+            <span aria-hidden className="mx-1 h-4 w-px bg-white/10" />
+            <button
+              onClick={() => setMushafTheme(mushafTheme === "night" ? "day" : "night")}
+              aria-label={mushafTheme === "night" ? "Switch to Day Mushaf" : "Switch to Night Mushaf"}
+              title={mushafTheme === "night" ? "Day Mushaf" : "Night Mushaf"}
+              className="interactive inline-flex size-7 items-center justify-center rounded-full bg-white/[0.04] hover:bg-white/[0.08]"
+            >
+              {mushafTheme === "night" ? <Sun className="size-4" /> : <Moon className="size-4" />}
+            </button>
+            <button
+              onClick={() => setPureMode(!pureMode)}
+              aria-label={pureMode ? "Exit Pure Quran Mode" : "Pure Quran Mode"}
+              title={pureMode ? "Exit Pure Quran Mode" : "Pure Quran Mode"}
+              className={`interactive inline-flex size-7 items-center justify-center rounded-full ${
+                pureMode
+                  ? "bg-[color:var(--gold)]/15 text-[color:var(--gold)] shadow-[0_0_0_1px_color-mix(in_oklab,var(--gold)_25%,transparent)]"
+                  : "bg-white/[0.04] hover:bg-white/[0.08]"
+              }`}
+            >
+              {pureMode ? <BookOpen className="size-4" /> : <Feather className="size-4" />}
+            </button>
+          </div>
+        </header>
+      </div>
+
 
       {/* Single mushaf page with page-turn animation */}
       <div
