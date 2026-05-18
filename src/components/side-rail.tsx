@@ -98,12 +98,8 @@ export function SideRail() {
           </svg>
         </div>
         <span
-          className="text-[10px] font-bold tracking-[0.22em] bg-clip-text text-transparent drop-shadow-[0_0_8px_oklch(0.82_0.14_82_/_0.35)]"
-          style={{
-            fontFamily: "var(--font-display)",
-            backgroundImage:
-              "linear-gradient(135deg, oklch(0.92 0.10 82), oklch(0.78 0.16 60), oklch(0.88 0.12 95))",
-          }}
+          className="text-aurora text-[11px] font-bold tracking-[0.28em]"
+          style={{ fontFamily: "var(--font-display)" }}
         >
           WASL
         </span>
