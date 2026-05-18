@@ -550,21 +550,21 @@ body.pure-mode .mushaf-active-glow { display: none !important; }
 /* "You were here" — resume ripple. Strong, glowy breathing pulse. */
 @keyframes ayah-resume-glow {
   0%, 100% {
-    background-color: color-mix(in oklab, var(--gold) 9%, transparent);
+    background-color: color-mix(in oklab, var(--gold) 4%, transparent);
     box-shadow:
       0 0 0 0 color-mix(in oklab, var(--gold) 0%, transparent),
-      0 0 7px 1px color-mix(in oklab, var(--gold) 15%, transparent);
+      0 0 4px 1px color-mix(in oklab, var(--gold) 8%, transparent);
   }
   50% {
-    background-color: color-mix(in oklab, var(--gold) 26%, transparent);
+    background-color: color-mix(in oklab, var(--gold) 13%, transparent);
     box-shadow:
-      0 0 0 2px color-mix(in oklab, var(--gold) 27%, transparent),
-      0 0 23px 7px color-mix(in oklab, var(--gold) 34%, transparent),
-      0 0 43px 15px color-mix(in oklab, var(--gold) 18%, transparent);
+      0 0 0 1px color-mix(in oklab, var(--gold) 14%, transparent),
+      0 0 12px 4px color-mix(in oklab, var(--gold) 17%, transparent),
+      0 0 22px 8px color-mix(in oklab, var(--gold) 9%, transparent);
   }
 }
 .ayah-resume {
-  animation: ayah-resume-glow 2.4s cubic-bezier(0.4, 0, 0.6, 1) 0.2s 3 both;
+  animation: ayah-resume-glow 2.4s cubic-bezier(0.4, 0, 0.6, 1) 0.2s 2 both;
   border-radius: 999px;
   padding-inline: 0.22em;
 }
