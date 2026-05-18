@@ -13,17 +13,15 @@ import { useEffect, useMemo, useState } from "react";
  * Duration: ~1.6s, shown once per browser session.
  */
 export function SplashScreen() {
-  const [visible, setVisible] = useState(() => {
-    if (typeof window === "undefined") return false;
-    return !sessionStorage.getItem("wasl_splash_shown");
-  });
+  const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    if (!visible) return;
+    if (sessionStorage.getItem("wasl_splash_shown")) return;
     sessionStorage.setItem("wasl_splash_shown", "1");
-    const t = setTimeout(() => setVisible(false), 1600);
+    setVisible(true);
+    const t = setTimeout(() => setVisible(false), 5000);
     return () => clearTimeout(t);
-  }, [visible]);
+  }, []);
 
   // Stable particle field
   const particles = useMemo(
@@ -50,10 +48,10 @@ export function SplashScreen() {
           className="fixed inset-0 z-[100] flex flex-col items-center justify-center overflow-hidden"
           style={{ background: "var(--gradient-night-canvas)" }}
         >
-          {/* aurora veil */}
+          {/* aurora veil — very subtle so background stays dark */}
           <div
             aria-hidden
-            className="pointer-events-none absolute inset-0 opacity-70 blur-3xl"
+            className="pointer-events-none absolute inset-0 opacity-25 blur-3xl"
             style={{ background: "var(--gradient-aurora)" }}
           />
 
@@ -130,7 +128,7 @@ export function SplashScreen() {
             initial={{ opacity: 0, y: 10, filter: "blur(6px)" }}
             animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
             transition={{ duration: 0.8, delay: 0.45, ease: [0.22, 1, 0.36, 1] }}
-            className="text-aurora mt-10 text-5xl font-medium tracking-[0.28em]"
+            className="text-aurora mt-10 text-7xl font-bold tracking-[0.28em]"
           >
             WASL
           </motion.h1>
