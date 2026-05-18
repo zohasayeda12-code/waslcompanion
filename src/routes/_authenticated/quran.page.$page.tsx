@@ -154,7 +154,7 @@ function MushafReader() {
     !!active && toolbarHit ? active.surah === toolbarHit.surah && active.ayah === toolbarHit.ayah : false;
   const isBm = toolbarHit ? bookmarkSet.has(`${toolbarHit.surah}:${toolbarHit.ayah}`) : false;
 
-  const handleAction = async (action: ToolbarAction) => {
+  const handleAction = async (action: ToolbarAction, el?: HTMLElement) => {
     if (!toolbarHit) return;
     const { surah, ayah } = toolbarHit;
     if (action === "reflection") {
@@ -164,6 +164,7 @@ function MushafReader() {
     }
     if (action === "highlight") {
       setOpenHit(toolbarHit);
+      setHighlightAnchor(el ?? toolbarHit.el);
       setOverlay("highlight");
       return;
     }
