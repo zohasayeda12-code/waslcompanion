@@ -8,6 +8,7 @@ import { AppShell } from "@/components/app-shell";
 import { GlowChip } from "@/components/glow-chip";
 import { HijriBanner } from "@/components/hijri-banner";
 import { getJourneyState } from "@/lib/journey.functions";
+import { getDisplayName } from "@/lib/profile.functions";
 import { getAyah } from "@/lib/qf-content.functions";
 import { getActiveIntention } from "@/lib/intentions.functions";
 import { saveSubscription, getVapidPublicKey } from "@/lib/push.functions";
