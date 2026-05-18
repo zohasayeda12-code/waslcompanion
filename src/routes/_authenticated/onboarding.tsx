@@ -7,6 +7,37 @@ import { PrimaryButton } from "@/components/primary-button";
 import { GlassCard } from "@/components/glass-card";
 import { completeOnboarding } from "@/lib/profile.functions";
 import { cn } from "@/lib/utils";
+import type { ComponentProps, ReactNode } from "react";
+
+function GlassCTA({
+  children,
+  className,
+  ...rest
+}: ComponentProps<"button"> & { children: ReactNode }) {
+  return (
+    <button
+      {...rest}
+      className={cn(
+        "group relative isolate inline-flex h-14 w-full items-center justify-center overflow-hidden rounded-2xl border border-white/10 bg-white/[0.035] px-8 py-4 text-base font-medium tracking-tight text-foreground/95 backdrop-blur-md transition-all duration-300 ease-[var(--ease-spring)] hover:-translate-y-[1px] hover:border-white/15 hover:bg-white/[0.06] active:translate-y-0 active:scale-[0.985] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+        className,
+      )}
+      style={{
+        boxShadow:
+          "inset 0 1px 0 oklch(1 0 0 / 0.07), 0 1px 0 oklch(0 0 0 / 0.4), 0 10px 30px -12px oklch(0 0 0 / 0.5)",
+      }}
+    >
+      <span
+        aria-hidden
+        className="pointer-events-none absolute inset-0 rounded-[inherit] opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+        style={{
+          background:
+            "radial-gradient(120% 80% at 50% 0%, oklch(0.85 0.10 82 / 0.10), transparent 65%)",
+        }}
+      />
+      <span className="relative z-10">{children}</span>
+    </button>
+  );
+}
 
 export const Route = createFileRoute("/_authenticated/onboarding")({
   head: () => ({
