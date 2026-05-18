@@ -77,7 +77,7 @@ function LoginScreen() {
   }
 
   return (
-    <AppShell>
+    <AppShell framed={false}>
       <Link
         to="/"
         className="-ml-1 inline-flex items-center gap-1 text-sm text-muted-foreground transition-colors hover:text-foreground"
@@ -97,31 +97,34 @@ function LoginScreen() {
       </Link>
 
       <motion.div
-        initial={{ opacity: 0, y: 12 }}
+        initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
-        className="mt-10 flex flex-1 flex-col md:mt-12"
+        transition={{ duration: 0.35, delay: 0.05, ease: [0.22, 1, 0.36, 1] }}
+        className="mt-10 flex flex-1 flex-col items-center text-center md:mt-12"
       >
-        {/* Hero orb with concentric aurora rings */}
+        {/* Hero orb — softer aurora wash, no harsh primary glow */}
         <div className="relative flex size-24 items-center justify-center">
           <div
             aria-hidden
-            className="absolute inset-0 animate-pulse-slow rounded-full opacity-70 blur-2xl"
-            style={{ background: "var(--gradient-aurora)" }}
+            className="animate-pulse-slow absolute inset-0 rounded-full opacity-50 blur-2xl"
+            style={{
+              background: "var(--gradient-aurora)",
+              animationDuration: "8s",
+            }}
           />
           <div
-            className="relative flex size-16 items-center justify-center rounded-3xl"
+            className="relative flex size-16 items-center justify-center rounded-3xl border border-white/10 bg-white/[0.04] backdrop-blur-md"
             style={{
-              background: "var(--gradient-primary)",
-              boxShadow: "var(--shadow-glow-primary)",
+              boxShadow:
+                "inset 0 1px 0 oklch(1 0 0 / 0.10), 0 8px 30px oklch(0 0 0 / 0.35)",
             }}
           >
             <svg
               viewBox="0 0 64 64"
               className="size-8"
               fill="none"
-              stroke="oklch(0.95 0.10 82)"
-              strokeWidth="2.4"
+              stroke="oklch(0.88 0.12 82)"
+              strokeWidth="2.2"
               strokeLinecap="round"
               strokeLinejoin="round"
             >
@@ -130,19 +133,19 @@ function LoginScreen() {
           </div>
         </div>
 
-        <h1 className="mt-8 text-[clamp(2rem,7vw,2.75rem)] font-medium tracking-tight">
-          Welcome to <span className="text-aurora">Wasl</span>
+        <h1 className="mt-8 text-[clamp(1.9rem,6.5vw,2.5rem)] font-medium tracking-tight">
+          Welcome back to <span className="text-aurora">Wasl</span>
         </h1>
         <p className="mt-3 max-w-sm text-balance text-muted-foreground">
-          Sign in with your Quran.Foundation account to keep your bookmarks,
-          reflections and journey in sync.
+          Continue your journey with Quran.Foundation — your bookmarks,
+          reflections and pace travel with you.
         </p>
 
         {error && (
           <motion.div
             initial={{ opacity: 0, y: -4 }}
             animate={{ opacity: 1, y: 0 }}
-            className="mt-6 rounded-2xl border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive"
+            className="mt-6 w-full max-w-sm rounded-2xl border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive"
             role="alert"
           >
             {prettyError(error)}
@@ -153,24 +156,24 @@ function LoginScreen() {
           <NotConfigured />
         ) : (
           <motion.div
-            initial={{ opacity: 0, y: 12 }}
+            initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.25, ease: [0.22, 1, 0.36, 1] }}
-            className="mt-10 flex flex-col gap-3"
+            transition={{ duration: 0.35, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
+            className="mt-10 flex w-full max-w-[18rem] flex-col gap-3"
           >
             <a
               href={loginHref}
               onClick={() => setRedirecting(true)}
-              className="group relative isolate inline-flex h-14 w-full items-center justify-center gap-2 rounded-2xl px-6 text-base font-medium tracking-tight text-primary-foreground transition-all duration-200 ease-[var(--ease-spring)] active:scale-[0.97] before:pointer-events-none before:absolute before:inset-0 before:-z-10 before:rounded-[inherit] before:[background:linear-gradient(180deg,oklch(1_0_0_/_0.18),transparent_55%)]"
+              className="group relative isolate inline-flex h-13 w-full items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/[0.04] px-6 py-3.5 text-[15px] font-medium tracking-tight text-foreground backdrop-blur-md transition-all duration-200 ease-[var(--ease-spring)] hover:bg-white/[0.07] active:scale-[0.97]"
               style={{
-                background: "var(--gradient-primary)",
-                boxShadow: "var(--shadow-glow-primary)",
+                boxShadow:
+                  "inset 0 1px 0 oklch(1 0 0 / 0.08), 0 6px 24px oklch(0.74 0.13 168 / 0.14)",
               }}
             >
-              <span className="relative z-10">Sign in with Quran.Foundation</span>
+              <span className="relative z-10">Continue with Quran.Foundation</span>
               <svg
                 viewBox="0 0 24 24"
-                className="relative z-10 size-4"
+                className="relative z-10 size-4 opacity-70 transition-transform group-hover:translate-x-0.5"
                 fill="none"
                 stroke="currentColor"
                 strokeWidth="2"
@@ -182,21 +185,21 @@ function LoginScreen() {
               </svg>
             </a>
             <p className="px-1 text-center text-xs text-muted-foreground">
-              You'll be redirected securely. Wasl never sees your password.
+              A quiet, secure handoff. Wasl never sees your password.
             </p>
           </motion.div>
         )}
       </motion.div>
 
       <p className="mt-auto pt-10 text-center text-sm text-muted-foreground">
-        New to Quran.Foundation?{" "}
+        New here?{" "}
         <a
           href="https://quran.foundation"
           target="_blank"
           rel="noreferrer"
           className="font-medium text-[color:var(--gold)] hover:underline"
         >
-          Create an account
+          Create a Quran.Foundation account
         </a>
       </p>
     </AppShell>

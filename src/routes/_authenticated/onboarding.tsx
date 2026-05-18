@@ -47,7 +47,7 @@ function Onboarding() {
   };
 
   return (
-    <AppShell className="justify-between">
+    <AppShell framed={false} className="justify-between">
       <header className="flex items-center justify-between">
         <span className="text-sm font-medium tracking-[0.22em] text-aurora uppercase">
           Wasl

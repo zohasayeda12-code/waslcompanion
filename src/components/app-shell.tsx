@@ -33,9 +33,9 @@ export function AppShell({ children, className = "", framed = true }: Props) {
       >
         {/* Outer unified frame: nav + content share one surface on desktop */}
         <motion.div
-          initial={{ opacity: 0, y: 8 }}
+          initial={{ opacity: 0, y: 6 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
           className={cn(
             "relative flex w-full flex-col",
             framed && [
