@@ -107,7 +107,10 @@ export function AyahToolbar({ anchor, bookmarked, isActiveIntention, onAction, o
               <ToolbarButton label="Expand" onClick={() => onAction("expand")}>
                 <Maximize2 className="size-[17px]" strokeWidth={1.9} />
               </ToolbarButton>
-              <ToolbarButton label="Highlight" onClick={() => onAction("highlight")}>
+              <ToolbarButton
+                label="Highlight"
+                onClick={(e) => onAction("highlight", e.currentTarget as HTMLElement)}
+              >
                 <Highlighter className="size-[17px]" strokeWidth={1.9} />
               </ToolbarButton>
             </div>
