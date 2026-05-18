@@ -505,18 +505,25 @@ body.pure-mode .mushaf-active-glow { display: none !important; }
 }
 .ayah-marked {
   background-color: color-mix(in oklab, var(--gold) 8%, transparent);
-  border-radius: 4px;
+  border-radius: 999px;
+  padding-inline: 0.18em;
 }
 
-/* "You were here" — resume ripple. Plays once on mount. */
+/* "You were here" — resume ripple. Soft, calm breathing pulse. */
 @keyframes ayah-resume-glow {
-  0%   { background-color: color-mix(in oklab, var(--gold) 0%,  transparent); box-shadow: 0 0 0 0 color-mix(in oklab, var(--gold) 0%, transparent); }
-  25%  { background-color: color-mix(in oklab, var(--gold) 22%, transparent); box-shadow: 0 0 18px 4px color-mix(in oklab, var(--gold) 18%, transparent); }
-  100% { background-color: color-mix(in oklab, var(--gold) 8%,  transparent); box-shadow: 0 0 0 0 color-mix(in oklab, var(--gold) 0%, transparent); }
+  0%, 100% {
+    background-color: color-mix(in oklab, var(--gold) 6%, transparent);
+    box-shadow: 0 0 0 0 color-mix(in oklab, var(--gold) 0%, transparent);
+  }
+  50% {
+    background-color: color-mix(in oklab, var(--gold) 18%, transparent);
+    box-shadow: 0 0 22px 6px color-mix(in oklab, var(--gold) 14%, transparent);
+  }
 }
 .ayah-resume {
-  animation: ayah-resume-glow 1.4s ease-out 0.15s 3 both;
-  border-radius: 4px;
+  animation: ayah-resume-glow 2.6s cubic-bezier(0.4, 0, 0.6, 1) 0.2s 2 both;
+  border-radius: 999px;
+  padding-inline: 0.18em;
 }
 
 body.pure-mode .mushaf-marker-ribbon { display: none !important; }
