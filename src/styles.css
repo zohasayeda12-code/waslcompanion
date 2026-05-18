@@ -482,6 +482,29 @@
 .mushaf-header .bg-white\/10,
 .mushaf-header [class*="bg-white/10"] { background-color: color-mix(in oklab, var(--mushaf-ink) 15%, transparent) !important; }
 
+/* Merged header + page — one continuous surface */
+.mushaf-header--joined {
+  border-bottom: 0;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  box-shadow: 0 -1px 0 0 oklch(0 0 0 / 0.04) inset;
+  position: relative;
+}
+.mushaf-header--joined::after {
+  content: "";
+  position: absolute;
+  left: 1rem;
+  right: 1rem;
+  bottom: 0;
+  height: 1px;
+  background: linear-gradient(to right, transparent, color-mix(in oklab, var(--mushaf-ink) 14%, transparent), transparent);
+}
+.mushaf-page--joined {
+  border-top: 0;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+
 /* Pure Quran Mode — strip personal state, keep only mushaf */
 body.pure-mode .ayah-span { background-color: transparent !important; cursor: default; }
 body.pure-mode .ayah-span:hover { background-color: transparent !important; }
