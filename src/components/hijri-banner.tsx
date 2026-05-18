@@ -4,17 +4,20 @@ import { ChevronDown, ArrowUpRight } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { cn } from "@/lib/utils";
 import { computeDailySunnah, getHijriToday, type SunnahKind } from "@/lib/hijri-sunnah";
+import { SURAH_START_PAGE } from "@/lib/quran-structure";
 
-// Maps a recitation suggestion to a concrete Quran target, when applicable.
-// Friday → Sūrah al-Kahf (18:1). Ramaḍān/default → null (let the existing
-// "continue where you left off" Home card handle the journey position).
-function recitationTarget(label: string | undefined): { surah: number; ayah: number } | null {
+// Maps a recitation suggestion to a Quran reader page.
+function recitationTarget(label: string | undefined): { page: number } | null {
   if (!label) return null;
-  if (/kahf/i.test(label)) return { surah: 18, ayah: 1 };
-  if (/mulk/i.test(label)) return { surah: 67, ayah: 1 };
-  if (/kursī|kursi/i.test(label)) return { surah: 2, ayah: 255 };
-  if (/ikhl[āa]ṣ|ikhlas|falaq|n[āa]s/i.test(label)) return { surah: 112, ayah: 1 };
-  return null;
+  const surah =
+    /kahf/i.test(label) ? 18
+    : /mulk/i.test(label) ? 67
+    : /kursī|kursi/i.test(label) ? 2
+    : /ikhl[āa]ṣ|ikhlas|falaq|n[āa]s/i.test(label) ? 112
+    : null;
+  if (!surah) return null;
+  const page = SURAH_START_PAGE[surah];
+  return page ? { page } : null;
 }
 
 /**
