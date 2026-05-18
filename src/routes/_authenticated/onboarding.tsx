@@ -151,7 +151,7 @@ function Onboarding() {
               Begin
             </PrimaryButton>
           ) : step === "notifications" ? null : (
-            <PrimaryButton onClick={next}>Continue</PrimaryButton>
+            <PrimaryButton onClick={next} className="!shadow-none">Continue</PrimaryButton>
           )}
         </div>
       </footer>
