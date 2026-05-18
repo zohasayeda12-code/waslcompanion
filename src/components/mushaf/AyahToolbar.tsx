@@ -23,7 +23,7 @@ type Props = {
   anchor: HTMLElement | null;
   bookmarked?: boolean;
   isActiveIntention?: boolean;
-  onAction: (a: ToolbarAction) => void;
+  onAction: (a: ToolbarAction, el?: HTMLElement) => void;
   onClose: () => void;
 };
 
@@ -107,7 +107,10 @@ export function AyahToolbar({ anchor, bookmarked, isActiveIntention, onAction, o
               <ToolbarButton label="Expand" onClick={() => onAction("expand")}>
                 <Maximize2 className="size-[17px]" strokeWidth={1.9} />
               </ToolbarButton>
-              <ToolbarButton label="Highlight" onClick={() => onAction("highlight")}>
+              <ToolbarButton
+                label="Highlight"
+                onClick={(e) => onAction("highlight", e.currentTarget as HTMLElement)}
+              >
                 <Highlighter className="size-[17px]" strokeWidth={1.9} />
               </ToolbarButton>
             </div>
@@ -127,7 +130,7 @@ function ToolbarButton({
 }: {
   children: React.ReactNode;
   label: string;
-  onClick: () => void;
+  onClick: (e: React.MouseEvent<HTMLButtonElement>) => void;
   accent?: "rose";
   glow?: boolean;
 }) {

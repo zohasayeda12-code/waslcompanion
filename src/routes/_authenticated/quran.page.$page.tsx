@@ -50,6 +50,7 @@ function MushafReader() {
   const [openHit, setOpenHit] = useState<AyahHit | null>(null);
   const [overlay, setOverlay] = useState<null | "reflection" | "highlight" | "live" | "translation">(null);
   const [markerToast, setMarkerToast] = useState<string | null>(null);
+  const [highlightAnchor, setHighlightAnchor] = useState<HTMLElement | null>(null);
 
   // Auto-hide bottom nav while any contextual reading UI is open.
   useImmersiveWhen(!!openHit || !!overlay);
@@ -153,7 +154,7 @@ function MushafReader() {
     !!active && toolbarHit ? active.surah === toolbarHit.surah && active.ayah === toolbarHit.ayah : false;
   const isBm = toolbarHit ? bookmarkSet.has(`${toolbarHit.surah}:${toolbarHit.ayah}`) : false;
 
-  const handleAction = async (action: ToolbarAction) => {
+  const handleAction = async (action: ToolbarAction, el?: HTMLElement) => {
     if (!toolbarHit) return;
     const { surah, ayah } = toolbarHit;
     if (action === "reflection") {
@@ -163,6 +164,7 @@ function MushafReader() {
     }
     if (action === "highlight") {
       setOpenHit(toolbarHit);
+      setHighlightAnchor(el ?? toolbarHit.el);
       setOverlay("highlight");
       return;
     }
@@ -196,7 +198,7 @@ function MushafReader() {
       {/* Header — glass bar aligned to the mushaf page width */}
       <div className="sticky top-0 z-30 -mx-4 mb-3 px-4 pt-2 pb-1">
         <header
-          className="mx-auto flex w-full max-w-[44rem] items-center justify-between gap-3 rounded-2xl border border-white/[0.06] bg-white/[0.04] px-3 py-1.5 shadow-[0_8px_30px_-12px_oklch(0_0_0_/_0.5)] backdrop-blur-xl"
+          className="mx-auto flex w-full max-w-[52rem] items-center justify-between gap-3 rounded-2xl border border-white/[0.06] bg-white/[0.04] px-3 py-1.5 shadow-[0_8px_30px_-12px_oklch(0_0_0_/_0.5)] backdrop-blur-xl"
         >
           <Link
             to="/quran"
@@ -234,8 +236,8 @@ function MushafReader() {
             </button>
             <button
               onClick={() => setPureMode(!pureMode)}
-              aria-label={pureMode ? "Exit Pure Quran Mode" : "Pure Quran Mode"}
-              title={pureMode ? "Exit Pure Quran Mode" : "Pure Quran Mode"}
+              aria-label={pureMode ? "Exit Mushaf Mode" : "Mushaf Mode"}
+              title={pureMode ? "Exit Mushaf Mode — return to reflections, highlights, and overlays" : "Mushaf Mode — read without reflections, highlights, or overlays"}
               className={`interactive inline-flex size-7 items-center justify-center rounded-full ${
                 pureMode
                   ? "bg-[color:var(--gold)]/15 text-[color:var(--gold)] shadow-[0_0_0_1px_color-mix(in_oklab,var(--gold)_25%,transparent)]"
@@ -321,12 +323,13 @@ function MushafReader() {
       )}
       {openHit && overlay === "highlight" && (
         <HighlightPicker
-          anchor={openHit.el}
+          anchor={highlightAnchor ?? openHit.el}
           surah={openHit.surah}
           ayah={openHit.ayah}
           onClose={() => {
             setOverlay(null);
             setOpenHit(null);
+            setHighlightAnchor(null);
           }}
         />
       )}

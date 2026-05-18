@@ -37,7 +37,9 @@ export function HighlightPicker({ anchor, surah, ayah, onClose }: Props) {
 
   const { refs, floatingStyles } = useFloating({
     placement: "bottom",
-    middleware: [offset(10), flip(), shift({ padding: 8 })],
+    strategy: "fixed",
+    transform: false,
+    middleware: [offset(8), flip({ fallbackPlacements: ["top", "right", "left"] }), shift({ padding: 8 })],
     whileElementsMounted: autoUpdate,
   });
   useEffect(() => refs.setReference(anchor), [anchor, refs]);
@@ -66,34 +68,37 @@ export function HighlightPicker({ anchor, surah, ayah, onClose }: Props) {
           ref.current = node;
         }}
         style={floatingStyles}
-        initial={{ opacity: 0, scale: 0.94 }}
-        animate={{ opacity: 1, scale: 1 }}
-        exit={{ opacity: 0, scale: 0.94 }}
-        transition={{ duration: 0.12 }}
+        initial={{ opacity: 0, scale: 0.8, y: -4 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.8, y: -4 }}
+        transition={{ duration: 0.16, ease: [0.16, 1, 0.3, 1] }}
         className="z-50"
       >
-        <div className="mushaf-overlay rounded-2xl p-2">
-          <div className="flex items-center gap-1">
-            {SWATCHES.map((s) => (
-              <button
-                key={s.color}
-                aria-label={s.label}
-                title={s.label}
-                onClick={() => apply.mutate(s.color)}
-                className="interactive size-8 rounded-full border border-border/60"
-                style={{
-                  background: `color-mix(in oklab, var(--hl-${s.color}) 65%, transparent)`,
-                }}
-              />
-            ))}
-            <span className="mx-1 h-6 w-px bg-border/60" />
-            <button
-              onClick={() => apply.mutate(null)}
-              className="interactive rounded-full px-3 py-1 text-xs text-muted-foreground hover:text-foreground"
-            >
-              Remove
-            </button>
-          </div>
+        <div className="mushaf-overlay flex flex-col items-center gap-1.5 rounded-full px-1.5 py-2">
+          {SWATCHES.map((s, i) => (
+            <motion.button
+              key={s.color}
+              aria-label={s.label}
+              title={s.label}
+              onClick={() => apply.mutate(s.color)}
+              initial={{ opacity: 0, y: -6 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: i * 0.035, duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
+              className="interactive size-5 rounded-full border border-white/15 shadow-[0_2px_6px_oklch(0_0_0_/_0.35)] hover:scale-110"
+              style={{
+                background: `color-mix(in oklab, var(--hl-${s.color}) 75%, transparent)`,
+              }}
+            />
+          ))}
+          <span className="my-0.5 h-px w-4 bg-border/60" />
+          <button
+            onClick={() => apply.mutate(null)}
+            aria-label="Remove highlight"
+            title="Remove"
+            className="interactive flex size-5 items-center justify-center rounded-full text-muted-foreground hover:text-foreground"
+          >
+            <span className="block h-px w-3 bg-current" />
+          </button>
         </div>
       </motion.div>
     </AnimatePresence>
