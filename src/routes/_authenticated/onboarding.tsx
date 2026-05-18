@@ -87,16 +87,10 @@ function Onboarding() {
                 One ayah <span className="text-aurora">at a time.</span>
               </h1>
               <p className="mt-6 max-w-sm text-balance text-base text-muted-foreground">
-                Wasl helps you build a gentle relationship with the Quran
-                through reflection, remembrance, and gradual implementation.
+                Read. Reflect. Live the ayah.
               </p>
               <p className="mt-4 max-w-sm text-balance text-base text-muted-foreground">
-                No rush. No race. Sometimes a single ayah stays with you for
-                days — and that is enough.
-              </p>
-              <p className="mt-4 max-w-sm text-balance text-sm text-muted-foreground/80">
-                Your bookmarks, reflections, and journey sync quietly through
-                Quran.Foundation.
+                No rush. No race.
               </p>
             </>
           )}
