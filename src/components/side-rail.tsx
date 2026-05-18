@@ -180,8 +180,8 @@ export function SideRail() {
         })}
       </div>
 
-      {/* Bottom cluster: profile initial + logout */}
-      <div className="mt-auto flex flex-col items-center gap-2 pt-4">
+      {/* Cluster: profile initial + logout — placed right under Settings, not pinned to bottom */}
+      <div className="mt-3 flex flex-col items-center gap-2">
         <span
           aria-hidden
           className="mb-1 h-px w-7 bg-gradient-to-r from-transparent via-white/15 to-transparent"
