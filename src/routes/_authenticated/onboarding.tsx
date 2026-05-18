@@ -178,11 +178,9 @@ function Onboarding() {
       <footer className="pt-4">
         <div className="md:mx-auto md:w-full md:max-w-xs">
           {step === "first-ayah" ? (
-            <PrimaryButton variant="gold" onClick={() => finish()} className="!text-white">
-              Begin
-            </PrimaryButton>
+            <GlassCTA onClick={() => finish()}>Begin</GlassCTA>
           ) : step === "notifications" ? null : (
-            <PrimaryButton onClick={next}>Continue</PrimaryButton>
+            <GlassCTA onClick={next}>Continue</GlassCTA>
           )}
         </div>
       </footer>
