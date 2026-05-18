@@ -1,6 +1,9 @@
-import { Link, useLocation } from "@tanstack/react-router";
+import { Link, useLocation, useNavigate } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
+import { useQuery } from "@tanstack/react-query";
 import { Home, BookOpen, Bookmark, Settings, LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { getDisplayName, logout } from "@/lib/profile.functions";
 
 type Item = {
   to: string;
