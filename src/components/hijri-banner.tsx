@@ -1,8 +1,18 @@
 import { useMemo, useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, ArrowUpRight } from "lucide-react";
+import { Link } from "@tanstack/react-router";
 import { cn } from "@/lib/utils";
 import { computeDailySunnah, getHijriToday, type SunnahKind } from "@/lib/hijri-sunnah";
+
+// Maps a recitation suggestion to a concrete Quran target, when applicable.
+// Friday → Sūrah al-Kahf (18:1). Ramaḍān/default → null (let the existing
+// "continue where you left off" Home card handle the journey position).
+function recitationTarget(label: string | undefined): { surah: number; ayah: number } | null {
+  if (!label) return null;
+  if (/kahf/i.test(label)) return { surah: 18, ayah: 1 };
+  return null;
+}
 
 /**
  * HijriBanner — today's Hijri date + a gentle "what is today good for?".
@@ -110,19 +120,41 @@ export function HijriBanner() {
                 ))}
               </ul>
 
-              {sunnah.recitation && (
-                <div className="rounded-xl border border-white/[0.05] bg-white/[0.02] px-3 py-2.5">
-                  <p className="text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
-                    Recitation today
-                  </p>
-                  <p className="mt-1 text-[13px] font-medium text-foreground/95">
-                    {sunnah.recitation.label}
-                  </p>
-                  <p className="mt-0.5 text-xs leading-relaxed text-foreground/65">
-                    {sunnah.recitation.detail}
-                  </p>
-                </div>
-              )}
+              {sunnah.recitation && (() => {
+                const target = recitationTarget(sunnah.recitation.label);
+                const content = (
+                  <>
+                    <div className="flex items-center justify-between gap-2">
+                      <p className="text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
+                        Recitation today
+                      </p>
+                      {target && (
+                        <ArrowUpRight className="size-3.5 text-[color:var(--gold)]/80" strokeWidth={1.8} />
+                      )}
+                    </div>
+                    <p className="mt-1 text-[13px] font-medium text-foreground/95">
+                      {sunnah.recitation.label}
+                    </p>
+                    <p className="mt-0.5 text-xs leading-relaxed text-foreground/65">
+                      {sunnah.recitation.detail}
+                    </p>
+                  </>
+                );
+                const wrapClass =
+                  "block rounded-xl border border-white/[0.05] bg-white/[0.02] px-3 py-2.5 text-left transition-colors hover:bg-white/[0.05]";
+                return target ? (
+                  <Link
+                    to="/ayah/$surah/$ayah"
+                    params={{ surah: String(target.surah), ayah: String(target.ayah) }}
+                    search={{ from: "home" }}
+                    className={wrapClass}
+                  >
+                    {content}
+                  </Link>
+                ) : (
+                  <div className={wrapClass}>{content}</div>
+                );
+              })()}
 
               {sunnah.regionalNote && (
                 <p className="text-[11px] leading-relaxed text-foreground/45">

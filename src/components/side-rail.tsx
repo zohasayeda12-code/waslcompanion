@@ -1,5 +1,5 @@
 import { Link, useLocation } from "@tanstack/react-router";
-import { Home, BookOpen, Bookmark, Settings, LogOut, User } from "lucide-react";
+import { Home, BookOpen, Bookmark, Settings, LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 type Item = {
@@ -54,38 +54,50 @@ export function SideRail() {
         "before:w-px before:[background:linear-gradient(to_bottom,transparent,oklch(1_0_0_/_0.08),transparent)]",
       )}
     >
-      {/* Brand mark — WASL moon */}
-      <Link
-        to="/home"
-        aria-label="Wasl — home"
-        className="group relative mb-5 flex size-11 items-center justify-center rounded-2xl"
+      {/* Brand mark — WASL moon + wordmark (non-interactive) */}
+      <div
+        aria-label="Wasl"
+        className="relative mb-5 flex flex-col items-center gap-1.5"
       >
+        <div className="relative flex size-11 items-center justify-center rounded-2xl">
+          <span
+            aria-hidden
+            className="absolute inset-0 -z-10 rounded-2xl opacity-80"
+            style={{
+              background:
+                "radial-gradient(65% 65% at 50% 45%, oklch(0.82 0.14 82 / 0.22), transparent 75%)",
+            }}
+          />
+          <svg
+            viewBox="0 0 64 64"
+            className="size-[26px] drop-shadow-[0_0_10px_oklch(0.82_0.14_82_/_0.55)]"
+            fill="none"
+            stroke="oklch(0.92 0.10 82)"
+            strokeWidth="2.4"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M48 32a18 18 0 1 1-18-18 14 14 0 0 0 18 18z" />
+          </svg>
+        </div>
         <span
-          aria-hidden
-          className="absolute inset-0 -z-10 rounded-2xl opacity-80"
+          className="text-[10px] font-bold tracking-[0.22em] bg-clip-text text-transparent drop-shadow-[0_0_8px_oklch(0.82_0.14_82_/_0.35)]"
           style={{
-            background:
-              "radial-gradient(65% 65% at 50% 45%, oklch(0.82 0.14 82 / 0.22), transparent 75%)",
+            fontFamily: "var(--font-display)",
+            backgroundImage:
+              "linear-gradient(135deg, oklch(0.92 0.10 82), oklch(0.78 0.16 60), oklch(0.88 0.12 95))",
           }}
-        />
-        <svg
-          viewBox="0 0 64 64"
-          className="size-[26px] drop-shadow-[0_0_10px_oklch(0.82_0.14_82_/_0.55)] transition-transform duration-500 group-hover:scale-105"
-          fill="none"
-          stroke="oklch(0.92 0.10 82)"
-          strokeWidth="2.4"
-          strokeLinecap="round"
-          strokeLinejoin="round"
         >
-          <path d="M48 32a18 18 0 1 1-18-18 14 14 0 0 0 18 18z" />
-        </svg>
-      </Link>
+          WASL
+        </span>
+      </div>
 
       {/* Subtle divider after brand */}
       <span
         aria-hidden
         className="mb-4 h-px w-7 bg-gradient-to-r from-transparent via-white/15 to-transparent"
       />
+
 
       {/* Primary nav */}
       <div className="flex flex-col items-center gap-1.5">
@@ -155,24 +167,12 @@ export function SideRail() {
         })}
       </div>
 
-      {/* Bottom cluster: profile + logout */}
+      {/* Bottom cluster: logout */}
       <div className="mt-auto flex flex-col items-center gap-1.5 pt-4">
         <span
           aria-hidden
           className="mb-2 h-px w-7 bg-gradient-to-r from-transparent via-white/15 to-transparent"
         />
-        <Link
-          to="/settings"
-          aria-label="Profile"
-          title="Profile"
-          className={cn(
-            "group flex size-11 items-center justify-center rounded-2xl",
-            "text-foreground/45 hover:text-foreground/90 hover:bg-white/[0.04]",
-            "transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] active:scale-[0.96]",
-          )}
-        >
-          <User className="size-[18px] transition-transform group-hover:scale-110" strokeWidth={1.6} />
-        </Link>
 
         <form method="post" action="/api/auth/logout" className="contents">
           <button

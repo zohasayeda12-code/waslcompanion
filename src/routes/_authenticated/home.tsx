@@ -2,7 +2,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery } from "@tanstack/react-query";
 import { motion } from "motion/react";
-import { LogOut } from "lucide-react";
+
 import { useEffect } from "react";
 import { AppShell } from "@/components/app-shell";
 import { GlowChip } from "@/components/glow-chip";
@@ -76,24 +76,13 @@ function HomeScreen() {
 
   return (
     <AppShell>
-      <header className="flex items-center justify-between">
-        <div>
-          <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
-            Assalāmu ʿalaykum{nameData?.name ? `, ${nameData.name}` : ""}
-          </p>
-          <h1 className="mt-1 text-[clamp(1.25rem,4.8vw,1.6rem)] font-medium tracking-tight text-foreground/90">
-            A moment with the Qurʾān
-          </h1>
-        </div>
-        <form method="post" action="/api/auth/logout">
-          <button
-            type="submit"
-            aria-label="Sign out"
-            className="glass interactive flex size-10 items-center justify-center rounded-full"
-          >
-            <LogOut className="size-4" />
-          </button>
-        </form>
+      <header>
+        <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
+          Assalāmu ʿalaykum{nameData?.name ? `, ${nameData.name}` : ""}
+        </p>
+        <h1 className="mt-1 text-[clamp(1.25rem,4.8vw,1.6rem)] font-medium tracking-tight text-foreground/90">
+          A moment with the Qurʾān
+        </h1>
       </header>
 
       {/* 1. Hijri month banner */}
