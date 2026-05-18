@@ -95,6 +95,7 @@ function Onboarding() {
               </p>
               <div className="mt-10 flex w-full max-w-xs flex-col gap-3">
                 <PrimaryButton
+                  className="!shadow-none"
                   onClick={async () => {
                     if ("Notification" in window)
                       await Notification.requestPermission();
