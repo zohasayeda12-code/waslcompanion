@@ -22,7 +22,7 @@ const STEPS = ["notifications", "first-ayah"] as const;
 type Step = (typeof STEPS)[number];
 
 function Onboarding() {
-  const [step, setStep] = useState<Step>("welcome");
+  const [step, setStep] = useState<Step>("notifications");
   const [notificationPref, setNotificationPref] =
     useState<"allow" | "maybe_later">("maybe_later");
   const navigate = useNavigate();
