@@ -39,15 +39,16 @@ function OnboardingScreen() {
         <motion.div
           initial={{ opacity: 0, scale: 0.96 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
           className="relative mb-10"
         >
           <div
             aria-hidden
-            className="absolute inset-0 -z-10 blur-2xl"
+            className="animate-pulse-slow absolute inset-0 -z-10 blur-2xl"
             style={{
               background:
-                "radial-gradient(circle, oklch(0.85 0.08 82 / 0.5), transparent 70%)",
+                "radial-gradient(circle, oklch(0.85 0.08 82 / 0.35), transparent 70%)",
+              animationDuration: "7s",
             }}
           />
           <div className="flex size-24 items-center justify-center rounded-3xl bg-[var(--gradient-primary)] shadow-[var(--shadow-elevated)] md:size-28">
