@@ -195,60 +195,61 @@ function MushafReader() {
 
   return (
     <AppShell>
-      {/* Header — glass bar aligned to the mushaf page width */}
-      <div className="sticky top-0 z-30 -mx-4 mb-3 px-4 pt-2 pb-1">
+      {/* Header — merged into the mushaf page surface as one continuous element */}
+      <div className="sticky top-0 z-30 -mx-4 px-4 pt-2">
         <header
-          className="mushaf-header mx-auto flex w-full max-w-[52rem] items-center justify-between gap-3 rounded-2xl px-3 py-1.5 shadow-[0_8px_30px_-12px_oklch(0_0_0_/_0.5)]"
+          className="mushaf-header mushaf-header--joined mx-auto flex w-full max-w-[52rem] items-center justify-between gap-3 rounded-t-2xl px-4 py-2.5"
         >
           <Link
             to="/quran"
-            className="interactive inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[12.5px] text-muted-foreground hover:text-foreground"
+            className="interactive inline-flex items-center gap-1.5 rounded-full px-2 py-1 text-[10.5px] uppercase tracking-[0.2em] text-foreground/70 hover:text-foreground"
           >
-            <ChevronLeft className="size-4" />
+            <ChevronLeft className="size-[18px]" strokeWidth={1.6} />
             Quran
           </Link>
-          <div className="flex items-center gap-1.5 text-[11.5px] text-muted-foreground">
+          <div className="flex items-center gap-2 text-[12px]">
             <button
               onClick={() => goTo(page - 1)}
               disabled={page <= 1}
               aria-label="Previous page"
-              className="interactive inline-flex size-7 items-center justify-center rounded-full bg-white/[0.04] hover:bg-white/[0.08] disabled:opacity-40"
+              className="interactive inline-flex size-9 items-center justify-center rounded-2xl disabled:opacity-40"
             >
-              <ChevronLeft className="size-4" />
+              <ChevronLeft className="size-[18px]" strokeWidth={1.6} />
             </button>
-            <span className="min-w-[3.2rem] text-center tabular-nums">{page} / {TOTAL_PAGES}</span>
+            <span className="min-w-[3.6rem] text-center tabular-nums text-foreground/80">{page} / {TOTAL_PAGES}</span>
             <button
               onClick={() => goTo(page + 1)}
               disabled={page >= TOTAL_PAGES}
               aria-label="Next page"
-              className="interactive inline-flex size-7 items-center justify-center rounded-full bg-white/[0.04] hover:bg-white/[0.08] disabled:opacity-40"
+              className="interactive inline-flex size-9 items-center justify-center rounded-2xl disabled:opacity-40"
             >
-              <ChevronRight className="size-4" />
+              <ChevronRight className="size-[18px]" strokeWidth={1.6} />
             </button>
-            <span aria-hidden className="mx-1 h-4 w-px bg-white/10" />
+            <span aria-hidden className="mx-1 h-5 w-px bg-current opacity-15" />
             <button
               onClick={() => setMushafTheme(mushafTheme === "night" ? "day" : "night")}
               aria-label={mushafTheme === "night" ? "Switch to Day Mushaf" : "Switch to Night Mushaf"}
               title={mushafTheme === "night" ? "Day Mushaf — warm parchment for daylight reading." : "Night Mushaf — soft dark page that's gentle on the eyes."}
-              className="interactive inline-flex size-7 items-center justify-center rounded-full bg-white/[0.04] hover:bg-white/[0.08]"
+              className="interactive inline-flex size-9 items-center justify-center rounded-2xl"
             >
-              {mushafTheme === "night" ? <Sun className="size-4" /> : <Moon className="size-4" />}
+              {mushafTheme === "night" ? <Sun className="size-[18px]" strokeWidth={1.6} /> : <Moon className="size-[18px]" strokeWidth={1.6} />}
             </button>
             <button
               onClick={() => setPureMode(!pureMode)}
               aria-label={pureMode ? "Exit Mushaf Mode" : "Mushaf Mode"}
               title={pureMode ? "Exit Mushaf Mode — return to reflections, highlights, and overlays." : "Mushaf Mode — read without reflections, highlights, or overlays. Double-tap any ayah to set your reading marker."}
-              className={`interactive inline-flex size-7 items-center justify-center rounded-full ${
+              className={`interactive inline-flex size-9 items-center justify-center rounded-2xl ${
                 pureMode
                   ? "bg-[color:var(--gold)]/15 text-[color:var(--gold)] shadow-[0_0_0_1px_color-mix(in_oklab,var(--gold)_25%,transparent)]"
-                  : "bg-white/[0.04] hover:bg-white/[0.08]"
+                  : ""
               }`}
             >
-              {pureMode ? <BookOpen className="size-4" /> : <Feather className="size-4" />}
+              {pureMode ? <BookOpen className="size-[18px]" strokeWidth={1.6} /> : <Feather className="size-[18px]" strokeWidth={1.6} />}
             </button>
           </div>
         </header>
       </div>
+
 
 
       {/* Single mushaf page with page-turn animation */}
