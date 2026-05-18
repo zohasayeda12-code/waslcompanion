@@ -323,12 +323,13 @@ function MushafReader() {
       )}
       {openHit && overlay === "highlight" && (
         <HighlightPicker
-          anchor={openHit.el}
+          anchor={highlightAnchor ?? openHit.el}
           surah={openHit.surah}
           ayah={openHit.ayah}
           onClose={() => {
             setOverlay(null);
             setOpenHit(null);
+            setHighlightAnchor(null);
           }}
         />
       )}
