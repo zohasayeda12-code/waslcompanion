@@ -8,6 +8,7 @@ import { AppShell } from "@/components/app-shell";
 import { GlowChip } from "@/components/glow-chip";
 import { HijriBanner } from "@/components/hijri-banner";
 import { getJourneyState } from "@/lib/journey.functions";
+import { getDisplayName } from "@/lib/profile.functions";
 import { getAyah } from "@/lib/qf-content.functions";
 import { getActiveIntention } from "@/lib/intentions.functions";
 import { saveSubscription, getVapidPublicKey } from "@/lib/push.functions";
@@ -22,6 +23,7 @@ function HomeScreen() {
   const journeyFn = useServerFn(getJourneyState);
   const intentionFn = useServerFn(getActiveIntention);
   const ayahFn = useServerFn(getAyah);
+  const nameFn = useServerFn(getDisplayName);
   const navigate = useNavigate();
 
   const saveSubFn = useServerFn(saveSubscription);
@@ -29,6 +31,7 @@ function HomeScreen() {
 
   const { data: journey } = useQuery({ queryKey: ["journey"], queryFn: () => journeyFn() });
   const { data: active } = useQuery({ queryKey: ["active-intention"], queryFn: () => intentionFn() });
+  const { data: nameData } = useQuery({ queryKey: ["display-name"], queryFn: () => nameFn(), staleTime: 5 * 60 * 1000 });
 
   // Auto-register push so reminders arrive on this device
   useEffect(() => {
@@ -76,7 +79,7 @@ function HomeScreen() {
       <header className="flex items-center justify-between">
         <div>
           <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
-            Assalāmu ʿalaykum
+            Assalāmu ʿalaykum{nameData?.name ? `, ${nameData.name}` : ""}
           </p>
           <h1 className="mt-1 text-[clamp(1.25rem,4.8vw,1.6rem)] font-medium tracking-tight text-foreground/90">
             A moment with the Qurʾān
@@ -142,7 +145,7 @@ function HomeScreen() {
                 </div>
               )}
               <p
-                className="text-[clamp(1.6rem,7.5vw,2.15rem)] leading-[1.85] font-medium tracking-tight text-foreground"
+                className="text-right text-[clamp(1.6rem,7.5vw,2.15rem)] leading-[1.85] font-medium tracking-tight text-foreground"
                 style={{ fontFamily: "var(--font-display)", direction: "rtl" }}
               >
                 {ayahData?.arabic || "···"}
