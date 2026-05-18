@@ -2,7 +2,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery } from "@tanstack/react-query";
 import { motion } from "motion/react";
-import { LogOut } from "lucide-react";
+
 import { useEffect } from "react";
 import { AppShell } from "@/components/app-shell";
 import { GlowChip } from "@/components/glow-chip";
