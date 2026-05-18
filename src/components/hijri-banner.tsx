@@ -150,9 +150,8 @@ export function HijriBanner() {
                   "block rounded-xl border border-white/[0.05] bg-white/[0.02] px-3 py-2.5 text-left transition-colors hover:bg-white/[0.05]";
                 return target ? (
                   <Link
-                    to="/ayah/$surah/$ayah"
-                    params={{ surah: String(target.surah), ayah: String(target.ayah) }}
-                    search={{ from: "home" }}
+                    to="/quran/page/$page"
+                    params={{ page: String(target.page) }}
                     className={wrapClass}
                   >
                     {content}
