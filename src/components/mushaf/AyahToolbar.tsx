@@ -130,7 +130,7 @@ function ToolbarButton({
 }: {
   children: React.ReactNode;
   label: string;
-  onClick: () => void;
+  onClick: (e: React.MouseEvent<HTMLButtonElement>) => void;
   accent?: "rose";
   glow?: boolean;
 }) {
