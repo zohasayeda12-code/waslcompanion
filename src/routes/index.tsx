@@ -24,7 +24,7 @@ const fade = {
 
 function OnboardingScreen() {
   return (
-    <AppShell className="justify-between">
+    <AppShell framed={false} className="justify-between">
       <header className="flex items-center justify-between pt-2">
         <span className="text-sm font-medium tracking-[0.18em] text-muted-foreground uppercase">
           Wasl
