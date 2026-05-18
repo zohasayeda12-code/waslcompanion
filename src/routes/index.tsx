@@ -167,7 +167,7 @@ function OnboardingScreen() {
       <motion.footer
         {...fade}
         transition={{ duration: 0.5, delay: 0.28, ease: [0.22, 1, 0.36, 1] }}
-        className="mx-auto flex w-full max-w-[44rem] flex-col items-center gap-7 pb-[max(env(safe-area-inset-bottom),0.5rem)] pt-6 md:gap-8 md:pt-10"
+        className="mx-auto flex w-full max-w-[44rem] flex-col items-center gap-4 pb-[max(env(safe-area-inset-bottom),0.5rem)] pt-6 md:pt-10"
       >
         {configured === false ? (
           <NotConfigured />
