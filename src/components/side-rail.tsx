@@ -187,20 +187,6 @@ export function SideRail() {
           className="mb-1 h-px w-7 bg-gradient-to-r from-transparent via-white/15 to-transparent"
         />
 
-        <div
-          aria-label={nameData?.name ? `Signed in as ${nameData.name}` : "Profile"}
-          title={nameData?.name ?? "Profile"}
-          className={cn(
-            "flex size-9 items-center justify-center rounded-full",
-            "border border-white/[0.08] bg-white/[0.03]",
-            "text-[12px] font-semibold tracking-wide text-foreground/80",
-            "select-none",
-          )}
-          style={{ fontFamily: "var(--font-display)" }}
-        >
-          {initial}
-        </div>
-
         <button
           type="button"
           onClick={handleLogout}
@@ -214,6 +200,20 @@ export function SideRail() {
         >
           <LogOut className="size-[18px] transition-transform group-hover:scale-110" strokeWidth={1.6} />
         </button>
+
+        <div
+          aria-label={nameData?.name ? `Signed in as ${nameData.name}` : "Profile"}
+          title={nameData?.name ?? "Profile"}
+          className={cn(
+            "flex size-9 items-center justify-center rounded-full",
+            "border border-white/[0.08] bg-white/[0.03]",
+            "text-[12px] font-semibold tracking-wide text-foreground/80",
+            "select-none",
+          )}
+          style={{ fontFamily: "var(--font-display)" }}
+        >
+          {initial}
+        </div>
       </div>
     </nav>
   );
