@@ -18,14 +18,7 @@ export const Route = createFileRoute("/_authenticated/onboarding")({
   component: Onboarding,
 });
 
-const STEPS = [
-  "welcome",
-  "philosophy",
-  "auth",
-  "notifications",
-  "style",
-  "first-ayah",
-] as const;
+const STEPS = ["welcome", "notifications", "first-ayah"] as const;
 type Step = (typeof STEPS)[number];
 
 function Onboarding() {
@@ -41,32 +34,41 @@ function Onboarding() {
     if (idx < STEPS.length - 1) setStep(STEPS[idx + 1]);
   };
 
-  const finish = async () => {
-    await complete({ data: { notificationPref } });
+  const finish = async (pref: "allow" | "maybe_later" = notificationPref) => {
+    await complete({ data: { notificationPref: pref } });
     navigate({ to: "/home" });
   };
+
+  const skip = () => finish("maybe_later");
 
   return (
     <AppShell framed={false} className="justify-between">
       <header className="flex items-center justify-between">
-        <span className="text-sm font-medium tracking-[0.22em] text-aurora uppercase">
+        <span className="text-[11px] font-medium tracking-[0.32em] text-muted-foreground/60 uppercase">
           Wasl
         </span>
-        {/* Progress dots */}
-        <div className="flex items-center gap-1.5">
-          {STEPS.map((s, i) => (
-            <span
-              key={s}
-              className={cn(
-                "h-1.5 rounded-full transition-all duration-500",
-                i === idx
-                  ? "w-6 bg-[color:var(--gold)] shadow-[0_0_12px_oklch(0.82_0.14_82_/_0.6)]"
-                  : i < idx
-                    ? "w-1.5 bg-white/40"
-                    : "w-1.5 bg-white/10"
-              )}
-            />
-          ))}
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-1.5">
+            {STEPS.map((s, i) => (
+              <span
+                key={s}
+                className={cn(
+                  "h-1.5 rounded-full transition-all duration-500",
+                  i === idx
+                    ? "w-6 bg-[color:var(--gold)] shadow-[0_0_12px_oklch(0.82_0.14_82_/_0.6)]"
+                    : i < idx
+                      ? "w-1.5 bg-white/40"
+                      : "w-1.5 bg-white/10"
+                )}
+              />
+            ))}
+          </div>
+          <button
+            onClick={skip}
+            className="text-[11px] tracking-[0.18em] uppercase text-muted-foreground/50 transition-colors hover:text-muted-foreground/80"
+          >
+            Skip
+          </button>
         </div>
       </header>
 
@@ -85,31 +87,16 @@ function Onboarding() {
                 One ayah <span className="text-aurora">at a time.</span>
               </h1>
               <p className="mt-6 max-w-sm text-balance text-base text-muted-foreground">
-                Wasl helps you build a gentle, lasting relationship with the
-                Quran — through reflection, remembrance, and gradual
-                implementation.
+                Wasl helps you build a gentle relationship with the Quran
+                through reflection, remembrance, and gradual implementation.
               </p>
-            </>
-          )}
-          {step === "philosophy" && (
-            <>
-              <h1 className="text-[clamp(2rem,8vw,3rem)] font-medium tracking-tight">
-                No rush. No race.
-              </h1>
-              <p className="mt-6 max-w-sm text-balance text-base text-muted-foreground">
-                You do not need to rush through the Quran. Sometimes one ayah
-                can stay with you for days. Wasl honors that pace.
+              <p className="mt-4 max-w-sm text-balance text-base text-muted-foreground">
+                No rush. No race. Sometimes a single ayah stays with you for
+                days — and that is enough.
               </p>
-            </>
-          )}
-          {step === "auth" && (
-            <>
-              <h1 className="text-[clamp(2rem,8vw,3rem)] font-medium tracking-tight">
-                You're signed in.
-              </h1>
-              <p className="mt-6 max-w-sm text-balance text-base text-muted-foreground">
-                Bookmarks, reflections, and your journey will sync across
-                Quran.Foundation apps you use.
+              <p className="mt-4 max-w-sm text-balance text-sm text-muted-foreground/80">
+                Your bookmarks, reflections, and journey sync quietly through
+                Quran.Foundation.
               </p>
             </>
           )}
@@ -119,8 +106,11 @@ function Onboarding() {
                 Gentle reminders?
               </h1>
               <p className="mt-6 max-w-sm text-balance text-base text-muted-foreground">
-                When you choose to live an ayah, we can softly remind you. No
-                guilt, no pressure.
+                When an ayah matters to you, Wasl can softly remind you
+                throughout your day.
+              </p>
+              <p className="mt-3 max-w-sm text-balance text-sm text-muted-foreground/80">
+                No guilt. No pressure.
               </p>
               <div className="mt-10 flex w-full max-w-xs flex-col gap-3">
                 <PrimaryButton
@@ -131,7 +121,7 @@ function Onboarding() {
                     next();
                   }}
                 >
-                  Allow gentle reminders
+                  Allow reminders
                 </PrimaryButton>
                 <PrimaryButton
                   variant="glass"
@@ -143,18 +133,6 @@ function Onboarding() {
                   Maybe later
                 </PrimaryButton>
               </div>
-            </>
-          )}
-          {step === "style" && (
-            <>
-              <h1 className="text-[clamp(2rem,8vw,3rem)] font-medium tracking-tight">
-                Sequential Journey
-              </h1>
-              <p className="mt-6 max-w-sm text-balance text-base text-muted-foreground">
-                Move through the Quran one ayah at a time, starting from Sūrah
-                Al-Fātiḥah. You can revisit any ayah whenever your heart returns
-                to it.
-              </p>
             </>
           )}
           {step === "first-ayah" && (
@@ -177,7 +155,7 @@ function Onboarding() {
 
       <footer className="pt-4">
         {step === "first-ayah" ? (
-          <PrimaryButton variant="gold" onClick={finish}>
+          <PrimaryButton variant="gold" onClick={() => finish()}>
             Begin
           </PrimaryButton>
         ) : step === "notifications" ? null : (
