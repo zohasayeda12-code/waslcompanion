@@ -162,4 +162,3 @@ export function ReflectionPopover({ anchor, surah, ayah, onClose }: Props) {
     </FloatingPortal>
   );
 }
-}
