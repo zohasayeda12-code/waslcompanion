@@ -83,14 +83,12 @@ function Onboarding() {
         >
           {step === "welcome" && (
             <>
-              <h1 className="text-[clamp(2.25rem,9vw,3.25rem)] font-medium tracking-tight">
-                One ayah <span className="text-aurora">at a time.</span>
+              <h1 className="text-[clamp(3rem,12vw,5rem)] font-medium tracking-tight leading-[1.05]">
+                <span className="text-aurora italic">Wasl</span>
               </h1>
               <p className="mt-6 max-w-sm text-balance text-base text-muted-foreground">
-                Read. Reflect. Live the ayah.
-              </p>
-              <p className="mt-4 max-w-sm text-balance text-base text-muted-foreground">
-                No rush. No race.
+                a quiet companion for building your connection with the Quran —
+                by living one ayah at a time.
               </p>
             </>
           )}
