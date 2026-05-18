@@ -148,13 +148,15 @@ function Onboarding() {
       </AnimatePresence>
 
       <footer className="pt-4">
-        {step === "first-ayah" ? (
-          <PrimaryButton variant="gold" onClick={() => finish()}>
-            Begin
-          </PrimaryButton>
-        ) : step === "notifications" ? null : (
-          <PrimaryButton onClick={next}>Continue</PrimaryButton>
-        )}
+        <div className="md:mx-auto md:w-full md:max-w-xs">
+          {step === "first-ayah" ? (
+            <PrimaryButton variant="gold" onClick={() => finish()} className="md:!text-white">
+              Begin
+            </PrimaryButton>
+          ) : step === "notifications" ? null : (
+            <PrimaryButton onClick={next}>Continue</PrimaryButton>
+          )}
+        </div>
       </footer>
     </AppShell>
   );
