@@ -3,6 +3,25 @@ import { z } from "zod";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { requireUserId } from "./current-user.server";
 import { qfUserFetch } from "./qf-user.server";
+import { getWaslSession } from "./qf-session.server";
+
+/** Clears the encrypted session cookie. Called from the client logout button. */
+export const logout = createServerFn({ method: "POST" }).handler(async () => {
+  try {
+    const session = await getWaslSession();
+    await session.clear();
+  } catch {
+    // best-effort; cookie may already be gone
+  }
+  return { ok: true };
+});
+
+/** Removes all push subscriptions for the current user (notifications off). */
+export const removePushSubscriptions = createServerFn({ method: "POST" }).handler(async () => {
+  const userId = await requireUserId();
+  await supabaseAdmin.from("push_subscriptions").delete().eq("user_id", userId);
+  return { ok: true };
+});
 
 /**
  * Best-effort fetch of the signed-in user's display name from QF userinfo.
