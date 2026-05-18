@@ -122,11 +122,6 @@ export function computeDailySunnah(today: HijriToday): DailySunnah {
       label: "One juzʾ today",
       detail: "A gentle rhythm of roughly a juzʾ a day completes the Qurʾān by month's end.",
     };
-  } else if (hour >= 21 || hour < 4) {
-    recitation = {
-      label: "Āyat al-Kursī before sleep",
-      detail: "A guardian remains with you through the night until morning.",
-    };
   } else if (hour >= 19) {
     recitation = {
       label: "Sūrah al-Mulk tonight",
