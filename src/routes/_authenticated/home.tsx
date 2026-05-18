@@ -55,11 +55,31 @@ function HomeScreen() {
   const statusLabel =
     active?.status === "carried"
       ? "Carrying this ayah"
-      : active?.status === "awaiting_response"
-      ? "Living this ayah"
       : active
-      ? "Current intention"
+      ? "Living this ayah"
       : null;
+
+  const reminderPhrase = (iso: string) => {
+    const d = new Date(iso);
+    const now = new Date();
+    const sameDay = d.toDateString() === now.toDateString();
+    const tomorrow = new Date(now); tomorrow.setDate(now.getDate() + 1);
+    const isTomorrow = d.toDateString() === tomorrow.toDateString();
+    const h = d.getHours();
+    let when = "";
+    if (sameDay && h >= 18) when = "Reminder tonight";
+    else if (sameDay && h < 12) when = "Reminder this morning";
+    else if (sameDay) when = "Reminder later today";
+    else if (isTomorrow && h < 12) when = "Reminder tomorrow morning";
+    else if (isTomorrow && h >= 18) when = "Reminder tomorrow night";
+    else if (isTomorrow) when = "Reminder tomorrow";
+    else when = "Reminder";
+    const time = d.toLocaleString(undefined, {
+      month: "short", day: "numeric", hour: "numeric", minute: "2-digit",
+    });
+    return `${when} · ${time}`;
+  };
+
 
   const { data: ayahData } = useQuery({
     queryKey: ["ayah", surah, ayah],
@@ -98,16 +118,27 @@ function HomeScreen() {
         className="mt-5"
       >
         <article
-          className="relative isolate overflow-hidden rounded-[2rem] border border-white/[0.06]"
+          className="relative isolate overflow-hidden rounded-[2rem] border border-white/[0.08]"
           style={{
             background:
               "linear-gradient(165deg, oklch(0.22 0.035 270 / 0.85), oklch(0.17 0.03 280 / 0.9))",
+            boxShadow:
+              "0 0 0 1px oklch(0.82 0.14 82 / 0.08), 0 18px 60px -20px oklch(0.82 0.14 82 / 0.35), 0 8px 28px -12px oklch(0.42 0.06 168 / 0.45)",
           }}
         >
+          {/* Outer soft aurora glow */}
+          <div
+            aria-hidden
+            className="pointer-events-none absolute -inset-8 -z-10 rounded-[3rem] opacity-60 blur-3xl"
+            style={{
+              background:
+                "radial-gradient(60% 55% at 50% 40%, oklch(0.82 0.14 82 / 0.28), oklch(0.42 0.06 168 / 0.18) 55%, transparent 80%)",
+            }}
+          />
           {/* Atmospheric depth — very subtle */}
           <div
             aria-hidden
-            className="pointer-events-none absolute -top-24 left-1/2 -z-10 size-72 -translate-x-1/2 rounded-full opacity-[0.12] blur-3xl"
+            className="pointer-events-none absolute -top-24 left-1/2 -z-10 size-72 -translate-x-1/2 rounded-full opacity-[0.18] blur-3xl"
             style={{ background: "var(--gradient-gold-glow)" }}
           />
           {/* Inner gold edge */}
@@ -116,9 +147,10 @@ function HomeScreen() {
             className="pointer-events-none absolute inset-0 rounded-[inherit]"
             style={{
               boxShadow:
-                "inset 0 1px 0 oklch(0.82 0.14 82 / 0.18), inset 0 -1px 0 oklch(0 0 0 / 0.35)",
+                "inset 0 1px 0 oklch(0.82 0.14 82 / 0.22), inset 0 -1px 0 oklch(0 0 0 / 0.35)",
             }}
           />
+
 
           <button
             type="button"
@@ -156,13 +188,7 @@ function HomeScreen() {
                   </p>
                   {active.reminder_at && (
                     <p className="mt-2 text-[10px] uppercase tracking-[0.24em] text-muted-foreground">
-                      Reminder ·{" "}
-                      {new Date(active.reminder_at).toLocaleString(undefined, {
-                        month: "short",
-                        day: "numeric",
-                        hour: "numeric",
-                        minute: "2-digit",
-                      })}
+                      {reminderPhrase(active.reminder_at)}
                     </p>
                   )}
                 </div>

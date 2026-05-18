@@ -26,7 +26,7 @@ export function SplashScreen() {
   // Stable particle field
   const particles = useMemo(
     () =>
-      Array.from({ length: 14 }).map((_, i) => ({
+      Array.from({ length: 18 }).map((_, i) => ({
         id: i,
         x: Math.random() * 100,
         y: 40 + Math.random() * 50,

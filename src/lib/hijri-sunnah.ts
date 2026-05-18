@@ -78,6 +78,7 @@ export type HijriToday = {
   day: number;
   year: string;
   weekday: number; // 0=Sun … 5=Fri … 6=Sat
+  hour: number; // 0-23, local
 };
 
 export function getHijriToday(now = new Date()): HijriToday {
@@ -96,23 +97,24 @@ export function getHijriToday(now = new Date()): HijriToday {
       day: parseInt(dayStr, 10) || 0,
       year,
       weekday: now.getDay(),
+      hour: now.getHours(),
     };
   } catch {
-    return { month: "", day: 0, year: "", weekday: now.getDay() };
+    return { month: "", day: 0, year: "", weekday: now.getDay(), hour: now.getHours() };
   }
 }
 
 export function computeDailySunnah(today: HijriToday): DailySunnah {
   const items: SunnahItem[] = [];
-  const { month, day, weekday } = today;
+  const { month, day, weekday, hour } = today;
   let headline: string | null = null;
   let recitation: DailySunnah["recitation"] = null;
   let regionalNote: string | null = null;
 
-  // — Recitation ————————————————————————————————————————
+  // — Recitation — gently surfaced by time of day / day of week ————
   if (weekday === 5) {
     recitation = {
-      label: "Read Sūrah al-Kahf",
+      label: "Sūrah al-Kahf",
       detail: "A light between this Friday and the next, for whoever recites it.",
     };
   } else if (month === "Ramadan") {
@@ -120,12 +122,33 @@ export function computeDailySunnah(today: HijriToday): DailySunnah {
       label: "One juzʾ today",
       detail: "A gentle rhythm of roughly a juzʾ a day completes the Qurʾān by month's end.",
     };
+  } else if (hour >= 21 || hour < 4) {
+    recitation = {
+      label: "Āyat al-Kursī before sleep",
+      detail: "A guardian remains with you through the night until morning.",
+    };
+  } else if (hour >= 19) {
+    recitation = {
+      label: "Sūrah al-Mulk tonight",
+      detail: "The Prophet ﷺ would not sleep until he recited it — it intercedes for its reciter.",
+    };
+  } else if (hour >= 16) {
+    recitation = {
+      label: "al-Ikhlāṣ, al-Falaq, an-Nās",
+      detail: "Three times each for the evening — suffices you against everything.",
+    };
+  } else if (hour >= 4 && hour < 11) {
+    recitation = {
+      label: "al-Ikhlāṣ, al-Falaq, an-Nās",
+      detail: "Three times each for the morning — suffices you against everything.",
+    };
   } else {
     recitation = {
-      label: "Continue where you left off",
+      label: "A few quiet ayāt",
       detail: "A small, steady portion is more beloved than long, broken stretches.",
     };
   }
+
 
   // — Dhul Hijjah ————————————————————————————————————————
   if (month === "Dhul Hijjah") {

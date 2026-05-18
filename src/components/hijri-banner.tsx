@@ -11,6 +11,9 @@ import { computeDailySunnah, getHijriToday, type SunnahKind } from "@/lib/hijri-
 function recitationTarget(label: string | undefined): { surah: number; ayah: number } | null {
   if (!label) return null;
   if (/kahf/i.test(label)) return { surah: 18, ayah: 1 };
+  if (/mulk/i.test(label)) return { surah: 67, ayah: 1 };
+  if (/kursī|kursi/i.test(label)) return { surah: 2, ayah: 255 };
+  if (/ikhl[āa]ṣ|ikhlas|falaq|n[āa]s/i.test(label)) return { surah: 112, ayah: 1 };
   return null;
 }
 
