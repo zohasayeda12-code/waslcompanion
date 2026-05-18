@@ -82,11 +82,13 @@ function MyAyahs() {
         ) : null}
       </header>
 
-      <Section title="Lived" items={lived.map((i) => ({ surah: i.surah, ayah: i.ayah, label: i.text }))} from="my-ayahs" />
-      <Section title="Bookmarks" items={bookmarks} from="bookmarks" />
-      <Section title="Highlights" items={highlights.map((h) => ({ surah: h.surah, ayah: h.ayah, label: h.color }))} from="highlights" />
-      <Section title="Reflections" items={reflections.map((r) => ({ surah: r.surah, ayah: r.ayah, label: r.body.slice(0, 60) }))} from="reflections" />
-      <Section title="Recently revisited" items={revisited} from="revisited" />
+      <div className="md:grid md:grid-cols-2 md:gap-x-10 md:gap-y-2">
+        <Section title="Lived" items={lived.map((i) => ({ surah: i.surah, ayah: i.ayah, label: i.text }))} from="my-ayahs" />
+        <Section title="Bookmarks" items={bookmarks} from="bookmarks" />
+        <Section title="Highlights" items={highlights.map((h) => ({ surah: h.surah, ayah: h.ayah, label: h.color }))} from="highlights" />
+        <Section title="Reflections" items={reflections.map((r) => ({ surah: r.surah, ayah: r.ayah, label: r.body.slice(0, 60) }))} from="reflections" />
+        <Section title="Recently revisited" items={revisited} from="revisited" />
+      </div>
     </AppShell>
   );
 }
