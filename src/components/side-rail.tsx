@@ -39,10 +39,24 @@ const HIDDEN_PREFIXES = ["/onboarding", "/live/"];
  */
 export function SideRail() {
   const { pathname } = useLocation();
+  const navigate = useNavigate();
+  const nameFn = useServerFn(getDisplayName);
+  const logoutFn = useServerFn(logout);
+  const { data: nameData } = useQuery({
+    queryKey: ["display-name"],
+    queryFn: () => nameFn(),
+    staleTime: 5 * 60 * 1000,
+  });
+  const initial = (nameData?.name?.trim()?.[0] ?? "").toUpperCase() || "·";
+
   if (HIDDEN_PREFIXES.some((p) => pathname.startsWith(p))) return null;
 
   const active = items.find((it) => it.match(pathname));
 
+  const handleLogout = async () => {
+    try { await logoutFn(); } catch {}
+    navigate({ to: "/login" });
+  };
   return (
     <nav
       aria-label="Primary"
