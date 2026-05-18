@@ -136,7 +136,7 @@ function OnboardingScreen() {
         <motion.h1
           {...fade}
           transition={{ duration: 0.5, delay: 0.08, ease: [0.22, 1, 0.36, 1] }}
-          className="text-4xl leading-[1.1] font-medium tracking-tight text-foreground sm:text-5xl md:text-6xl"
+          className="mt-4 text-4xl leading-[1.08] font-medium tracking-tight text-foreground sm:text-5xl md:text-6xl"
         >
           Read. Understand.
           <br />
@@ -146,7 +146,7 @@ function OnboardingScreen() {
         <motion.p
           {...fade}
           transition={{ duration: 0.5, delay: 0.18, ease: [0.22, 1, 0.36, 1] }}
-          className="mt-6 max-w-md text-balance text-base leading-relaxed text-muted-foreground md:text-lg"
+          className="mt-10 max-w-md text-balance text-base leading-relaxed text-muted-foreground md:mt-12 md:text-lg"
         >
           A calm companion for your daily journey with the Quran — gentle,
           focused, and made to feel close.
