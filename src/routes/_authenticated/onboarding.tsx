@@ -18,7 +18,7 @@ export const Route = createFileRoute("/_authenticated/onboarding")({
   component: Onboarding,
 });
 
-const STEPS = ["welcome", "notifications", "first-ayah"] as const;
+const STEPS = ["notifications", "first-ayah"] as const;
 type Step = (typeof STEPS)[number];
 
 function Onboarding() {
