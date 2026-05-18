@@ -59,10 +59,12 @@ export function ReflectionPopover({ anchor, surah, ayah, onClose }: Props) {
 
   const { refs, floatingStyles } = useFloating({
     placement: "bottom",
-    middleware: [offset(12), flip(), shift({ padding: 8 })],
+    strategy: "fixed",
+    transform: false,
+    elements: { reference: anchor },
+    middleware: [offset(12), flip({ fallbackPlacements: ["top"] }), shift({ padding: 8 })],
     whileElementsMounted: autoUpdate,
   });
-  useEffect(() => refs.setReference(anchor), [anchor, refs]);
 
   const ref = useRef<HTMLDivElement | null>(null);
   useEffect(() => {
