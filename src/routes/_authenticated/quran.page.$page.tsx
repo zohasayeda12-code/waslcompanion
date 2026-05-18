@@ -4,7 +4,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { z } from "zod";
-import { Eye, EyeOff, ChevronLeft, ChevronRight, Sun, Moon } from "lucide-react";
+import { Feather, ChevronLeft, ChevronRight, Sun, Moon, BookOpen } from "lucide-react";
 
 import { AppShell } from "@/components/app-shell";
 import { MushafPage, type AyahHit } from "@/components/mushaf/MushafPage";
