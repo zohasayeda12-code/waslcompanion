@@ -128,7 +128,7 @@ export function SplashScreen() {
             initial={{ opacity: 0, y: 10, filter: "blur(6px)" }}
             animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
             transition={{ duration: 0.8, delay: 0.45, ease: [0.22, 1, 0.36, 1] }}
-            className="text-aurora mt-10 text-5xl font-medium tracking-[0.28em]"
+            className="text-aurora mt-10 text-7xl font-bold tracking-[0.28em]"
           >
             WASL
           </motion.h1>
