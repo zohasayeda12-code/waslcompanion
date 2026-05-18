@@ -167,24 +167,12 @@ export function SideRail() {
         })}
       </div>
 
-      {/* Bottom cluster: profile + logout */}
+      {/* Bottom cluster: logout */}
       <div className="mt-auto flex flex-col items-center gap-1.5 pt-4">
         <span
           aria-hidden
           className="mb-2 h-px w-7 bg-gradient-to-r from-transparent via-white/15 to-transparent"
         />
-        <Link
-          to="/settings"
-          aria-label="Profile"
-          title="Profile"
-          className={cn(
-            "group flex size-11 items-center justify-center rounded-2xl",
-            "text-foreground/45 hover:text-foreground/90 hover:bg-white/[0.04]",
-            "transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] active:scale-[0.96]",
-          )}
-        >
-          <User className="size-[18px] transition-transform group-hover:scale-110" strokeWidth={1.6} />
-        </Link>
 
         <form method="post" action="/api/auth/logout" className="contents">
           <button
