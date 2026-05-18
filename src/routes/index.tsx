@@ -166,7 +166,7 @@ function OnboardingScreen() {
             <a
               href={loginHref}
               onClick={() => setRedirecting(true)}
-              className="group relative isolate inline-flex h-13 w-full max-w-[18rem] items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/[0.04] px-6 py-3.5 text-[15px] font-medium tracking-tight text-foreground backdrop-blur-md transition-all duration-200 ease-[var(--ease-spring)] hover:bg-white/[0.07] active:scale-[0.97]"
+              className="group relative isolate inline-flex h-16 w-full max-w-[22rem] items-center justify-center gap-2.5 rounded-2xl border border-white/10 bg-white/[0.04] px-8 py-4 text-base font-medium tracking-tight text-foreground backdrop-blur-md transition-all duration-200 ease-[var(--ease-spring)] hover:bg-white/[0.07] active:scale-[0.97]"
               style={{
                 boxShadow:
                   "inset 0 1px 0 oklch(1 0 0 / 0.08), 0 6px 24px oklch(0.74 0.13 168 / 0.14)",
@@ -175,7 +175,7 @@ function OnboardingScreen() {
               <span className="relative z-10">Continue with Quran.Foundation</span>
               <svg
                 viewBox="0 0 24 24"
-                className="relative z-10 size-4 opacity-70 transition-transform group-hover:translate-x-0.5"
+                className="relative z-10 size-[18px] opacity-70 transition-transform group-hover:translate-x-0.5"
                 fill="none"
                 stroke="currentColor"
                 strokeWidth="2"
@@ -186,10 +186,6 @@ function OnboardingScreen() {
                 <path d="m12 5 7 7-7 7" />
               </svg>
             </a>
-            <p className="max-w-xs px-2 text-center text-xs leading-relaxed text-muted-foreground">
-              Continue your journey with Quran.Foundation — your bookmarks,
-              reflections, and pace travel with you.
-            </p>
             <p className="text-center text-xs text-muted-foreground">
               New here?{" "}
               <a
