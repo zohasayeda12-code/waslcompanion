@@ -236,8 +236,8 @@ function MushafReader() {
             </button>
             <button
               onClick={() => setPureMode(!pureMode)}
-              aria-label={pureMode ? "Exit Pure Quran Mode" : "Pure Quran Mode"}
-              title={pureMode ? "Exit Pure Quran Mode" : "Pure Quran Mode"}
+              aria-label={pureMode ? "Exit Mushaf Mode" : "Mushaf Mode"}
+              title={pureMode ? "Exit Mushaf Mode — return to reflections, highlights, and overlays" : "Mushaf Mode — read without reflections, highlights, or overlays"}
               className={`interactive inline-flex size-7 items-center justify-center rounded-full ${
                 pureMode
                   ? "bg-[color:var(--gold)]/15 text-[color:var(--gold)] shadow-[0_0_0_1px_color-mix(in_oklab,var(--gold)_25%,transparent)]"
