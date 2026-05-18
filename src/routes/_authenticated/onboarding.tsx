@@ -21,6 +21,38 @@ export const Route = createFileRoute("/_authenticated/onboarding")({
 const STEPS = ["welcome", "notifications", "first-ayah"] as const;
 type Step = (typeof STEPS)[number];
 
+function GlassButton({
+  onClick,
+  children,
+  type = "button",
+}: {
+  onClick?: () => void | Promise<void>;
+  children: React.ReactNode;
+  type?: "button" | "submit";
+}) {
+  return (
+    <button
+      type={type}
+      onClick={onClick}
+      className="group relative isolate inline-flex h-16 w-full items-center justify-center gap-2.5 overflow-hidden rounded-2xl border border-white/10 bg-white/[0.035] px-8 py-4 text-base font-medium tracking-tight text-foreground/95 backdrop-blur-md transition-all duration-300 ease-[var(--ease-spring)] hover:-translate-y-[1px] hover:border-white/15 hover:bg-white/[0.06] active:translate-y-0 active:scale-[0.985]"
+      style={{
+        boxShadow:
+          "inset 0 1px 0 oklch(1 0 0 / 0.07), 0 1px 0 oklch(0 0 0 / 0.4), 0 10px 30px -12px oklch(0 0 0 / 0.5)",
+      }}
+    >
+      <span
+        aria-hidden
+        className="pointer-events-none absolute inset-0 rounded-[inherit] opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+        style={{
+          background:
+            "radial-gradient(120% 80% at 50% 0%, oklch(0.85 0.10 82 / 0.10), transparent 65%)",
+        }}
+      />
+      <span className="relative z-10">{children}</span>
+    </button>
+  );
+}
+
 function Onboarding() {
   const [step, setStep] = useState<Step>("welcome");
   const [notificationPref, setNotificationPref] =
