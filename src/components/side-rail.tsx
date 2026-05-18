@@ -180,27 +180,40 @@ export function SideRail() {
         })}
       </div>
 
-      {/* Bottom cluster: logout */}
-      <div className="mt-auto flex flex-col items-center gap-1.5 pt-4">
+      {/* Bottom cluster: profile initial + logout */}
+      <div className="mt-auto flex flex-col items-center gap-2 pt-4">
         <span
           aria-hidden
-          className="mb-2 h-px w-7 bg-gradient-to-r from-transparent via-white/15 to-transparent"
+          className="mb-1 h-px w-7 bg-gradient-to-r from-transparent via-white/15 to-transparent"
         />
 
-        <form method="post" action="/api/auth/logout" className="contents">
-          <button
-            type="submit"
-            aria-label="Sign out"
-            title="Sign out"
-            className={cn(
-              "group flex size-11 items-center justify-center rounded-2xl",
-              "text-foreground/45 hover:text-foreground/90 hover:bg-white/[0.04]",
-              "transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] active:scale-[0.96]",
-            )}
-          >
-            <LogOut className="size-[18px] transition-transform group-hover:scale-110" strokeWidth={1.6} />
-          </button>
-        </form>
+        <div
+          aria-label={nameData?.name ? `Signed in as ${nameData.name}` : "Profile"}
+          title={nameData?.name ?? "Profile"}
+          className={cn(
+            "flex size-9 items-center justify-center rounded-full",
+            "border border-white/[0.08] bg-white/[0.03]",
+            "text-[12px] font-semibold tracking-wide text-foreground/80",
+            "select-none",
+          )}
+          style={{ fontFamily: "var(--font-display)" }}
+        >
+          {initial}
+        </div>
+
+        <button
+          type="button"
+          onClick={handleLogout}
+          aria-label="Sign out"
+          title="Sign out"
+          className={cn(
+            "group flex size-11 items-center justify-center rounded-2xl",
+            "text-foreground/45 hover:text-foreground/90 hover:bg-white/[0.04]",
+            "transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] active:scale-[0.96]",
+          )}
+        >
+          <LogOut className="size-[18px] transition-transform group-hover:scale-110" strokeWidth={1.6} />
+        </button>
       </div>
     </nav>
   );
