@@ -148,7 +148,8 @@ function OnboardingScreen() {
           transition={{ duration: 0.5, delay: 0.18, ease: [0.22, 1, 0.36, 1] }}
           className="mt-5 max-w-md text-balance text-base leading-relaxed text-muted-foreground md:mt-6 md:text-lg"
         >
-          Build your connection with the Quran by living one ayah at a time.
+          A calm companion for your daily journey with the Quran — gentle,
+          focused, and made to feel close.
         </motion.p>
 
         {error && (

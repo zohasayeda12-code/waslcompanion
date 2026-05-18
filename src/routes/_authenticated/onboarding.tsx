@@ -18,11 +18,11 @@ export const Route = createFileRoute("/_authenticated/onboarding")({
   component: Onboarding,
 });
 
-const STEPS = ["notifications", "first-ayah"] as const;
+const STEPS = ["welcome", "notifications", "first-ayah"] as const;
 type Step = (typeof STEPS)[number];
 
 function Onboarding() {
-  const [step, setStep] = useState<Step>("notifications");
+  const [step, setStep] = useState<Step>("welcome");
   const [notificationPref, setNotificationPref] =
     useState<"allow" | "maybe_later">("maybe_later");
   const navigate = useNavigate();
@@ -81,6 +81,19 @@ function Onboarding() {
           transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
           className="flex flex-1 flex-col items-center justify-center text-center"
         >
+          {step === "welcome" && (
+            <>
+              <h1 className="text-[clamp(2.25rem,9vw,3.25rem)] font-medium tracking-tight">
+                One ayah <span className="text-aurora">at a time.</span>
+              </h1>
+              <p className="mt-6 max-w-sm text-balance text-base text-muted-foreground">
+                Read. Reflect. Live the ayah.
+              </p>
+              <p className="mt-4 max-w-sm text-balance text-base text-muted-foreground">
+                No rush. No race.
+              </p>
+            </>
+          )}
           {step === "notifications" && (
             <>
               <h1 className="text-[clamp(2rem,8vw,3rem)] font-medium tracking-tight">
@@ -95,7 +108,6 @@ function Onboarding() {
               </p>
               <div className="mt-10 flex w-full max-w-xs flex-col gap-3">
                 <PrimaryButton
-                  className="!shadow-none"
                   onClick={async () => {
                     if ("Notification" in window)
                       await Notification.requestPermission();
@@ -138,7 +150,7 @@ function Onboarding() {
       <footer className="pt-4">
         <div className="md:mx-auto md:w-full md:max-w-xs">
           {step === "first-ayah" ? (
-            <PrimaryButton variant="gold" onClick={() => finish()} className="!text-white !shadow-none">
+            <PrimaryButton variant="gold" onClick={() => finish()} className="!text-white">
               Begin
             </PrimaryButton>
           ) : step === "notifications" ? null : (
