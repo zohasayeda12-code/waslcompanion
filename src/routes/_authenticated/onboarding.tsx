@@ -150,7 +150,7 @@ function Onboarding() {
       <footer className="pt-4">
         <div className="md:mx-auto md:w-full md:max-w-xs">
           {step === "first-ayah" ? (
-            <PrimaryButton variant="gold" onClick={() => finish()} className="md:!text-white">
+            <PrimaryButton variant="gold" onClick={() => finish()} className="!text-white">
               Begin
             </PrimaryButton>
           ) : step === "notifications" ? null : (
