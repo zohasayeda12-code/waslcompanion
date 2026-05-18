@@ -4,6 +4,7 @@ import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { requireUserId } from "./current-user.server";
 import { qfUserFetch } from "./qf-user.server";
 import { getWaslSession } from "./qf-session.server";
+import { qfConfig } from "./qf-config.server";
 
 /** Clears the encrypted session cookie. Called from the client logout button. */
 export const logout = createServerFn({ method: "POST" }).handler(async () => {
