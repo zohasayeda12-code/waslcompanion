@@ -55,11 +55,31 @@ function HomeScreen() {
   const statusLabel =
     active?.status === "carried"
       ? "Carrying this ayah"
-      : active?.status === "awaiting_response"
-      ? "Living this ayah"
       : active
-      ? "Current intention"
+      ? "Living this ayah"
       : null;
+
+  const reminderPhrase = (iso: string) => {
+    const d = new Date(iso);
+    const now = new Date();
+    const sameDay = d.toDateString() === now.toDateString();
+    const tomorrow = new Date(now); tomorrow.setDate(now.getDate() + 1);
+    const isTomorrow = d.toDateString() === tomorrow.toDateString();
+    const h = d.getHours();
+    let when = "";
+    if (sameDay && h >= 18) when = "Reminder tonight";
+    else if (sameDay && h < 12) when = "Reminder this morning";
+    else if (sameDay) when = "Reminder later today";
+    else if (isTomorrow && h < 12) when = "Reminder tomorrow morning";
+    else if (isTomorrow && h >= 18) when = "Reminder tomorrow night";
+    else if (isTomorrow) when = "Reminder tomorrow";
+    else when = "Reminder";
+    const time = d.toLocaleString(undefined, {
+      month: "short", day: "numeric", hour: "numeric", minute: "2-digit",
+    });
+    return `${when} · ${time}`;
+  };
+
 
   const { data: ayahData } = useQuery({
     queryKey: ["ayah", surah, ayah],
