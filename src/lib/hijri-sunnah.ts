@@ -78,6 +78,7 @@ export type HijriToday = {
   day: number;
   year: string;
   weekday: number; // 0=Sun … 5=Fri … 6=Sat
+  hour: number; // 0-23, local
 };
 
 export function getHijriToday(now = new Date()): HijriToday {
@@ -96,9 +97,10 @@ export function getHijriToday(now = new Date()): HijriToday {
       day: parseInt(dayStr, 10) || 0,
       year,
       weekday: now.getDay(),
+      hour: now.getHours(),
     };
   } catch {
-    return { month: "", day: 0, year: "", weekday: now.getDay() };
+    return { month: "", day: 0, year: "", weekday: now.getDay(), hour: now.getHours() };
   }
 }
 
