@@ -48,11 +48,11 @@ export function SplashScreen() {
           className="fixed inset-0 z-[100] flex flex-col items-center justify-center overflow-hidden"
           style={{ background: "var(--gradient-night-canvas)" }}
         >
-          {/* aurora veil — very subtle so background stays dark */}
+          {/* solid dark base to match app background */}
           <div
             aria-hidden
-            className="pointer-events-none absolute inset-0 opacity-25 blur-3xl"
-            style={{ background: "var(--gradient-aurora)" }}
+            className="pointer-events-none absolute inset-0"
+            style={{ background: "oklch(0.16 0.035 270)" }}
           />
 
           {/* floating particles */}
