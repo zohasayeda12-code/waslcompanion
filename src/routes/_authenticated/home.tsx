@@ -23,6 +23,7 @@ function HomeScreen() {
   const journeyFn = useServerFn(getJourneyState);
   const intentionFn = useServerFn(getActiveIntention);
   const ayahFn = useServerFn(getAyah);
+  const nameFn = useServerFn(getDisplayName);
   const navigate = useNavigate();
 
   const saveSubFn = useServerFn(saveSubscription);
@@ -30,6 +31,7 @@ function HomeScreen() {
 
   const { data: journey } = useQuery({ queryKey: ["journey"], queryFn: () => journeyFn() });
   const { data: active } = useQuery({ queryKey: ["active-intention"], queryFn: () => intentionFn() });
+  const { data: nameData } = useQuery({ queryKey: ["display-name"], queryFn: () => nameFn(), staleTime: 5 * 60 * 1000 });
 
   // Auto-register push so reminders arrive on this device
   useEffect(() => {
