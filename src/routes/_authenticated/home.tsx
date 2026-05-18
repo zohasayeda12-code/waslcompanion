@@ -134,8 +134,10 @@ function HomeScreen() {
                 </div>
               )}
               <p
+                dir="rtl"
+                lang="ar"
                 className="text-right text-[clamp(1.6rem,7.5vw,2.15rem)] leading-[1.85] font-medium tracking-tight text-foreground"
-                style={{ fontFamily: "var(--font-display)", direction: "rtl" }}
+                style={{ fontFamily: "var(--font-display)", direction: "rtl", unicodeBidi: "isolate" }}
               >
                 {ayahData?.arabic || "···"}
               </p>
