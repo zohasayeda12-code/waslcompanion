@@ -44,7 +44,7 @@ export function AppShell({ children, className = "", framed = true }: Props) {
             // viewport so large screens feel intentionally framed rather
             // than a phone trapped in a void — without becoming a dashboard.
             framed && [
-              "md:max-w-[560px] lg:max-w-[760px] xl:max-w-[880px] 2xl:max-w-[960px]",
+              "md:max-w-[640px] lg:max-w-[860px] xl:max-w-[1000px] 2xl:max-w-[1080px]",
               "md:min-h-[min(880px,90dvh)]",
               "md:rounded-[2.25rem]",
               "md:border md:border-white/10",
