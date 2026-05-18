@@ -23,7 +23,7 @@ type Props = {
   anchor: HTMLElement | null;
   bookmarked?: boolean;
   isActiveIntention?: boolean;
-  onAction: (a: ToolbarAction) => void;
+  onAction: (a: ToolbarAction, el?: HTMLElement) => void;
   onClose: () => void;
 };
 
