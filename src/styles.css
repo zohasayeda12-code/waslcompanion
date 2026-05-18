@@ -558,7 +558,6 @@ body.pure-mode .mushaf-active-glow { display: none !important; }
   50% {
     background-color: color-mix(in oklab, var(--gold) 13%, transparent);
     box-shadow:
-      0 0 0 1px color-mix(in oklab, var(--gold) 14%, transparent),
       0 0 12px 4px color-mix(in oklab, var(--gold) 17%, transparent),
       0 0 22px 8px color-mix(in oklab, var(--gold) 9%, transparent);
   }
