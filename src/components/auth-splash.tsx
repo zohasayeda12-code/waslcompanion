@@ -52,7 +52,10 @@ export function AuthSplash({ message = "One quiet moment…" }: { message?: stri
           </svg>
         </motion.div>
       </div>
-      <p className="mt-8 text-sm text-muted-foreground">{message}</p>
+      <p className="mt-8 text-sm text-foreground/80">{message}</p>
+      <p className="mt-2 text-xs tracking-wide text-muted-foreground">
+        Secure sign-in powered by Quran.Foundation
+      </p>
     </motion.div>
   );
 }
