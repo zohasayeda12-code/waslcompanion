@@ -4,7 +4,7 @@ import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { z } from "zod";
 import { AppShell } from "@/components/app-shell";
-import { BookOpen, Bookmark, Sparkles, Heart, ChevronDown, Loader2, Check, Play, Pause, X, Lock } from "lucide-react";
+import { BookOpen, Bookmark, Sparkles, Heart, ChevronDown, Loader2, Check, Play, Pause, X, Lock, ChevronLeft, ChevronRight } from "lucide-react";
 import { getAyah } from "@/lib/qf-content.functions";
 import { getAyahContext } from "@/lib/ayah-context.functions";
 import { listIntentionsForAyah, getActiveIntention, markLived, carryForward, removeIntention, createIntention } from "@/lib/intentions.functions";
@@ -13,7 +13,7 @@ import { getJourneyState, advanceJourney } from "@/lib/journey.functions";
 import { toggleBookmark, isBookmarked, recordRevisit } from "@/lib/library.functions";
 import { setHighlight, getHighlight } from "@/lib/highlights.functions";
 import { saveReflection } from "@/lib/library.functions";
-import { nextAyahPos } from "@/lib/surah-meta";
+import { nextAyahPos, prevAyahPos } from "@/lib/surah-meta";
 
 const search = z.object({
   from: z.enum(["home", "quran", "bookmarks", "highlights", "reflections", "collections", "search", "notification", "revisited", "my-ayahs"]).optional(),
@@ -100,6 +100,11 @@ function AyahDetail() {
   });
 
   const isCurrent = journey?.current_surah === s && journey?.current_ayah === a;
+
+  const prevPos = useMemo(() => prevAyahPos(s, a), [s, a]);
+  const hasPrev = !(prevPos.surah === s && prevPos.ayah === a);
+  const nextPos = useMemo(() => nextAyahPos(s, a), [s, a]);
+  const forwardBlocked = isCurrent; // cannot go past the current journey ayah
 
   // Seed Home tab's lighter cache key with what we already have, so returning
   // to /home renders instantly without a fresh round-trip.
@@ -198,21 +203,39 @@ function AyahDetail() {
       {/* Ayah card */}
       <section className="mt-6 rounded-3xl border border-border/60 bg-card/60 p-6 shadow-[var(--shadow-soft)] backdrop-blur-sm">
         <div className="flex items-center justify-between">
-          <p className="text-xs uppercase tracking-[0.22em] text-[color:var(--gold)]">
-            {s}:{a}
-          </p>
           <button
-            onClick={() => setSheet("live")}
-            aria-label="Live this ayah"
-            className="interactive relative inline-flex size-8 items-center justify-center rounded-full border border-border/60 bg-secondary/40 text-[color:var(--rose,oklch(0.72_0.16_15))]"
+            type="button"
+            onClick={() => {
+              if (!hasPrev) return;
+              navigate({
+                to: "/ayah/$surah/$ayah",
+                params: { surah: String(prevPos.surah), ayah: String(prevPos.ayah) },
+                search: { from: from ?? "home" },
+              });
+            }}
+            disabled={!hasPrev}
+            aria-label="Previous ayah"
+            className="interactive inline-flex items-center gap-1.5 rounded-full px-1.5 py-0.5 text-xs uppercase tracking-[0.22em] text-[color:var(--gold)] hover:bg-white/[0.04] disabled:opacity-40"
           >
-            {glowLive && !activeForThis && (
-              <span
-                className="absolute inset-0 -z-10 animate-ping rounded-full"
-                style={{ background: "color-mix(in oklab, var(--rose, oklch(0.72 0.16 15)) 50%, transparent)" }}
-              />
-            )}
-            <Heart className="size-4" />
+            <ChevronLeft className="size-3.5" />
+            <span>{s}:{a}</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              if (forwardBlocked) { setShowBlocked(true); return; }
+              navigate({
+                to: "/ayah/$surah/$ayah",
+                params: { surah: String(nextPos.surah), ayah: String(nextPos.ayah) },
+                search: { from: from ?? "home" },
+              });
+            }}
+            disabled={forwardBlocked}
+            aria-label={forwardBlocked ? "You've reached your current ayah" : "Next ayah"}
+            title={forwardBlocked ? "You've reached your current ayah" : "Next ayah"}
+            className="interactive inline-flex size-8 items-center justify-center rounded-full border border-border/60 bg-secondary/40 text-foreground/80 hover:text-foreground disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            <ChevronRight className="size-4" />
           </button>
         </div>
 
@@ -239,8 +262,16 @@ function AyahDetail() {
           </p>
         )}
 
-        {/* 4 icons — one row */}
-        <div className="mt-6 grid grid-cols-4 gap-1.5">
+        {/* 5 icons — one row */}
+        <div className="mt-6 grid grid-cols-5 gap-1.5">
+          <IconPill
+            label="Live"
+            icon={<Heart className="size-3.5" />}
+            color="var(--rose,oklch(0.72_0.16_15))"
+            active={Boolean(activeForThis)}
+            glow={glowLive && !activeForThis}
+            onClick={() => setSheet("live")}
+          />
           <IconPill
             label="Tafsir"
             icon={<BookOpen className="size-3.5" />}
