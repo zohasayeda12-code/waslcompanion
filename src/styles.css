@@ -472,7 +472,6 @@
   -webkit-box-decoration-break: clone;
   box-decoration-break: clone;
   color: var(--mushaf-ink);
-  filter: blur(0.01px); /* nudge GPU compositing for smoother edges */
 }
 .hl-gold   { background-image: radial-gradient(ellipse 50% 60% at 50% 50%, color-mix(in oklab, var(--hl-gold)   32%, transparent) 0%, color-mix(in oklab, var(--hl-gold)   22%, transparent) 55%, transparent 100%); }
 .hl-blue   { background-image: radial-gradient(ellipse 50% 60% at 50% 50%, color-mix(in oklab, var(--hl-blue)   32%, transparent) 0%, color-mix(in oklab, var(--hl-blue)   22%, transparent) 55%, transparent 100%); }
