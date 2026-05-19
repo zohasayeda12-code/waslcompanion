@@ -969,26 +969,51 @@ function BottomSheet({
 }) {
   const [dragY, setDragY] = useState(0);
   const [startY, setStartY] = useState<number | null>(null);
+  const [mounted, setMounted] = useState(false);
+  const [closing, setClosing] = useState(false);
+
+  const requestClose = () => {
+    if (closing) return;
+    setClosing(true);
+    setTimeout(onClose, 280);
+  };
 
   useEffect(() => {
+    const id = requestAnimationFrame(() => setMounted(true));
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
+      if (e.key === "Escape") requestClose();
     };
     document.addEventListener("keydown", onKey);
     const prev = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     return () => {
+      cancelAnimationFrame(id);
       document.removeEventListener("keydown", onKey);
       document.body.style.overflow = prev;
     };
-  }, [onClose]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const visible = mounted && !closing;
+  const offscreen = typeof window !== "undefined" ? window.innerHeight : 800;
+  const translate = visible ? Math.max(0, dragY) : offscreen;
 
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center" role="dialog" aria-modal="true">
-      <div className="absolute inset-0 bg-background/70 backdrop-blur-sm" onClick={onClose} aria-hidden />
+      <div
+        className="absolute inset-0 bg-background/70 backdrop-blur-sm transition-opacity duration-300 ease-out"
+        style={{ opacity: visible ? 1 : 0 }}
+        onClick={requestClose}
+        aria-hidden
+      />
       <div
         className="relative z-10 mx-auto w-full md:max-w-[720px] lg:max-w-[940px] xl:max-w-[1080px] 2xl:max-w-[1160px] rounded-t-3xl border-t border-x border-border/60 bg-card shadow-[var(--shadow-elevated)]"
-        style={{ transform: `translateY(${Math.max(0, dragY)}px)`, transition: startY === null ? "transform 200ms ease" : "none", maxHeight: "85vh" }}
+        style={{
+          transform: `translateY(${translate}px)`,
+          transition: startY === null ? "transform 340ms cubic-bezier(0.32, 0.72, 0, 1)" : "none",
+          maxHeight: "85vh",
+          willChange: "transform",
+        }}
         onTouchStart={(e) => setStartY(e.touches[0].clientY)}
         onTouchMove={(e) => {
           if (startY === null) return;
@@ -997,7 +1022,7 @@ function BottomSheet({
         }}
         onTouchEnd={() => {
           if (dragY > 120) {
-            onClose();
+            requestClose();
           }
           setStartY(null);
           setDragY(0);
@@ -1005,7 +1030,7 @@ function BottomSheet({
       >
         <div className="flex items-center justify-between gap-3 px-5 pt-3 pb-2">
           <button
-            onClick={onClose}
+            onClick={requestClose}
             aria-label="Close"
             className="inline-flex size-8 items-center justify-center rounded-full bg-secondary/60 text-foreground/80 hover:text-foreground"
           >
