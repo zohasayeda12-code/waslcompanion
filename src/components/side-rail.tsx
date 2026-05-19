@@ -123,7 +123,6 @@ export function SideRail() {
               key={it.to}
               to={it.to}
               aria-current={isActive ? "page" : undefined}
-              title={it.label}
               className={cn(
                 "group relative flex items-center justify-center",
                 "size-11 rounded-2xl",
