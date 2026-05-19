@@ -215,10 +215,9 @@ function AyahDetail() {
             }}
             disabled={!hasPrev}
             aria-label="Previous ayah"
-            className="interactive inline-flex items-center gap-1.5 rounded-full px-1.5 py-0.5 text-xs uppercase tracking-[0.22em] text-[color:var(--gold)] hover:bg-white/[0.04] disabled:opacity-40"
+            className="interactive inline-flex size-8 items-center justify-center rounded-full border border-border/60 bg-secondary/40 text-foreground/80 hover:text-foreground disabled:opacity-40 disabled:cursor-not-allowed"
           >
-            <ChevronLeft className="size-3.5" />
-            <span>{s}:{a}</span>
+            <ChevronLeft className="size-4" />
           </button>
           <button
             type="button"
