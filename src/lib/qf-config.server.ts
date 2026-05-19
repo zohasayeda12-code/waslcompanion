@@ -28,7 +28,7 @@ export const qfConfig = {
     return process.env.QF_TOKEN_URL ?? "https://prelive-oauth2.quran.foundation/oauth2/token";
   },
   get userInfoUrl() {
-    return process.env.QF_USERINFO_URL ?? `${new URL(this.authUrl).origin}/userinfo`;
+    return process.env.QF_USERINFO_URL ?? `${new URL(this.authUrl).origin}/oauth2/userinfo`;
   },
   get scopes() {
     return (
