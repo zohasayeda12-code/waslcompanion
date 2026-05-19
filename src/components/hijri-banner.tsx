@@ -34,7 +34,14 @@ function recitationTarget(label: string | undefined): { page: number } | null {
  * framed as an invitation.
  */
 export function HijriBanner() {
-  const today = useMemo(() => getHijriToday(), []);
+  // Compute on the client only. Running on the server uses the server's
+  // timezone (UTC), and that value gets frozen into the hydrated HTML,
+  // causing mobile installs / cached responses to show a stale or wrong
+  // date. Recomputing in an effect guarantees the user's local "today".
+  const [today, setToday] = useState(() => getHijriToday());
+  useEffect(() => {
+    setToday(getHijriToday(new Date()));
+  }, []);
   const sunnah = useMemo(() => computeDailySunnah(today), [today]);
   const [open, setOpen] = useState(false);
 
