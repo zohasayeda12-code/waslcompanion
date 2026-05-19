@@ -605,7 +605,7 @@ body.pure-mode .mushaf-active-glow { display: none !important; }
 @keyframes ayah-resume-glow {
   0%, 100% {
     background-color: color-mix(in oklab, var(--resume-gold) 5%, transparent);
-    outline-color: color-mix(in oklab, var(--resume-cyan) 20%, transparent);
+    
     box-shadow:
       0 0 0 0 color-mix(in oklab, var(--resume-gold) 0%, transparent),
       0 0 5px 1px color-mix(in oklab, var(--resume-gold) 10%, transparent);
