@@ -142,43 +142,6 @@ function SettingsScreen() {
         <div className="rounded-2xl border border-border bg-card p-4">
           <div className="flex items-center justify-between gap-4">
             <div className="pr-4">
-              <p className="text-sm font-medium">Daily reminders</p>
-              <p className="text-xs text-muted-foreground">
-                {supported
-                  ? "One gentle nudge each day at your chosen time. Separate from your ayah intentions."
-                  : "Notifications aren't supported on this device or browser."}
-              </p>
-              {notifNote && (
-                <p className="mt-1 text-xs text-amber-400/80">{notifNote}</p>
-              )}
-            </div>
-            <Switch
-              checked={notifOn}
-              disabled={!supported || notifBusy}
-              onCheckedChange={toggleNotif}
-            />
-          </div>
-          {notifOn && (
-            <div className="mt-4 flex items-center justify-between gap-4 border-t border-border/60 pt-4">
-              <div>
-                <p className="text-xs font-medium text-foreground/80">Reminder time</p>
-                <p className="text-[11px] text-muted-foreground">
-                  Sent once each day at this time.
-                </p>
-              </div>
-              <input
-                type="time"
-                value={dailyTime}
-                onChange={(e) => persistDaily(e.target.value)}
-                className="rounded-lg border border-border bg-background px-3 py-1.5 text-sm tabular-nums focus:outline-none focus:ring-1 focus:ring-ring"
-              />
-            </div>
-          )}
-        </div>
-
-        <div className="rounded-2xl border border-border bg-card p-4">
-          <div className="flex items-center justify-between gap-4">
-            <div className="pr-4">
               <p className="text-sm font-medium">Reciter</p>
               <p className="text-xs text-muted-foreground">
                 Voice used for ayah audio on the ayah screen.
