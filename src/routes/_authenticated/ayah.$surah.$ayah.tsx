@@ -28,19 +28,6 @@ export const Route = createFileRoute("/_authenticated/ayah/$surah/$ayah")({
 
 type SheetKind = "tafsir" | "context" | "live" | null;
 
-function formatReminderDate(value: string) {
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return "your selected time";
-  return date.toLocaleString(undefined, {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-    hour: "numeric",
-    minute: "2-digit",
-    timeZoneName: "short",
-  });
-}
-
 function AyahDetail() {
   const { surah, ayah } = Route.useParams();
   const { from } = Route.useSearch();
@@ -364,7 +351,7 @@ function AyahDetail() {
           <p className="mt-2 text-sm leading-relaxed text-foreground/90">{activeForThis.text}</p>
           {activeForThis.reminder_at && (
             <p className="mt-2 text-xs text-muted-foreground">
-              Reminder: {formatReminderDate(activeForThis.reminder_at)}
+              Reminder: {new Date(activeForThis.reminder_at).toLocaleString([], { dateStyle: "medium", timeStyle: "short" })}
             </p>
           )}
           <div className="mt-3 flex flex-wrap gap-2">
@@ -668,7 +655,7 @@ function LiveSheet({
       <button
         onClick={() => submit.mutate()}
         disabled={!text.trim() || submit.isPending || !reminderLocal}
-        className="interactive mt-5 inline-flex h-12 w-full items-center justify-center rounded-2xl bg-[var(--gradient-primary)] px-6 text-sm font-medium text-primary-foreground shadow-[var(--shadow-soft)] disabled:opacity-50 disabled:pointer-events-none"
+        className="mt-5 inline-flex h-12 w-full items-center justify-center rounded-2xl bg-[var(--gradient-primary)] px-6 text-sm font-medium text-primary-foreground shadow-[var(--shadow-soft)] disabled:opacity-50"
       >
         {submit.isPending ? <Loader2 className="size-4 animate-spin" /> : "Set Intention"}
       </button>
@@ -677,7 +664,7 @@ function LiveSheet({
 }
 
 function ConfirmDialog({ when, onClose }: { when: string; onClose: () => void }) {
-  const formatted = formatReminderDate(when);
+  const formatted = new Date(when).toLocaleString([], { dateStyle: "medium", timeStyle: "short" });
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-6" role="dialog" aria-modal="true">
       <div className="absolute inset-0 bg-background/70 backdrop-blur-sm" onClick={onClose} aria-hidden />
@@ -690,7 +677,7 @@ function ConfirmDialog({ when, onClose }: { when: string; onClose: () => void })
         </p>
         <button
           onClick={onClose}
-          className="interactive mt-5 inline-flex h-10 w-full items-center justify-center rounded-2xl bg-secondary px-4 text-sm text-secondary-foreground"
+          className="mt-5 inline-flex h-10 w-full items-center justify-center rounded-2xl bg-secondary px-4 text-sm"
         >
           Close
         </button>

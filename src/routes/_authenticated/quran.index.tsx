@@ -1,9 +1,9 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useCallback, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { BookOpen, ChevronRight } from "lucide-react";
+import { BookOpen, Bookmark, ChevronRight } from "lucide-react";
 
 import { AppShell } from "@/components/app-shell";
 import { GlassCard } from "@/components/glass-card";
@@ -84,6 +84,13 @@ function QuranHub() {
             A gentle entry into your reading
           </p>
         </div>
+        <Link
+          to="/my-ayahs"
+          aria-label="My Ayahs"
+          className="interactive inline-flex size-9 items-center justify-center rounded-full bg-secondary/60 text-foreground/80"
+        >
+          <Bookmark className="size-[17px]" strokeWidth={1.6} />
+        </Link>
       </header>
 
       {/* Continue Reading — the "thread marker" */}
