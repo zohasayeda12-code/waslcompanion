@@ -165,22 +165,39 @@ function HomeScreen() {
                   </GlowChip>
                 </div>
               )}
-              <p
-                dir="rtl"
-                lang="ar"
-                className="text-right text-[clamp(1.6rem,7.5vw,2.15rem)] leading-[1.85] font-medium tracking-tight text-foreground"
-                style={{ fontFamily: "var(--font-display)", direction: "rtl", unicodeBidi: "isolate" }}
-              >
-                {ayahData?.arabic || "···"}
-              </p>
-              {ayahData?.translation && (
-                <p className="mt-6 text-[clamp(0.95rem,3.6vw,1.05rem)] leading-relaxed text-foreground/75">
-                  {ayahData.translation}
-                </p>
-              )}
-              <p className="mt-5 text-[10px] uppercase tracking-[0.24em] text-muted-foreground">
-                {ayahData?.surahName ?? `Surah ${surah}`} · {surah}:{ayah}
-              </p>
+              <div className="relative overflow-hidden">
+                <AnimatePresence mode="popLayout" initial={false}>
+                  <motion.div
+                    key={`${surah}:${ayah}`}
+                    initial={{ y: 28, opacity: 0, filter: "blur(6px)" }}
+                    animate={{ y: 0, opacity: 1, filter: "blur(0px)" }}
+                    exit={{ y: -28, opacity: 0, filter: "blur(6px)" }}
+                    transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+                  >
+                    <p
+                      dir="rtl"
+                      lang="ar"
+                      className="text-right text-[clamp(1.6rem,7.5vw,2.15rem)] leading-[1.85] font-medium tracking-tight text-foreground"
+                      style={{ fontFamily: "var(--font-display)", direction: "rtl", unicodeBidi: "isolate" }}
+                    >
+                      {ayahData?.arabic || "···"}
+                    </p>
+                    {ayahData?.translation && (
+                      <motion.p
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ duration: 0.5, delay: 0.18, ease: "easeOut" }}
+                        className="mt-6 text-[clamp(0.95rem,3.6vw,1.05rem)] leading-relaxed text-foreground/75"
+                      >
+                        {ayahData.translation}
+                      </motion.p>
+                    )}
+                    <p className="mt-5 text-[10px] uppercase tracking-[0.24em] text-muted-foreground">
+                      {ayahData?.surahName ?? `Surah ${surah}`} · {surah}:{ayah}
+                    </p>
+                  </motion.div>
+                </AnimatePresence>
+              </div>
               {active && (
                 <div className="mt-5 border-t border-white/[0.06] pt-4">
                   <p className="text-sm leading-relaxed text-foreground/80">
