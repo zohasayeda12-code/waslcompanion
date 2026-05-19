@@ -613,7 +613,7 @@ body.pure-mode .mushaf-active-glow { display: none !important; }
   }
   50% {
     background-color: color-mix(in oklab, var(--resume-gold) 18%, transparent);
-    outline-color: color-mix(in oklab, var(--resume-cyan) 48%, transparent);
+    
     box-shadow:
       0 0 13px 4px color-mix(in oklab, var(--resume-gold) 26%, transparent),
       0 0 26px 10px color-mix(in oklab, var(--resume-gold) 13%, transparent);
