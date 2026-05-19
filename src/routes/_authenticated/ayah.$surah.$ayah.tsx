@@ -664,7 +664,11 @@ function LiveSheet({
 }
 
 function ConfirmDialog({ when, onClose }: { when: string; onClose: () => void }) {
-  const formatted = new Date(when).toLocaleString([], { dateStyle: "medium", timeStyle: "short" });
+  const formatted = new Date(when).toLocaleString(undefined, {
+    dateStyle: "medium",
+    timeStyle: "short",
+    timeZoneName: "short",
+  });
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-6" role="dialog" aria-modal="true">
       <div className="absolute inset-0 bg-background/70 backdrop-blur-sm" onClick={onClose} aria-hidden />
@@ -677,7 +681,7 @@ function ConfirmDialog({ when, onClose }: { when: string; onClose: () => void })
         </p>
         <button
           onClick={onClose}
-          className="mt-5 inline-flex h-10 w-full items-center justify-center rounded-2xl bg-secondary px-4 text-sm"
+          className="interactive mt-5 inline-flex h-10 w-full items-center justify-center rounded-2xl bg-secondary px-4 text-sm text-secondary-foreground"
         >
           Close
         </button>
