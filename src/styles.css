@@ -648,7 +648,7 @@ body.pure-mode .mushaf-active-glow { display: none !important; }
   background: oklch(0 0 0 / 0.42);
   pointer-events: none;
   z-index: 1;
-  animation: ayah-resume-spotlight 9.75s ease-in-out 0.15s 1 forwards;
+  animation: ayah-resume-spotlight 5.9s ease-in-out 0.1s 1 forwards;
 }
 body.mushaf-day .mushaf-page:has(.ayah-resume)::after {
   background: oklch(0 0 0 / 0.22);
