@@ -120,7 +120,7 @@ function isHijriMonth(name: string): boolean {
 
 function getFallbackHijriToday(now: Date): HijriToday {
   const localDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  let current = UMM_AL_QURA_MONTH_STARTS[0];
+  let current: (typeof UMM_AL_QURA_MONTH_STARTS)[number] = UMM_AL_QURA_MONTH_STARTS[0];
 
   for (const row of UMM_AL_QURA_MONTH_STARTS) {
     const [year, month, day] = row.start.split("-").map(Number);
