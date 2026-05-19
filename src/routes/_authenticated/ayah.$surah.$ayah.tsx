@@ -81,12 +81,17 @@ function AyahDetail() {
     window.addEventListener("storage", onStorage);
     return () => window.removeEventListener("storage", onStorage);
   }, []);
-  const { data: ayahData } = useQuery({ queryKey: ["ayah", s, a, "full", reciterId ?? 7], queryFn: () => ayahFn({ data: { surah: s, ayah: a, includeTafsir: true, reciterId } }) });
-  const { data: intentions = [] } = useQuery({ queryKey: ["intentions", s, a], queryFn: () => intentionsFn({ data: { surah: s, ayah: a } }) });
-  const { data: active } = useQuery({ queryKey: ["active-intention"], queryFn: () => activeFn() });
-  const { data: journey } = useQuery({ queryKey: ["journey"], queryFn: () => journeyFn() });
-  const { data: bookmark } = useQuery({ queryKey: ["bookmark", s, a], queryFn: () => bookmarkedFn({ data: { surah: s, ayah: a } }) });
-  useQuery({ queryKey: ["highlight", s, a], queryFn: () => getHighlightFn({ data: { surah: s, ayah: a } }) });
+  const { data: ayahData } = useQuery({
+    queryKey: ["ayah", s, a, "full", reciterId ?? 7],
+    queryFn: () => ayahFn({ data: { surah: s, ayah: a, includeTafsir: true, reciterId } }),
+    staleTime: 10 * 60_000,
+    gcTime: 30 * 60_000,
+  });
+  const { data: intentions = [] } = useQuery({ queryKey: ["intentions", s, a], queryFn: () => intentionsFn({ data: { surah: s, ayah: a } }), staleTime: 30_000 });
+  const { data: active } = useQuery({ queryKey: ["active-intention"], queryFn: () => activeFn(), staleTime: 30_000 });
+  const { data: journey } = useQuery({ queryKey: ["journey"], queryFn: () => journeyFn(), staleTime: 60_000 });
+  const { data: bookmark } = useQuery({ queryKey: ["bookmark", s, a], queryFn: () => bookmarkedFn({ data: { surah: s, ayah: a } }), staleTime: 60_000 });
+  useQuery({ queryKey: ["highlight", s, a], queryFn: () => getHighlightFn({ data: { surah: s, ayah: a } }), staleTime: 60_000 });
   const { data: contextData, isLoading: contextLoading } = useQuery({
     queryKey: ["ayah-context", s, a],
     queryFn: () => contextFn({ data: { surah: s, ayah: a } }),
@@ -95,6 +100,32 @@ function AyahDetail() {
   });
 
   const isCurrent = journey?.current_surah === s && journey?.current_ayah === a;
+
+  // Seed Home tab's lighter cache key with what we already have, so returning
+  // to /home renders instantly without a fresh round-trip.
+  useEffect(() => {
+    if (ayahData) {
+      qc.setQueryData(["ayah", s, a], ayahData);
+    }
+  }, [ayahData, s, a, qc]);
+
+  // Prefetch the next sequential ayah so its Arabic renders immediately.
+  useEffect(() => {
+    const next = nextAyahPos(s, a);
+    if (!next) return;
+    const key = ["ayah", next.surah, next.ayah, "full", reciterId ?? 7];
+    if (qc.getQueryData(key)) return;
+    qc.prefetchQuery({
+      queryKey: key,
+      queryFn: () => ayahFn({ data: { surah: next.surah, ayah: next.ayah, includeTafsir: true, reciterId } }),
+      staleTime: 10 * 60_000,
+    });
+    qc.prefetchQuery({
+      queryKey: ["bookmark", next.surah, next.ayah],
+      queryFn: () => bookmarkedFn({ data: { surah: next.surah, ayah: next.ayah } }),
+      staleTime: 60_000,
+    });
+  }, [s, a, reciterId, qc, ayahFn, bookmarkedFn]);
 
   useEffect(() => {
     if (from && from !== "home") {
