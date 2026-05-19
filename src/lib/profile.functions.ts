@@ -29,14 +29,7 @@ export const removePushSubscriptions = createServerFn({ method: "POST" }).handle
  * Returns null on any failure so the header degrades gracefully.
  */
 export const getDisplayName = createServerFn({ method: "GET" }).handler(async () => {
-  try {
-    const res = await qfUserFetch("/auth/v1/userinfo");
-    const bodyText = await res.text();
-    console.log("[getDisplayName] userinfo", res.status, bodyText.slice(0, 500));
-    if (!res.ok) return { name: null as string | null };
-    let data: Record<string, unknown> = {};
-    try { data = JSON.parse(bodyText) as Record<string, unknown>; } catch {}
-
+  const extractFirstName = (data: Record<string, unknown>): string => {
     const pick = (k: string) => (typeof data[k] === "string" ? (data[k] as string) : "");
     const full =
       pick("name") ||
@@ -44,6 +37,7 @@ export const getDisplayName = createServerFn({ method: "GET" }).handler(async ()
       pick("preferred_username") ||
       pick("nickname") ||
       pick("first_name") ||
+      pick("firstName") ||
       pick("username") ||
       pick("display_name") ||
       pick("displayName") ||
@@ -53,7 +47,49 @@ export const getDisplayName = createServerFn({ method: "GET" }).handler(async ()
       const email = pick("email");
       if (email && email.includes("@")) first = email.split("@")[0];
     }
-    console.log("[getDisplayName] resolved:", first, "keys:", Object.keys(data));
+    return first;
+  };
+
+  try {
+    const res = await qfUserFetch("/auth/v1/userinfo");
+    const bodyText = await res.text();
+    console.log("[getDisplayName] userinfo", res.status, bodyText.slice(0, 500));
+    let data: Record<string, unknown> = {};
+    try { data = JSON.parse(bodyText) as Record<string, unknown>; } catch {}
+
+    // Try top-level, then common nested shapes
+    let first = extractFirstName(data);
+    if (!first) {
+      for (const key of ["user", "profile", "data", "result"]) {
+        const nested = data[key];
+        if (nested && typeof nested === "object") {
+          first = extractFirstName(nested as Record<string, unknown>);
+          if (first) break;
+        }
+      }
+    }
+
+    // Fallback: decode the JWT access token claims
+    if (!first) {
+      try {
+        const session = await getWaslSession();
+        const tok = session.data?.accessToken;
+        if (tok) {
+          const parts = tok.split(".");
+          if (parts.length >= 2) {
+            const payload = JSON.parse(
+              Buffer.from(parts[1].replace(/-/g, "+").replace(/_/g, "/"), "base64").toString("utf8"),
+            ) as Record<string, unknown>;
+            console.log("[getDisplayName] jwt claims keys:", Object.keys(payload));
+            first = extractFirstName(payload);
+          }
+        }
+      } catch (e) {
+        console.warn("[getDisplayName] jwt decode failed", e);
+      }
+    }
+
+    console.log("[getDisplayName] resolved:", first);
     return { name: first || null };
   } catch (e) {
     console.error("[getDisplayName] error", e);
