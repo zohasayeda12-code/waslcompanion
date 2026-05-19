@@ -14,6 +14,7 @@ import { toggleBookmark, isBookmarked, recordRevisit } from "@/lib/library.funct
 import { setHighlight, getHighlight } from "@/lib/highlights.functions";
 import { saveReflection } from "@/lib/library.functions";
 import { nextAyahPos, prevAyahPos } from "@/lib/surah-meta";
+import { useImmersiveWhen } from "@/hooks/use-immersive";
 
 const search = z.object({
   from: z.enum(["home", "quran", "bookmarks", "highlights", "reflections", "collections", "search", "notification", "revisited", "my-ayahs"]).optional(),
