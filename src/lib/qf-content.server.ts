@@ -113,13 +113,19 @@ export async function fetchAyah(
       console.warn("verses.by_key failed", verseKey, String(e));
       return null;
     }),
-    // Use public quran.com API for audio — QF prelive only has reciter id 7.
-    fetch(`https://api.quran.com/api/v4/recitations/${reciterId}/by_ayah/${verseKey}`, {
-      headers: { Accept: "application/json" },
-    }).catch((e) => {
-      console.warn("[fetchAyah] quran.com audio fetch failed", reciterId, verseKey, String(e));
-      return null;
-    }),
+    // Try QF Content API first (hackathon requirement). Fall back to quran.com
+    // public API if QF doesn't have this reciter on prelive (only id 7 there).
+    (async () => {
+      const qfRes = await qfFetch(`/recitations/${reciterId}/by_ayah/${verseKey}`).catch(() => null);
+      if (qfRes && qfRes.ok) return qfRes;
+      if (qfRes) console.warn("[fetchAyah] QF recitations non-ok, falling back", reciterId, verseKey, qfRes.status);
+      return fetch(`https://api.quran.com/api/v4/recitations/${reciterId}/by_ayah/${verseKey}`, {
+        headers: { Accept: "application/json" },
+      }).catch((e) => {
+        console.warn("[fetchAyah] quran.com audio fetch failed", reciterId, verseKey, String(e));
+        return null;
+      });
+    })(),
     opts?.includeTafsir
       ? qfFetch(`/tafsirs/${tafsirId}/by_ayah/${verseKey}`).catch(() => null)
       : Promise.resolve(null),
