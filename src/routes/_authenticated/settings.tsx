@@ -171,6 +171,23 @@ function SettingsScreen() {
           </div>
         </div>
       </section>
+
+      <section className="mt-6 md:hidden">
+        <button
+          type="button"
+          onClick={handleLogout}
+          className={cn(
+            "group flex w-full items-center justify-center gap-2.5 rounded-2xl",
+            "border border-border bg-card px-4 py-3.5",
+            "text-sm font-medium text-foreground/80",
+            "transition-all duration-300 ease-out",
+            "hover:bg-white/[0.04] hover:text-foreground active:scale-[0.98]",
+          )}
+        >
+          <LogOut className="size-[18px] transition-transform group-hover:scale-110" strokeWidth={1.6} />
+          <span>Sign out</span>
+        </button>
+      </section>
     </AppShell>
   );
 }
