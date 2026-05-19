@@ -6,6 +6,7 @@ import { useSession } from "@tanstack/react-start/server";
  */
 export type WaslSession = {
   accessToken?: string;
+  idToken?: string;
   refreshToken?: string;
   tokenType?: string;
   /** Absolute expiry in ms-epoch. */

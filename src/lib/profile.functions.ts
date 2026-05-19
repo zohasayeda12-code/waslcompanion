@@ -2,7 +2,6 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { requireUserId } from "./current-user.server";
-import { qfUserFetch } from "./qf-user.server";
 import { getWaslSession } from "./qf-session.server";
 import { qfConfig } from "./qf-config.server";
 
@@ -51,9 +50,18 @@ export const getDisplayName = createServerFn({ method: "GET" }).handler(async ()
   };
 
   try {
-    const res = await qfUserFetch("/auth/v1/userinfo");
+    const session = await getWaslSession();
+    const token = session.data?.accessToken;
+    if (!token) return { name: null as string | null };
+
+    const res = await fetch(qfConfig.userInfoUrl, {
+      headers: {
+        Accept: "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
     const bodyText = await res.text();
-    console.log("[getDisplayName] userinfo", res.status, bodyText.slice(0, 500));
+    console.log("[getDisplayName] userinfo status", res.status);
     let data: Record<string, unknown> = {};
     try { data = JSON.parse(bodyText) as Record<string, unknown>; } catch {}
 
@@ -72,15 +80,13 @@ export const getDisplayName = createServerFn({ method: "GET" }).handler(async ()
     // Fallback: decode the JWT access token claims
     if (!first) {
       try {
-        const session = await getWaslSession();
-        const tok = session.data?.accessToken;
+        const tok = session.data?.idToken ?? session.data?.accessToken;
         if (tok) {
           const parts = tok.split(".");
           if (parts.length >= 2) {
             const payload = JSON.parse(
               Buffer.from(parts[1].replace(/-/g, "+").replace(/_/g, "/"), "base64").toString("utf8"),
             ) as Record<string, unknown>;
-            console.log("[getDisplayName] jwt claims keys:", Object.keys(payload));
             first = extractFirstName(payload);
           }
         }
@@ -89,7 +95,6 @@ export const getDisplayName = createServerFn({ method: "GET" }).handler(async ()
       }
     }
 
-    console.log("[getDisplayName] resolved:", first);
     return { name: first || null };
   } catch (e) {
     console.error("[getDisplayName] error", e);

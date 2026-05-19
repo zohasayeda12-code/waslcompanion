@@ -31,7 +31,7 @@ function HomeScreen() {
 
   const { data: journey } = useQuery({ queryKey: ["journey"], queryFn: () => journeyFn() });
   const { data: active } = useQuery({ queryKey: ["active-intention"], queryFn: () => intentionFn() });
-  const { data: nameData } = useQuery({ queryKey: ["display-name"], queryFn: () => nameFn(), staleTime: 5 * 60 * 1000 });
+  const { data: nameData } = useQuery({ queryKey: ["display-name", "oidc"], queryFn: () => nameFn(), staleTime: 5 * 60 * 1000, retry: 2 });
 
   // Auto-register push so reminders arrive on this device
   useEffect(() => {

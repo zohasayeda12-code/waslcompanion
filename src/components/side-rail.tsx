@@ -43,9 +43,10 @@ export function SideRail() {
   const nameFn = useServerFn(getDisplayName);
   const logoutFn = useServerFn(logout);
   const { data: nameData } = useQuery({
-    queryKey: ["display-name"],
+    queryKey: ["display-name", "oidc"],
     queryFn: () => nameFn(),
     staleTime: 5 * 60 * 1000,
+    retry: 2,
   });
   const initial = (nameData?.name?.trim()?.[0] ?? "").toUpperCase() || "·";
 
