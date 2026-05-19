@@ -926,7 +926,7 @@ function BottomSheet({
     <div className="fixed inset-0 z-50 flex items-end justify-center" role="dialog" aria-modal="true">
       <div className="absolute inset-0 bg-background/70 backdrop-blur-sm" onClick={onClose} aria-hidden />
       <div
-        className="relative z-10 w-full max-w-2xl rounded-t-3xl border-t border-x border-border/60 bg-card shadow-[var(--shadow-elevated)]"
+        className="relative z-10 mx-auto w-full md:max-w-[720px] lg:max-w-[940px] xl:max-w-[1080px] 2xl:max-w-[1160px] rounded-t-3xl border-t border-x border-border/60 bg-card shadow-[var(--shadow-elevated)]"
         style={{ transform: `translateY(${Math.max(0, dragY)}px)`, transition: startY === null ? "transform 200ms ease" : "none", maxHeight: "85vh" }}
         onTouchStart={(e) => setStartY(e.touches[0].clientY)}
         onTouchMove={(e) => {
