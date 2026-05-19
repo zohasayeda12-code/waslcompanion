@@ -1054,7 +1054,7 @@ function BottomSheet({
           <span className="size-8" />
         </div>
         <div className="mx-auto mb-2 h-1 w-10 rounded-full bg-border/70" />
-        <div className="max-h-[70vh] overflow-y-auto px-5 pb-8">{children}</div>
+        <div className="max-h-[70vh] overflow-y-auto px-5 pb-[max(env(safe-area-inset-bottom),1.5rem)]">{children}</div>
       </div>
     </div>
   );
