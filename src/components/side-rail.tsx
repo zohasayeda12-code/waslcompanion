@@ -203,17 +203,28 @@ export function SideRail() {
         </button>
 
         <div
-          aria-label={nameData?.name ? `Signed in as ${nameData.name}` : "Profile"}
-          title={nameData?.name ?? "Profile"}
+          aria-label="Profile"
+          title="Profile"
           className={cn(
-            "flex size-9 items-center justify-center rounded-full",
+            "group relative flex size-9 items-center justify-center rounded-full",
             "border border-white/[0.08] bg-white/[0.03]",
             "text-[12px] font-semibold tracking-wide text-foreground/80",
-            "select-none",
+            "select-none cursor-default",
           )}
           style={{ fontFamily: "var(--font-display)" }}
         >
           {initial}
+          <span
+            className={cn(
+              "pointer-events-none absolute left-full ml-4 whitespace-nowrap",
+              "text-[10.5px] tracking-[0.2em] uppercase text-foreground/70",
+              "opacity-0 -translate-x-1",
+              "transition-all duration-300 ease-out",
+              "group-hover:opacity-100 group-hover:translate-x-0",
+            )}
+          >
+            Profile
+          </span>
         </div>
       </div>
     </nav>
