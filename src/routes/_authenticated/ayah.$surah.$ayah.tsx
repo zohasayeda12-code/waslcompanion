@@ -109,22 +109,27 @@ function AyahDetail() {
     }
   }, [ayahData, s, a, qc]);
 
-  // Prefetch the next sequential ayah so its Arabic renders immediately.
+  // Prefetch the next + previous ayah so their Arabic renders immediately.
   useEffect(() => {
-    const next = nextAyahPos(s, a);
-    if (!next) return;
-    const key = ["ayah", next.surah, next.ayah, "full", reciterId ?? 7];
-    if (qc.getQueryData(key)) return;
-    qc.prefetchQuery({
-      queryKey: key,
-      queryFn: () => ayahFn({ data: { surah: next.surah, ayah: next.ayah, includeTafsir: true, reciterId } }),
-      staleTime: 10 * 60_000,
-    });
-    qc.prefetchQuery({
-      queryKey: ["bookmark", next.surah, next.ayah],
-      queryFn: () => bookmarkedFn({ data: { surah: next.surah, ayah: next.ayah } }),
-      staleTime: 60_000,
-    });
+    const neighbours = [nextAyahPos(s, a), prevAyahPos(s, a)].filter(Boolean) as {
+      surah: number;
+      ayah: number;
+    }[];
+    for (const n of neighbours) {
+      const key = ["ayah", n.surah, n.ayah, "full", reciterId ?? 7];
+      if (!qc.getQueryData(key)) {
+        qc.prefetchQuery({
+          queryKey: key,
+          queryFn: () => ayahFn({ data: { surah: n.surah, ayah: n.ayah, includeTafsir: true, reciterId } }),
+          staleTime: 10 * 60_000,
+        });
+      }
+      qc.prefetchQuery({
+        queryKey: ["bookmark", n.surah, n.ayah],
+        queryFn: () => bookmarkedFn({ data: { surah: n.surah, ayah: n.ayah } }),
+        staleTime: 60_000,
+      });
+    }
   }, [s, a, reciterId, qc, ayahFn, bookmarkedFn]);
 
   useEffect(() => {
