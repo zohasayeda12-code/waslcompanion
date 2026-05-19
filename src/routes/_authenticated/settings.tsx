@@ -1,7 +1,9 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useState } from "react";
+import { LogOut } from "lucide-react";
 import { AppShell } from "@/components/app-shell";
+import { cn } from "@/lib/utils";
 import { usePureMode } from "@/hooks/use-pure-mode";
 import { Switch } from "@/components/ui/switch";
 import {
@@ -15,7 +17,7 @@ import {
   getVapidPublicKey,
   saveSubscription,
 } from "@/lib/push.functions";
-import { removePushSubscriptions } from "@/lib/profile.functions";
+import { removePushSubscriptions, logout } from "@/lib/profile.functions";
 
 export const Route = createFileRoute("/_authenticated/settings")({
   head: () => ({ meta: [{ title: "Settings — Wasl" }] }),
@@ -39,10 +41,17 @@ const DAILY_KEY = "wasl.dailyReminderAt";
 
 function SettingsScreen() {
   const [pure, setPure] = usePureMode();
+  const navigate = useNavigate();
 
   const getKeyFn = useServerFn(getVapidPublicKey);
   const saveSubFn = useServerFn(saveSubscription);
   const removeSubsFn = useServerFn(removePushSubscriptions);
+  const logoutFn = useServerFn(logout);
+
+  const handleLogout = async () => {
+    try { await logoutFn(); } catch {}
+    navigate({ to: "/login" });
+  };
 
   const [notifOn, setNotifOn] = useState(false);
   const [notifBusy, setNotifBusy] = useState(false);
@@ -161,6 +170,23 @@ function SettingsScreen() {
             </Select>
           </div>
         </div>
+      </section>
+
+      <section className="mt-6 md:hidden">
+        <button
+          type="button"
+          onClick={handleLogout}
+          className={cn(
+            "group flex w-full items-center justify-center gap-2.5 rounded-2xl",
+            "border border-border bg-card px-4 py-3.5",
+            "text-sm font-medium text-foreground/80",
+            "transition-all duration-300 ease-out",
+            "hover:bg-white/[0.04] hover:text-foreground active:scale-[0.98]",
+          )}
+        >
+          <LogOut className="size-[18px] transition-transform group-hover:scale-110" strokeWidth={1.6} />
+          <span>Sign out</span>
+        </button>
       </section>
     </AppShell>
   );
