@@ -68,14 +68,16 @@ function MushafReader() {
   const setMarkerFn = useServerFn(setReadingMarker);
   const journeyFn = useServerFn(getJourneyState);
 
-  const { data: active } = useQuery({ queryKey: ["active-intention"], queryFn: () => activeFn() });
+  const { data: active } = useQuery({ queryKey: ["active-intention"], queryFn: () => activeFn(), staleTime: 60_000 });
   const { data: bookmarks = [] } = useQuery({
     queryKey: ["bookmarks-list"],
     queryFn: () => bookmarksFn(),
+    staleTime: 60_000,
   });
   const { data: journey } = useQuery({
     queryKey: ["journey-state"],
     queryFn: () => journeyFn(),
+    staleTime: 60_000,
   });
 
   const marker = (journey as any)?.reading_marker ?? null;

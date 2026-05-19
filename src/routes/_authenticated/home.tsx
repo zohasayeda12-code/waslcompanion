@@ -29,8 +29,8 @@ function HomeScreen() {
   const saveSubFn = useServerFn(saveSubscription);
   const getKeyFn = useServerFn(getVapidPublicKey);
 
-  const { data: journey } = useQuery({ queryKey: ["journey"], queryFn: () => journeyFn() });
-  const { data: active } = useQuery({ queryKey: ["active-intention"], queryFn: () => intentionFn() });
+  const { data: journey } = useQuery({ queryKey: ["journey"], queryFn: () => journeyFn(), staleTime: 60_000 });
+  const { data: active } = useQuery({ queryKey: ["active-intention"], queryFn: () => intentionFn(), staleTime: 60_000 });
   const { data: nameData } = useQuery({ queryKey: ["display-name", "oidc"], queryFn: () => nameFn(), staleTime: 5 * 60 * 1000, retry: 2 });
 
   // Auto-register push so reminders arrive on this device
@@ -85,6 +85,7 @@ function HomeScreen() {
     queryKey: ["ayah", surah, ayah],
     queryFn: () => ayahFn({ data: { surah, ayah } }),
     enabled: !!journey,
+    staleTime: 10 * 60_000,
   });
 
   const goAyah = () =>
