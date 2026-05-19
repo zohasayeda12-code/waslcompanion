@@ -468,16 +468,16 @@
 .ayah-span[class*="hl-"] {
   background-repeat: no-repeat;
   background-position: 0 50%;
-  background-size: 100% 64%;
+  background-size: 100% 48%;
   -webkit-box-decoration-break: clone;
   box-decoration-break: clone;
   color: var(--mushaf-ink);
 }
-.hl-gold   { background-image: linear-gradient(color-mix(in oklab, var(--hl-gold)   42%, transparent), color-mix(in oklab, var(--hl-gold)   42%, transparent)); }
-.hl-blue   { background-image: linear-gradient(color-mix(in oklab, var(--hl-blue)   42%, transparent), color-mix(in oklab, var(--hl-blue)   42%, transparent)); }
-.hl-green  { background-image: linear-gradient(color-mix(in oklab, var(--hl-green)  42%, transparent), color-mix(in oklab, var(--hl-green)  42%, transparent)); }
-.hl-purple { background-image: linear-gradient(color-mix(in oklab, var(--hl-purple) 42%, transparent), color-mix(in oklab, var(--hl-purple) 42%, transparent)); }
-.hl-rose   { background-image: linear-gradient(color-mix(in oklab, var(--hl-rose)   42%, transparent), color-mix(in oklab, var(--hl-rose)   42%, transparent)); }
+.hl-gold   { background-image: linear-gradient(color-mix(in oklab, var(--hl-gold)   28%, transparent), color-mix(in oklab, var(--hl-gold)   28%, transparent)); }
+.hl-blue   { background-image: linear-gradient(color-mix(in oklab, var(--hl-blue)   28%, transparent), color-mix(in oklab, var(--hl-blue)   28%, transparent)); }
+.hl-green  { background-image: linear-gradient(color-mix(in oklab, var(--hl-green)  28%, transparent), color-mix(in oklab, var(--hl-green)  28%, transparent)); }
+.hl-purple { background-image: linear-gradient(color-mix(in oklab, var(--hl-purple) 28%, transparent), color-mix(in oklab, var(--hl-purple) 28%, transparent)); }
+.hl-rose   { background-image: linear-gradient(color-mix(in oklab, var(--hl-rose)   28%, transparent), color-mix(in oklab, var(--hl-rose)   28%, transparent)); }
 
 /* Mushaf-shaped loading skeleton — soft, atmospheric ink strokes that mimic
    the justified composition of the real page. No gray rectangles. */
