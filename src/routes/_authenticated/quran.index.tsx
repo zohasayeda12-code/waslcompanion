@@ -182,7 +182,11 @@ function QuranHub() {
             transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}
             className="grid grid-cols-1 gap-2 md:grid-cols-2 md:gap-x-4 md:gap-y-2.5"
           >
-            {mode === "surah" ? <SurahList onOpen={goToPage} /> : <JuzList onOpen={goToPage} />}
+            {mode === "surah" ? (
+              <SurahList onOpen={goToPage} onWarm={warmPage} />
+            ) : (
+              <JuzList onOpen={goToPage} onWarm={warmPage} />
+            )}
           </motion.div>
         </AnimatePresence>
       </div>
