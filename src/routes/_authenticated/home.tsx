@@ -100,7 +100,7 @@ function HomeScreen() {
         <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
           Assalāmu ʿalaykum{nameData?.name ? `, ${nameData.name}` : ""}
         </p>
-        <h1 className="mt-1 text-[clamp(1.25rem,4.8vw,1.6rem)] font-medium tracking-tight text-foreground/90">
+        <h1 className="mt-1 text-[1.55rem] font-semibold tracking-tight">
           A moment with the Qurʾān
         </h1>
       </header>
