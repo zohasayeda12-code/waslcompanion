@@ -21,6 +21,7 @@ import { Route as AuthenticatedMyAyahsRouteImport } from './routes/_authenticate
 import { Route as AuthenticatedIntentionsRouteImport } from './routes/_authenticated/intentions'
 import { Route as AuthenticatedHomeRouteImport } from './routes/_authenticated/home'
 import { Route as AuthenticatedQuranIndexRouteImport } from './routes/_authenticated/quran.index'
+import { Route as ApiPublicDebugRecitersRouteImport } from './routes/api/public/debug-reciters'
 import { Route as ApiAuthLogoutRouteImport } from './routes/api/auth/logout'
 import { Route as ApiAuthLoginRouteImport } from './routes/api/auth/login'
 import { Route as ApiPublicCronRemindersRouteImport } from './routes/api/public/cron/reminders'
@@ -88,6 +89,11 @@ const AuthenticatedQuranIndexRoute = AuthenticatedQuranIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AuthenticatedQuranRoute,
 } as any)
+const ApiPublicDebugRecitersRoute = ApiPublicDebugRecitersRouteImport.update({
+  id: '/api/public/debug-reciters',
+  path: '/api/public/debug-reciters',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiAuthLogoutRoute = ApiAuthLogoutRouteImport.update({
   id: '/api/auth/logout',
   path: '/api/auth/logout',
@@ -141,6 +147,7 @@ export interface FileRoutesByFullPath {
   '/oauth/callback': typeof OauthCallbackRoute
   '/api/auth/login': typeof ApiAuthLoginRoute
   '/api/auth/logout': typeof ApiAuthLogoutRoute
+  '/api/public/debug-reciters': typeof ApiPublicDebugRecitersRoute
   '/quran/': typeof AuthenticatedQuranIndexRoute
   '/ayah/$surah/$ayah': typeof AuthenticatedAyahSurahAyahRoute
   '/live/$surah/$ayah': typeof AuthenticatedLiveSurahAyahRoute
@@ -160,6 +167,7 @@ export interface FileRoutesByTo {
   '/oauth/callback': typeof OauthCallbackRoute
   '/api/auth/login': typeof ApiAuthLoginRoute
   '/api/auth/logout': typeof ApiAuthLogoutRoute
+  '/api/public/debug-reciters': typeof ApiPublicDebugRecitersRoute
   '/quran': typeof AuthenticatedQuranIndexRoute
   '/ayah/$surah/$ayah': typeof AuthenticatedAyahSurahAyahRoute
   '/live/$surah/$ayah': typeof AuthenticatedLiveSurahAyahRoute
@@ -182,6 +190,7 @@ export interface FileRoutesById {
   '/oauth/callback': typeof OauthCallbackRoute
   '/api/auth/login': typeof ApiAuthLoginRoute
   '/api/auth/logout': typeof ApiAuthLogoutRoute
+  '/api/public/debug-reciters': typeof ApiPublicDebugRecitersRoute
   '/_authenticated/quran/': typeof AuthenticatedQuranIndexRoute
   '/_authenticated/ayah/$surah/$ayah': typeof AuthenticatedAyahSurahAyahRoute
   '/_authenticated/live/$surah/$ayah': typeof AuthenticatedLiveSurahAyahRoute
@@ -204,6 +213,7 @@ export interface FileRouteTypes {
     | '/oauth/callback'
     | '/api/auth/login'
     | '/api/auth/logout'
+    | '/api/public/debug-reciters'
     | '/quran/'
     | '/ayah/$surah/$ayah'
     | '/live/$surah/$ayah'
@@ -223,6 +233,7 @@ export interface FileRouteTypes {
     | '/oauth/callback'
     | '/api/auth/login'
     | '/api/auth/logout'
+    | '/api/public/debug-reciters'
     | '/quran'
     | '/ayah/$surah/$ayah'
     | '/live/$surah/$ayah'
@@ -244,6 +255,7 @@ export interface FileRouteTypes {
     | '/oauth/callback'
     | '/api/auth/login'
     | '/api/auth/logout'
+    | '/api/public/debug-reciters'
     | '/_authenticated/quran/'
     | '/_authenticated/ayah/$surah/$ayah'
     | '/_authenticated/live/$surah/$ayah'
@@ -259,6 +271,7 @@ export interface RootRouteChildren {
   OauthCallbackRoute: typeof OauthCallbackRoute
   ApiAuthLoginRoute: typeof ApiAuthLoginRoute
   ApiAuthLogoutRoute: typeof ApiAuthLogoutRoute
+  ApiPublicDebugRecitersRoute: typeof ApiPublicDebugRecitersRoute
   ApiPublicCronEnsureScheduleRoute: typeof ApiPublicCronEnsureScheduleRoute
   ApiPublicCronRemindersRoute: typeof ApiPublicCronRemindersRoute
 }
@@ -348,6 +361,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/quran/'
       preLoaderRoute: typeof AuthenticatedQuranIndexRouteImport
       parentRoute: typeof AuthenticatedQuranRoute
+    }
+    '/api/public/debug-reciters': {
+      id: '/api/public/debug-reciters'
+      path: '/api/public/debug-reciters'
+      fullPath: '/api/public/debug-reciters'
+      preLoaderRoute: typeof ApiPublicDebugRecitersRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/api/auth/logout': {
       id: '/api/auth/logout'
@@ -449,6 +469,7 @@ const rootRouteChildren: RootRouteChildren = {
   OauthCallbackRoute: OauthCallbackRoute,
   ApiAuthLoginRoute: ApiAuthLoginRoute,
   ApiAuthLogoutRoute: ApiAuthLogoutRoute,
+  ApiPublicDebugRecitersRoute: ApiPublicDebugRecitersRoute,
   ApiPublicCronEnsureScheduleRoute: ApiPublicCronEnsureScheduleRoute,
   ApiPublicCronRemindersRoute: ApiPublicCronRemindersRoute,
 }
