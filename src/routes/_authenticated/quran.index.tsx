@@ -200,16 +200,21 @@ function Row({
   primary,
   secondary,
   onClick,
+  onWarm,
 }: {
   index: number | string;
   arabic?: string;
   primary: string;
   secondary: string;
   onClick: () => void;
+  onWarm?: () => void;
 }) {
   return (
     <button
       onClick={onClick}
+      onMouseEnter={onWarm}
+      onFocus={onWarm}
+      onTouchStart={onWarm}
       className={cn(
         "interactive group flex w-full items-center gap-3 rounded-2xl",
         "border border-white/[0.06] bg-white/[0.025] px-3.5 py-3 md:py-2.5",
@@ -249,24 +254,40 @@ function Row({
   );
 }
 
-function SurahList({ onOpen }: { onOpen: (page: number) => void }) {
+function SurahList({
+  onOpen,
+  onWarm,
+}: {
+  onOpen: (page: number) => void;
+  onWarm: (page: number) => void;
+}) {
   return (
     <>
-      {Array.from({ length: 114 }, (_, i) => i + 1).map((s) => (
-        <Row
-          key={s}
-          index={s}
-          arabic={SURAH_NAMES_AR[s]}
-          primary={SURAH_NAMES_EN[s]}
-          secondary={`${SURAH_AYAH_COUNTS[s]} verses`}
-          onClick={() => onOpen(SURAH_START_PAGE[s])}
-        />
-      ))}
+      {Array.from({ length: 114 }, (_, i) => i + 1).map((s) => {
+        const page = SURAH_START_PAGE[s];
+        return (
+          <Row
+            key={s}
+            index={s}
+            arabic={SURAH_NAMES_AR[s]}
+            primary={SURAH_NAMES_EN[s]}
+            secondary={`${SURAH_AYAH_COUNTS[s]} verses`}
+            onClick={() => onOpen(page)}
+            onWarm={() => onWarm(page)}
+          />
+        );
+      })}
     </>
   );
 }
 
-function JuzList({ onOpen }: { onOpen: (page: number) => void }) {
+function JuzList({
+  onOpen,
+  onWarm,
+}: {
+  onOpen: (page: number) => void;
+  onWarm: (page: number) => void;
+}) {
   return (
     <>
       {JUZ_INFO.map((j) => (
@@ -276,6 +297,7 @@ function JuzList({ onOpen }: { onOpen: (page: number) => void }) {
           primary={j.name}
           secondary={`Begins ${j.startSurah}:${j.startAyah} · ${juzAyahCount(j.number)} verses`}
           onClick={() => onOpen(j.startPage)}
+          onWarm={() => onWarm(j.startPage)}
         />
       ))}
     </>
