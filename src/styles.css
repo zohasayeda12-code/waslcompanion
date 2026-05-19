@@ -461,23 +461,23 @@
   direction: rtl;
 }
 
-/* Highlights paint a vertically-bounded band (≈middle 64% of the line) so that
- * adjacent ayahs on neighbouring lines don't visually overlap with the tall
- * mushaf line-height. box-decoration-break:clone keeps every wrapped line
- * rendered independently. */
+/* Highlights — soft, full-text glow that hugs the ayah exactly.
+ * Uses background-color (line-box bounded) + box-decoration-break:clone so
+ * wrapped lines each receive the same gentle wash without bleeding into
+ * neighbouring ayahs. A faint box-shadow gives a "lit from within" feel
+ * instead of a hard horizontal band. */
 .ayah-span[class*="hl-"] {
-  background-repeat: no-repeat;
-  background-position: 0 50%;
-  background-size: 100% 48%;
   -webkit-box-decoration-break: clone;
   box-decoration-break: clone;
+  border-radius: 0.28em;
+  padding-inline: 0.05em;
   color: var(--mushaf-ink);
 }
-.hl-gold   { background-image: linear-gradient(color-mix(in oklab, var(--hl-gold)   28%, transparent), color-mix(in oklab, var(--hl-gold)   28%, transparent)); }
-.hl-blue   { background-image: linear-gradient(color-mix(in oklab, var(--hl-blue)   28%, transparent), color-mix(in oklab, var(--hl-blue)   28%, transparent)); }
-.hl-green  { background-image: linear-gradient(color-mix(in oklab, var(--hl-green)  28%, transparent), color-mix(in oklab, var(--hl-green)  28%, transparent)); }
-.hl-purple { background-image: linear-gradient(color-mix(in oklab, var(--hl-purple) 28%, transparent), color-mix(in oklab, var(--hl-purple) 28%, transparent)); }
-.hl-rose   { background-image: linear-gradient(color-mix(in oklab, var(--hl-rose)   28%, transparent), color-mix(in oklab, var(--hl-rose)   28%, transparent)); }
+.hl-gold   { background-color: color-mix(in oklab, var(--hl-gold)   15%, transparent); box-shadow: 0 0 8px 0 color-mix(in oklab, var(--hl-gold)   16%, transparent); }
+.hl-blue   { background-color: color-mix(in oklab, var(--hl-blue)   15%, transparent); box-shadow: 0 0 8px 0 color-mix(in oklab, var(--hl-blue)   16%, transparent); }
+.hl-green  { background-color: color-mix(in oklab, var(--hl-green)  15%, transparent); box-shadow: 0 0 8px 0 color-mix(in oklab, var(--hl-green)  16%, transparent); }
+.hl-purple { background-color: color-mix(in oklab, var(--hl-purple) 15%, transparent); box-shadow: 0 0 8px 0 color-mix(in oklab, var(--hl-purple) 16%, transparent); }
+.hl-rose   { background-color: color-mix(in oklab, var(--hl-rose)   15%, transparent); box-shadow: 0 0 8px 0 color-mix(in oklab, var(--hl-rose)   16%, transparent); }
 
 /* Mushaf-shaped loading skeleton — soft, atmospheric ink strokes that mimic
    the justified composition of the real page. No gray rectangles. */
