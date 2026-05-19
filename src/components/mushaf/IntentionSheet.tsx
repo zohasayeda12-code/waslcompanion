@@ -20,6 +20,19 @@ const STATUS_LABEL: Record<string, string> = {
   removed: "Removed",
 };
 
+function formatReminderDate(value: string) {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "your selected time";
+  return date.toLocaleString(undefined, {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+    timeZoneName: "short",
+  });
+}
+
 export function IntentionSheet({ surah, ayah, onClose }: Props) {
   const listFn = useServerFn(listIntentionsForAyah);
   const { data: intentions = [], isLoading } = useQuery({
@@ -85,7 +98,7 @@ export function IntentionSheet({ surah, ayah, onClose }: Props) {
                     {i.reminder_at && (
                       <span>
                         Reminder:{" "}
-                        {new Date(i.reminder_at).toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short", timeZoneName: "short" })}
+                        {formatReminderDate(i.reminder_at)}
                       </span>
                     )}
                     {i.lived_at && (
