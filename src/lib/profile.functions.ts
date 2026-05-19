@@ -5,6 +5,18 @@ import { requireUserId } from "./current-user.server";
 import { getWaslSession } from "./qf-session.server";
 import { qfConfig } from "./qf-config.server";
 
+const decodeJwtPayload = (token?: string): Record<string, unknown> | null => {
+  if (!token) return null;
+  try {
+    const parts = token.split(".");
+    if (parts.length < 2) return null;
+    return JSON.parse(Buffer.from(parts[1].replace(/-/g, "+").replace(/_/g, "/"), "base64").toString("utf8")) as Record<string, unknown>;
+  } catch (e) {
+    console.warn("[getDisplayName] jwt decode failed", e);
+    return null;
+  }
+};
+
 /** Clears the encrypted session cookie. Called from the client logout button. */
 export const logout = createServerFn({ method: "POST" }).handler(async () => {
   try {
@@ -52,6 +64,13 @@ export const getDisplayName = createServerFn({ method: "GET" }).handler(async ()
   try {
     const session = await getWaslSession();
     const token = session.data?.accessToken;
+    const idToken = session.data?.idToken;
+    if (!token && !idToken) return { name: null as string | null };
+
+    let first = extractFirstName(decodeJwtPayload(idToken) ?? {});
+    if (!first) first = extractFirstName(decodeJwtPayload(token) ?? {});
+
+    if (first) return { name: first };
     if (!token) return { name: null as string | null };
 
     const res = await fetch(qfConfig.userInfoUrl, {
@@ -66,7 +85,7 @@ export const getDisplayName = createServerFn({ method: "GET" }).handler(async ()
     try { data = JSON.parse(bodyText) as Record<string, unknown>; } catch {}
 
     // Try top-level, then common nested shapes
-    let first = extractFirstName(data);
+    first = extractFirstName(data);
     if (!first) {
       for (const key of ["user", "profile", "data", "result"]) {
         const nested = data[key];
@@ -76,25 +95,6 @@ export const getDisplayName = createServerFn({ method: "GET" }).handler(async ()
         }
       }
     }
-
-    // Fallback: decode the JWT access token claims
-    if (!first) {
-      try {
-        const tok = session.data?.idToken ?? session.data?.accessToken;
-        if (tok) {
-          const parts = tok.split(".");
-          if (parts.length >= 2) {
-            const payload = JSON.parse(
-              Buffer.from(parts[1].replace(/-/g, "+").replace(/_/g, "/"), "base64").toString("utf8"),
-            ) as Record<string, unknown>;
-            first = extractFirstName(payload);
-          }
-        }
-      } catch (e) {
-        console.warn("[getDisplayName] jwt decode failed", e);
-      }
-    }
-
     return { name: first || null };
   } catch (e) {
     console.error("[getDisplayName] error", e);
