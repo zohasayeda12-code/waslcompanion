@@ -593,12 +593,12 @@ body.pure-mode .mushaf-active-glow { display: none !important; }
   border-top: 0.18em solid color-mix(in oklab, var(--gold) 55%, transparent);
 }
 .ayah-marked {
-  background-color: color-mix(in oklab, var(--gold) 8%, transparent);
-  box-shadow: 0 0 6px 0 color-mix(in oklab, var(--gold) 18%, transparent);
+  background-image: linear-gradient(180deg, transparent 0%, color-mix(in oklab, var(--gold) 16%, transparent) 28%, color-mix(in oklab, var(--gold) 16%, transparent) 72%, transparent 100%);
+  background-repeat: no-repeat;
+  background-position: 0 50%;
+  background-size: 100% 1.15em;
   -webkit-box-decoration-break: clone;
   box-decoration-break: clone;
-  border-radius: 0.28em;
-  padding-inline: 0.05em;
 }
 
 /* "You were here" — resume ripple. Soft golden pulse with a fine cyan border, 3 slow blinks. */
