@@ -1,8 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useLayoutEffect, useMemo, useRef, useState } from "react";
-import { Loader2 } from "lucide-react";
-import { getMushafPage } from "@/lib/qf-content.functions";
+import { mushafPageQueryOptions } from "@/lib/mushaf-query";
 import { listBookmarks } from "@/lib/library.functions";
 import { listHighlights } from "@/lib/highlights.functions";
 import { useLongPress } from "@/hooks/use-long-press";
