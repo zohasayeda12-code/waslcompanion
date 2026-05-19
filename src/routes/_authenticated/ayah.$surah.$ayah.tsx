@@ -13,7 +13,7 @@ import { getJourneyState, advanceJourney } from "@/lib/journey.functions";
 import { toggleBookmark, isBookmarked, recordRevisit } from "@/lib/library.functions";
 import { setHighlight, getHighlight } from "@/lib/highlights.functions";
 import { saveReflection } from "@/lib/library.functions";
-import { nextAyahPos, prevAyahPos } from "@/lib/surah-meta";
+import { nextAyahPos } from "@/lib/surah-meta";
 
 const search = z.object({
   from: z.enum(["home", "quran", "bookmarks", "highlights", "reflections", "collections", "search", "notification", "revisited", "my-ayahs"]).optional(),
@@ -109,27 +109,22 @@ function AyahDetail() {
     }
   }, [ayahData, s, a, qc]);
 
-  // Prefetch the next + previous ayah so their Arabic renders immediately.
+  // Prefetch the next sequential ayah so its Arabic renders immediately.
   useEffect(() => {
-    const neighbours = [nextAyahPos(s, a), prevAyahPos(s, a)].filter(Boolean) as {
-      surah: number;
-      ayah: number;
-    }[];
-    for (const n of neighbours) {
-      const key = ["ayah", n.surah, n.ayah, "full", reciterId ?? 7];
-      if (!qc.getQueryData(key)) {
-        qc.prefetchQuery({
-          queryKey: key,
-          queryFn: () => ayahFn({ data: { surah: n.surah, ayah: n.ayah, includeTafsir: true, reciterId } }),
-          staleTime: 10 * 60_000,
-        });
-      }
-      qc.prefetchQuery({
-        queryKey: ["bookmark", n.surah, n.ayah],
-        queryFn: () => bookmarkedFn({ data: { surah: n.surah, ayah: n.ayah } }),
-        staleTime: 60_000,
-      });
-    }
+    const next = nextAyahPos(s, a);
+    if (!next) return;
+    const key = ["ayah", next.surah, next.ayah, "full", reciterId ?? 7];
+    if (qc.getQueryData(key)) return;
+    qc.prefetchQuery({
+      queryKey: key,
+      queryFn: () => ayahFn({ data: { surah: next.surah, ayah: next.ayah, includeTafsir: true, reciterId } }),
+      staleTime: 10 * 60_000,
+    });
+    qc.prefetchQuery({
+      queryKey: ["bookmark", next.surah, next.ayah],
+      queryFn: () => bookmarkedFn({ data: { surah: next.surah, ayah: next.ayah } }),
+      staleTime: 60_000,
+    });
   }, [s, a, reciterId, qc, ayahFn, bookmarkedFn]);
 
   useEffect(() => {
@@ -415,28 +410,6 @@ function AyahDetail() {
           )}
         </div>
       )}
-
-      {(() => {
-        const prev = prevAyahPos(s, a);
-        if (!prev) return null;
-        return (
-          <div className="mt-3">
-            <button
-              onClick={() =>
-                navigate({
-                  to: "/ayah/$surah/$ayah",
-                  params: { surah: String(prev.surah), ayah: String(prev.ayah) },
-                  search: { from },
-                })
-              }
-              className="interactive flex w-full items-center justify-center gap-2 rounded-2xl border border-border/60 bg-secondary/40 py-3 text-sm font-medium text-muted-foreground hover:text-foreground"
-              aria-label={`Go to previous ayah ${prev.surah}:${prev.ayah}`}
-            >
-              ← Previous Ayah
-            </button>
-          </div>
-        );
-      })()}
 
       {advanceFlow && (
         <ReflectBeforeNextSheet
