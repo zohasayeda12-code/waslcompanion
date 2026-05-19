@@ -468,16 +468,16 @@
 .ayah-span[class*="hl-"] {
   background-repeat: no-repeat;
   background-position: 0 50%;
-  background-size: 100% 64%;
+  background-size: 100% 48%;
   -webkit-box-decoration-break: clone;
   box-decoration-break: clone;
   color: var(--mushaf-ink);
 }
-.hl-gold   { background-image: linear-gradient(color-mix(in oklab, var(--hl-gold)   42%, transparent), color-mix(in oklab, var(--hl-gold)   42%, transparent)); }
-.hl-blue   { background-image: linear-gradient(color-mix(in oklab, var(--hl-blue)   42%, transparent), color-mix(in oklab, var(--hl-blue)   42%, transparent)); }
-.hl-green  { background-image: linear-gradient(color-mix(in oklab, var(--hl-green)  42%, transparent), color-mix(in oklab, var(--hl-green)  42%, transparent)); }
-.hl-purple { background-image: linear-gradient(color-mix(in oklab, var(--hl-purple) 42%, transparent), color-mix(in oklab, var(--hl-purple) 42%, transparent)); }
-.hl-rose   { background-image: linear-gradient(color-mix(in oklab, var(--hl-rose)   42%, transparent), color-mix(in oklab, var(--hl-rose)   42%, transparent)); }
+.hl-gold   { background-image: linear-gradient(color-mix(in oklab, var(--hl-gold)   28%, transparent), color-mix(in oklab, var(--hl-gold)   28%, transparent)); }
+.hl-blue   { background-image: linear-gradient(color-mix(in oklab, var(--hl-blue)   28%, transparent), color-mix(in oklab, var(--hl-blue)   28%, transparent)); }
+.hl-green  { background-image: linear-gradient(color-mix(in oklab, var(--hl-green)  28%, transparent), color-mix(in oklab, var(--hl-green)  28%, transparent)); }
+.hl-purple { background-image: linear-gradient(color-mix(in oklab, var(--hl-purple) 28%, transparent), color-mix(in oklab, var(--hl-purple) 28%, transparent)); }
+.hl-rose   { background-image: linear-gradient(color-mix(in oklab, var(--hl-rose)   28%, transparent), color-mix(in oklab, var(--hl-rose)   28%, transparent)); }
 
 /* Mushaf-shaped loading skeleton — soft, atmospheric ink strokes that mimic
    the justified composition of the real page. No gray rectangles. */
@@ -587,15 +587,15 @@ body.pure-mode .mushaf-active-glow { display: none !important; }
 }
 .ayah-marked {
   background-image: linear-gradient(
-    color-mix(in oklab, var(--gold) 10%, transparent),
-    color-mix(in oklab, var(--gold) 10%, transparent)
+    color-mix(in oklab, var(--gold) 7%, transparent),
+    color-mix(in oklab, var(--gold) 7%, transparent)
   );
   background-repeat: no-repeat;
   background-position: 0 50%;
-  background-size: 100% 60%;
+  background-size: 100% 44%;
   -webkit-box-decoration-break: clone;
   box-decoration-break: clone;
-  border-radius: 0.25rem;
+  border-radius: 0.2rem;
 }
 
 /* "You were here" — resume ripple. Soft golden pulse with a fine cyan border, 3 slow blinks. */
@@ -625,10 +625,11 @@ body.pure-mode .mushaf-active-glow { display: none !important; }
   position: relative;
   z-index: 2;
   animation: ayah-resume-glow 2.8s cubic-bezier(0.4, 0, 0.6, 1) 0.15s 3 both;
-  border-radius: 999px;
-  outline: 1px solid color-mix(in oklab, var(--resume-cyan) 26%, transparent);
-  outline-offset: 0.08em;
-  padding-inline: 0.22em;
+  border-radius: 0.25rem;
+  outline: 1px solid color-mix(in oklab, var(--resume-cyan) 22%, transparent);
+  outline-offset: -0.18em;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
 }
 
 /* Spotlight: dim + blur the rest of the page while the resume ayah pulses,
