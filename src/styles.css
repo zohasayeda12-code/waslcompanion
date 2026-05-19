@@ -601,32 +601,35 @@ body.pure-mode .mushaf-active-glow { display: none !important; }
   box-decoration-break: clone;
 }
 
-/* "You were here" — resume ripple. Soft golden pulse confined to the ayah's
- * text band (same vertical band as highlights) so it never spills into
- * neighbouring lines. 3 slow blinks via background-image opacity swap. */
-@keyframes ayah-resume-glow {
-  0%, 100% {
-    background-image: linear-gradient(180deg, transparent 0%, color-mix(in oklab, var(--resume-gold) 8%, transparent) 28%, color-mix(in oklab, var(--resume-gold) 8%, transparent) 72%, transparent 100%);
-    color: inherit;
-  }
-  50% {
-    background-image: linear-gradient(180deg, transparent 0%, color-mix(in oklab, var(--resume-gold) 30%, transparent) 28%, color-mix(in oklab, var(--resume-gold) 30%, transparent) 72%, transparent 100%);
-    color: color-mix(in oklab, var(--resume-gold) 18%, var(--mushaf-ink, currentColor));
-  }
-}
+/* "You were here" — resume ripple. A single gradient band whose opacity
+ * breathes in and out three times. Animating opacity (not the gradient
+ * itself) lets the browser interpolate smoothly — no on/off tubelight feel. */
 :root {
   --resume-cyan: oklch(0.86 0.17 215);
   --resume-gold: oklch(0.82 0.14 82);
 }
+@keyframes ayah-resume-glow {
+  0%   { opacity: 0.25; }
+  50%  { opacity: 1;    }
+  100% { opacity: 0.25; }
+}
 .ayah-resume {
   position: relative;
   z-index: 2;
-  animation: ayah-resume-glow 2.8s cubic-bezier(0.4, 0, 0.6, 1) 0.15s 3 both;
+  background-image: linear-gradient(
+    180deg,
+    transparent 0%,
+    color-mix(in oklab, var(--resume-gold) 28%, transparent) 28%,
+    color-mix(in oklab, var(--resume-gold) 28%, transparent) 72%,
+    transparent 100%
+  );
   background-repeat: no-repeat;
   background-position: 0 65%;
   background-size: 100% 0.95em;
   -webkit-box-decoration-break: clone;
   box-decoration-break: clone;
+  animation: ayah-resume-glow 3.2s cubic-bezier(0.45, 0, 0.55, 1) 0.15s 3 both;
+  will-change: opacity;
 }
 
 /* Spotlight: dim + blur the rest of the page while the resume ayah pulses,
