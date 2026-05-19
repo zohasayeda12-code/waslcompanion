@@ -351,7 +351,7 @@ function AyahDetail() {
           <p className="mt-2 text-sm leading-relaxed text-foreground/90">{activeForThis.text}</p>
           {activeForThis.reminder_at && (
             <p className="mt-2 text-xs text-muted-foreground">
-              Reminder: {new Date(activeForThis.reminder_at).toLocaleString([], { dateStyle: "medium", timeStyle: "short" })}
+              Reminder: {new Date(activeForThis.reminder_at).toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short", timeZoneName: "short" })}
             </p>
           )}
           <div className="mt-3 flex flex-wrap gap-2">
