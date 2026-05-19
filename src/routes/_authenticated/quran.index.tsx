@@ -95,6 +95,9 @@ function QuranHub() {
       {/* Continue Reading — the "thread marker" */}
       <button
         onClick={continueReading}
+        onMouseEnter={() => warmPage(lastPage)}
+        onFocus={() => warmPage(lastPage)}
+        onTouchStart={() => warmPage(lastPage)}
         className="block w-full text-left"
         aria-label={`Continue reading from page ${lastPage}, ayah ${lastSurah}:${lastAyah}`}
       >
