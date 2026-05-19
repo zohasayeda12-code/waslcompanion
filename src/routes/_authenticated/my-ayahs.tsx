@@ -43,11 +43,11 @@ function MyAyahs() {
   const intents = useServerFn(listAllIntentions);
   const rv = useServerFn(listRevisited);
   const status = useServerFn(getSyncStatus);
-  const { data: bookmarks = [] } = useQuery({ queryKey: ["bookmarks"], queryFn: () => bm() });
-  const { data: reflections = [] } = useQuery({ queryKey: ["reflections"], queryFn: () => re({ data: {} }) });
-  const { data: highlights = [] } = useQuery({ queryKey: ["highlights"], queryFn: () => hl({ data: {} }) });
-  const { data: allIntents = [] } = useQuery({ queryKey: ["intents-all"], queryFn: () => intents() });
-  const { data: revisited = [] } = useQuery({ queryKey: ["revisited"], queryFn: () => rv() });
+  const { data: bookmarks = [] } = useQuery({ queryKey: ["bookmarks"], queryFn: () => bm(), staleTime: 60_000 });
+  const { data: reflections = [] } = useQuery({ queryKey: ["reflections"], queryFn: () => re({ data: {} }), staleTime: 60_000 });
+  const { data: highlights = [] } = useQuery({ queryKey: ["highlights"], queryFn: () => hl({ data: {} }), staleTime: 60_000 });
+  const { data: allIntents = [] } = useQuery({ queryKey: ["intents-all"], queryFn: () => intents(), staleTime: 60_000 });
+  const { data: revisited = [] } = useQuery({ queryKey: ["revisited"], queryFn: () => rv(), staleTime: 60_000 });
   const { data: syncState } = useQuery({
     queryKey: ["sync-status"],
     queryFn: () => status(),

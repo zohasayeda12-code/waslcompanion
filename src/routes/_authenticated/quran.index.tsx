@@ -35,6 +35,7 @@ function QuranHub() {
   const { data: journey } = useQuery({
     queryKey: ["journey-state"],
     queryFn: () => journeyFn(),
+    staleTime: 60_000,
   });
 
   const marker = (journey as any)?.reading_marker as
