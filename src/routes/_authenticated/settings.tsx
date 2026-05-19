@@ -122,7 +122,7 @@ function SettingsScreen() {
   return (
     <AppShell>
       <header>
-        <h1 className="text-2xl font-medium tracking-tight md:text-3xl">Settings</h1>
+        <h1 className="text-[1.55rem] font-semibold tracking-tight">Settings</h1>
         <p className="mt-1 text-sm text-muted-foreground">
           Quiet preferences for your time with the Qurʾān.
         </p>
