@@ -103,9 +103,7 @@ export function MushafPage({ pageNumber, onAyahClick, onAyahLongPress, onAyahDou
       </header>
 
       {isLoading ? (
-        <div className="flex flex-1 items-center justify-center text-muted-foreground">
-          <Loader2 className="h-5 w-5 animate-spin" />
-        </div>
+        <MushafSkeleton />
       ) : error || !page ? (
         <div className="flex flex-1 flex-col items-center justify-center text-center text-sm text-muted-foreground">
           <p className="mb-2 font-medium text-foreground">Couldn't load this page.</p>
