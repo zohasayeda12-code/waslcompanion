@@ -351,7 +351,7 @@ function AyahDetail() {
           <p className="mt-2 text-sm leading-relaxed text-foreground/90">{activeForThis.text}</p>
           {activeForThis.reminder_at && (
             <p className="mt-2 text-xs text-muted-foreground">
-              Reminder: {new Date(activeForThis.reminder_at).toLocaleString([], { dateStyle: "medium", timeStyle: "short" })}
+              Reminder: {new Date(activeForThis.reminder_at).toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short", timeZoneName: "short" })}
             </p>
           )}
           <div className="mt-3 flex flex-wrap gap-2">
@@ -655,7 +655,7 @@ function LiveSheet({
       <button
         onClick={() => submit.mutate()}
         disabled={!text.trim() || submit.isPending || !reminderLocal}
-        className="mt-5 inline-flex h-12 w-full items-center justify-center rounded-2xl bg-[var(--gradient-primary)] px-6 text-sm font-medium text-primary-foreground shadow-[var(--shadow-soft)] disabled:opacity-50"
+        className="interactive mt-5 inline-flex h-12 w-full items-center justify-center rounded-2xl bg-[var(--gradient-primary)] px-6 text-sm font-medium text-primary-foreground shadow-[var(--shadow-soft)] disabled:opacity-50 disabled:pointer-events-none"
       >
         {submit.isPending ? <Loader2 className="size-4 animate-spin" /> : "Set Intention"}
       </button>
@@ -664,7 +664,11 @@ function LiveSheet({
 }
 
 function ConfirmDialog({ when, onClose }: { when: string; onClose: () => void }) {
-  const formatted = new Date(when).toLocaleString([], { dateStyle: "medium", timeStyle: "short" });
+  const formatted = new Date(when).toLocaleString(undefined, {
+    dateStyle: "medium",
+    timeStyle: "short",
+    timeZoneName: "short",
+  });
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-6" role="dialog" aria-modal="true">
       <div className="absolute inset-0 bg-background/70 backdrop-blur-sm" onClick={onClose} aria-hidden />
@@ -677,7 +681,7 @@ function ConfirmDialog({ when, onClose }: { when: string; onClose: () => void })
         </p>
         <button
           onClick={onClose}
-          className="mt-5 inline-flex h-10 w-full items-center justify-center rounded-2xl bg-secondary px-4 text-sm"
+          className="interactive mt-5 inline-flex h-10 w-full items-center justify-center rounded-2xl bg-secondary px-4 text-sm text-secondary-foreground"
         >
           Close
         </button>

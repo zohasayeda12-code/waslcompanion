@@ -85,7 +85,7 @@ export function IntentionSheet({ surah, ayah, onClose }: Props) {
                     {i.reminder_at && (
                       <span>
                         Reminder:{" "}
-                        {new Date(i.reminder_at).toLocaleString([], { dateStyle: "medium", timeStyle: "short" })}
+                        {new Date(i.reminder_at).toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short", timeZoneName: "short" })}
                       </span>
                     )}
                     {i.lived_at && (
