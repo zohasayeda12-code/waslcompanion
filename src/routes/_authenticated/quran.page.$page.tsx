@@ -102,17 +102,19 @@ function MushafReader() {
     } catch {}
   };
 
-  // Persist last-read page on change
+  // Persist last-read page on change + warm neighbor pages so turns feel instant.
   useEffect(() => {
     lastPageFn({ data: { page } }).catch(() => {});
     try {
       sessionStorage.setItem("wasl.mushaf.pos", JSON.stringify({ page }));
     } catch {}
+    if (page < TOTAL_PAGES) qc.prefetchQuery(mushafPageQueryOptions(page + 1));
+    if (page > 1) qc.prefetchQuery(mushafPageQueryOptions(page - 1));
     // close any open overlays/toolbars when turning page
     setOpenHit(null);
     setOverlay(null);
     window.scrollTo({ top: 0, behavior: "auto" });
-  }, [page, lastPageFn]);
+  }, [page, lastPageFn, qc]);
 
   const goTo = (next: number) => {
     const target = Math.min(TOTAL_PAGES, Math.max(1, next));
