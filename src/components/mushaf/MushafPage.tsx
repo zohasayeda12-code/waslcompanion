@@ -267,3 +267,31 @@ function AyahInline({
     </>
   );
 }
+
+/**
+ * Mushaf-shaped skeleton — faded line placeholders that mimic the page
+ * composition (justified ayah lines + a soft surah header glow). Uses
+ * `mushaf-skeleton-shimmer` defined in styles.css. Atmospheric, not boxy.
+ */
+function MushafSkeleton() {
+  const lines = Array.from({ length: 15 }, (_, i) => i);
+  return (
+    <div className="relative flex-1 overflow-hidden" aria-hidden>
+      <div className="mushaf-skeleton flex h-full flex-col gap-[1.05em] pt-2" dir="rtl">
+        <div className="mushaf-skel-header mx-auto mt-1 mb-3 h-7 w-2/5 rounded-md" />
+        {lines.map((i) => {
+          // Subtle variance — penultimate / first lines a touch shorter to feel organic.
+          const w =
+            i === 0 ? "92%" : i === lines.length - 1 ? "68%" : i % 4 === 0 ? "96%" : "100%";
+          return (
+            <div
+              key={i}
+              className="mushaf-skel-line h-[1.05em] rounded-[3px]"
+              style={{ width: w, animationDelay: `${i * 90}ms` }}
+            />
+          );
+        })}
+      </div>
+    </div>
+  );
+}
