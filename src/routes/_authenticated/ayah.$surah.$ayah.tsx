@@ -69,7 +69,19 @@ function AyahDetail() {
     return () => clearTimeout(t);
   }, [s, a]);
 
-  const { data: ayahData } = useQuery({ queryKey: ["ayah", s, a, "full"], queryFn: () => ayahFn({ data: { surah: s, ayah: a, includeTafsir: true } }) });
+  const [reciterId, setReciterId] = useState<number | undefined>(undefined);
+  useEffect(() => {
+    try {
+      const v = localStorage.getItem("wasl.reciterId");
+      if (v) setReciterId(Number(v));
+    } catch {}
+    const onStorage = (e: StorageEvent) => {
+      if (e.key === "wasl.reciterId") setReciterId(e.newValue ? Number(e.newValue) : undefined);
+    };
+    window.addEventListener("storage", onStorage);
+    return () => window.removeEventListener("storage", onStorage);
+  }, []);
+  const { data: ayahData } = useQuery({ queryKey: ["ayah", s, a, "full", reciterId ?? 7], queryFn: () => ayahFn({ data: { surah: s, ayah: a, includeTafsir: true, reciterId } }) });
   const { data: intentions = [] } = useQuery({ queryKey: ["intentions", s, a], queryFn: () => intentionsFn({ data: { surah: s, ayah: a } }) });
   const { data: active } = useQuery({ queryKey: ["active-intention"], queryFn: () => activeFn() });
   const { data: journey } = useQuery({ queryKey: ["journey"], queryFn: () => journeyFn() });
