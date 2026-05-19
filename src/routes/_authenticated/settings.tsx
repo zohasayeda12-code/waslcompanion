@@ -1,4 +1,4 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useState } from "react";
 import { AppShell } from "@/components/app-shell";
@@ -86,8 +86,7 @@ function SettingsScreen() {
   return (
     <AppShell>
       <header>
-        <Link to="/home" className="text-sm text-muted-foreground">← Home</Link>
-        <h1 className="mt-2 text-2xl font-medium tracking-tight md:text-3xl">Settings</h1>
+        <h1 className="text-2xl font-medium tracking-tight md:text-3xl">Settings</h1>
         <p className="mt-1 text-sm text-muted-foreground">
           Quiet preferences for your time with the Qurʾān.
         </p>

@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { AppShell } from "@/components/app-shell";
@@ -19,8 +19,7 @@ function Intentions() {
   return (
     <AppShell>
       <header>
-        <Link to="/home" className="text-sm text-muted-foreground">← Home</Link>
-        <h1 className="mt-2 text-2xl font-medium tracking-tight">Your intentions</h1>
+        <h1 className="text-2xl font-medium tracking-tight">Your intentions</h1>
       </header>
       <ul className="mt-6 grid gap-3">
         {items.map((it) => (
