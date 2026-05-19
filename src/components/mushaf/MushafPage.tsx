@@ -27,17 +27,10 @@ const toArabicNumber = (n: number) =>
   String(n).split("").map((d) => ARABIC_DIGITS[Number(d)] ?? d).join("");
 
 export function MushafPage({ pageNumber, onAyahClick, onAyahLongPress, onAyahDoubleTap, marker, resumeKey }: Props) {
-  const pageFn = useServerFn(getMushafPage);
   const bookmarksFn = useServerFn(listBookmarks);
   const highlightsFn = useServerFn(listHighlights);
 
-  const { data: page, isLoading, error } = useQuery({
-    queryKey: ["mushaf-page", pageNumber],
-    queryFn: () => pageFn({ data: { page: pageNumber } }),
-    staleTime: 60 * 60 * 1000,
-    gcTime: 5 * 60 * 1000,
-    retry: 1,
-  });
+  const { data: page, isLoading, error } = useQuery(mushafPageQueryOptions(pageNumber));
   const { data: bookmarks = [] } = useQuery({
     queryKey: ["bookmarks-list"],
     queryFn: () => bookmarksFn(),
