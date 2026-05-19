@@ -798,3 +798,16 @@ body.mushaf-day .mushaf-overlay .text-\[color\:var\(--rose\)\] {
 @media (prefers-reduced-motion: reduce) {
   .ayah-swap, .ayah-swap-delay-1, .ayah-swap-delay-2 { animation: none; }
 }
+
+/* Route-level soft fade when switching tabs. Cheap GPU transform only. */
+@keyframes route-fade-in {
+  0%   { opacity: 0; transform: translateY(4px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+.route-fade {
+  animation: route-fade-in 240ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  will-change: opacity, transform;
+}
+@media (prefers-reduced-motion: reduce) {
+  .route-fade { animation: none; }
+}
