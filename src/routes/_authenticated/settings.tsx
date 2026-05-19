@@ -17,7 +17,7 @@ import {
   getVapidPublicKey,
   saveSubscription,
 } from "@/lib/push.functions";
-import { removePushSubscriptions } from "@/lib/profile.functions";
+import { removePushSubscriptions, logout } from "@/lib/profile.functions";
 
 export const Route = createFileRoute("/_authenticated/settings")({
   head: () => ({ meta: [{ title: "Settings — Wasl" }] }),
