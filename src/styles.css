@@ -628,7 +628,7 @@ body.pure-mode .mushaf-active-glow { display: none !important; }
   background-size: 100% 0.95em;
   -webkit-box-decoration-break: clone;
   box-decoration-break: clone;
-  animation: ayah-resume-glow 3.2s cubic-bezier(0.45, 0, 0.55, 1) 0.15s 3 both;
+  animation: ayah-resume-glow 1.9s cubic-bezier(0.45, 0, 0.55, 1) 0.1s 3 both;
   will-change: opacity;
 }
 
