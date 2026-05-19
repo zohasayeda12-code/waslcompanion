@@ -41,10 +41,17 @@ const DAILY_KEY = "wasl.dailyReminderAt";
 
 function SettingsScreen() {
   const [pure, setPure] = usePureMode();
+  const navigate = useNavigate();
 
   const getKeyFn = useServerFn(getVapidPublicKey);
   const saveSubFn = useServerFn(saveSubscription);
   const removeSubsFn = useServerFn(removePushSubscriptions);
+  const logoutFn = useServerFn(logout);
+
+  const handleLogout = async () => {
+    try { await logoutFn(); } catch {}
+    navigate({ to: "/login" });
+  };
 
   const [notifOn, setNotifOn] = useState(false);
   const [notifBusy, setNotifBusy] = useState(false);
