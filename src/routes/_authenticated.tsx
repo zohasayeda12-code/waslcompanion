@@ -1,18 +1,12 @@
-import { createFileRoute, Outlet, redirect, useLocation } from "@tanstack/react-router";
+import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
 import { getAuthStatus } from "@/lib/auth.functions";
 import { getProfile } from "@/lib/profile.functions";
 import { BottomNav } from "@/components/bottom-nav";
 
 function AuthenticatedShell() {
-  const { pathname } = useLocation();
-  // Key only on the top-level tab segment so navigating between ayahs within
-  // /ayah/$surah/$ayah doesn't re-trigger the fade (their own swap handles it).
-  const segment = pathname.split("/")[1] ?? "";
   return (
     <>
-      <div key={segment} className="route-fade">
-        <Outlet />
-      </div>
+      <Outlet />
       <BottomNav />
     </>
   );
