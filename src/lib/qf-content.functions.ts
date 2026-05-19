@@ -6,12 +6,13 @@ const AyahInput = z.object({
   surah: z.number().int().min(1).max(114),
   ayah: z.number().int().min(1),
   includeTafsir: z.boolean().optional(),
+  reciterId: z.number().int().min(1).max(200).optional(),
 });
 
 export const getAyah = createServerFn({ method: "GET" })
   .inputValidator((d) => AyahInput.parse(d))
   .handler(async ({ data }) => {
-    return fetchAyah(data.surah, data.ayah, { includeTafsir: data.includeTafsir });
+    return fetchAyah(data.surah, data.ayah, { includeTafsir: data.includeTafsir, reciterId: data.reciterId });
   });
 
 export const searchQuran = createServerFn({ method: "GET" })
