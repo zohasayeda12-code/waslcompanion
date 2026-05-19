@@ -605,7 +605,7 @@ body.pure-mode .mushaf-active-glow { display: none !important; }
 @keyframes ayah-resume-glow {
   0%, 100% {
     background-color: color-mix(in oklab, var(--resume-gold) 5%, transparent);
-    outline-color: color-mix(in oklab, var(--resume-cyan) 20%, transparent);
+    
     box-shadow:
       0 0 0 0 color-mix(in oklab, var(--resume-gold) 0%, transparent),
       0 0 5px 1px color-mix(in oklab, var(--resume-gold) 10%, transparent);
@@ -613,7 +613,7 @@ body.pure-mode .mushaf-active-glow { display: none !important; }
   }
   50% {
     background-color: color-mix(in oklab, var(--resume-gold) 18%, transparent);
-    outline-color: color-mix(in oklab, var(--resume-cyan) 48%, transparent);
+    
     box-shadow:
       0 0 13px 4px color-mix(in oklab, var(--resume-gold) 26%, transparent),
       0 0 26px 10px color-mix(in oklab, var(--resume-gold) 13%, transparent);
@@ -629,8 +629,6 @@ body.pure-mode .mushaf-active-glow { display: none !important; }
   z-index: 2;
   animation: ayah-resume-glow 2.8s cubic-bezier(0.4, 0, 0.6, 1) 0.15s 3 both;
   border-radius: 0.25rem;
-  outline: 1px solid color-mix(in oklab, var(--resume-cyan) 22%, transparent);
-  outline-offset: -0.18em;
   -webkit-box-decoration-break: clone;
   box-decoration-break: clone;
 }
