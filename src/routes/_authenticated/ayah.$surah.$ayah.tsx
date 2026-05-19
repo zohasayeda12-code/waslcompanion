@@ -28,6 +28,19 @@ export const Route = createFileRoute("/_authenticated/ayah/$surah/$ayah")({
 
 type SheetKind = "tafsir" | "context" | "live" | null;
 
+function formatReminderDate(value: string) {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "your selected time";
+  return date.toLocaleString(undefined, {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+    timeZoneName: "short",
+  });
+}
+
 function AyahDetail() {
   const { surah, ayah } = Route.useParams();
   const { from } = Route.useSearch();
@@ -351,7 +364,7 @@ function AyahDetail() {
           <p className="mt-2 text-sm leading-relaxed text-foreground/90">{activeForThis.text}</p>
           {activeForThis.reminder_at && (
             <p className="mt-2 text-xs text-muted-foreground">
-              Reminder: {new Date(activeForThis.reminder_at).toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short", timeZoneName: "short" })}
+              Reminder: {formatReminderDate(activeForThis.reminder_at)}
             </p>
           )}
           <div className="mt-3 flex flex-wrap gap-2">
@@ -664,11 +677,7 @@ function LiveSheet({
 }
 
 function ConfirmDialog({ when, onClose }: { when: string; onClose: () => void }) {
-  const formatted = new Date(when).toLocaleString(undefined, {
-    dateStyle: "medium",
-    timeStyle: "short",
-    timeZoneName: "short",
-  });
+  const formatted = formatReminderDate(when);
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-6" role="dialog" aria-modal="true">
       <div className="absolute inset-0 bg-background/70 backdrop-blur-sm" onClick={onClose} aria-hidden />
