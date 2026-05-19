@@ -5,6 +5,7 @@ import { getWaslSession } from "@/lib/qf-session.server";
 
 type TokenResponse = {
   access_token: string;
+  id_token?: string;
   refresh_token?: string;
   expires_in?: number;
   token_type?: string;
@@ -116,6 +117,7 @@ export const Route = createFileRoute("/oauth/callback")({
 
         await session.update({
           accessToken: tok.access_token,
+          idToken: tok.id_token,
           refreshToken: tok.refresh_token,
           tokenType: tok.token_type ?? "Bearer",
           expiresAt: tok.expires_in ? Date.now() + tok.expires_in * 1000 : undefined,
