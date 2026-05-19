@@ -86,10 +86,7 @@ function MyAyahs() {
   return (
     <AppShell>
       <header>
-        <h1
-          className="text-[clamp(1.6rem,5.2vw,2.1rem)] font-medium tracking-tight text-foreground/90"
-          style={{ fontFamily: "var(--font-display)" }}
-        >
+        <h1 className="text-[1.55rem] font-semibold tracking-tight">
           My Ayahs
         </h1>
         {syncState?.syncing ? (
