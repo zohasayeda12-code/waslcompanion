@@ -223,8 +223,21 @@ function AyahDetail() {
             active={audioPlaying}
             onClick={() => {
               const el = audioRef.current;
-              if (!el || !ayahData?.audioUrl) return;
-              if (el.paused) { el.play(); } else { el.pause(); }
+              if (!el || !ayahData?.audioUrl) {
+                console.warn("[audio] no element or url", { hasEl: !!el, url: ayahData?.audioUrl });
+                return;
+              }
+              if (el.paused) {
+                const p = el.play();
+                if (p && typeof p.catch === "function") {
+                  p.catch((err) => {
+                    console.error("[audio] play failed", err, "src:", el.currentSrc || el.src);
+                    setAudioPlaying(false);
+                  });
+                }
+              } else {
+                el.pause();
+              }
             }}
           />
           <IconPill
