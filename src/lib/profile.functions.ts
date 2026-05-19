@@ -2,7 +2,6 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { requireUserId } from "./current-user.server";
-import { qfUserFetch } from "./qf-user.server";
 import { getWaslSession } from "./qf-session.server";
 import { qfConfig } from "./qf-config.server";
 
