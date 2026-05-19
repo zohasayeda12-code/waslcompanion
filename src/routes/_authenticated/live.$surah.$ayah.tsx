@@ -21,6 +21,8 @@ function LiveScreen() {
   const navigate = useNavigate();
   const createFn = useServerFn(createIntention);
   const activeFn = useServerFn(getActiveIntention);
+  // Focused full-screen intention flow — hide the mobile bottom nav.
+  useImmersiveWhen(true);
   const { data: active } = useQuery({ queryKey: ["active-intention"], queryFn: () => activeFn() });
 
   const suggestFn = useServerFn(generateLiveSuggestion);
