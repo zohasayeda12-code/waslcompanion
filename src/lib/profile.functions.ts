@@ -51,7 +51,16 @@ export const getDisplayName = createServerFn({ method: "GET" }).handler(async ()
   };
 
   try {
-    const res = await qfUserFetch("/auth/v1/userinfo");
+    const session = await getWaslSession();
+    const token = session.data?.accessToken;
+    if (!token) return { name: null as string | null };
+
+    const res = await fetch(qfConfig.userInfoUrl, {
+      headers: {
+        Accept: "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
     const bodyText = await res.text();
     console.log("[getDisplayName] userinfo", res.status, bodyText.slice(0, 500));
     let data: Record<string, unknown> = {};
@@ -72,8 +81,7 @@ export const getDisplayName = createServerFn({ method: "GET" }).handler(async ()
     // Fallback: decode the JWT access token claims
     if (!first) {
       try {
-        const session = await getWaslSession();
-        const tok = session.data?.accessToken;
+        const tok = session.data?.idToken ?? session.data?.accessToken;
         if (tok) {
           const parts = tok.split(".");
           if (parts.length >= 2) {
