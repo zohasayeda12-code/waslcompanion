@@ -223,8 +223,21 @@ function AyahDetail() {
             active={audioPlaying}
             onClick={() => {
               const el = audioRef.current;
-              if (!el || !ayahData?.audioUrl) return;
-              if (el.paused) { el.play(); } else { el.pause(); }
+              if (!el || !ayahData?.audioUrl) {
+                console.warn("[audio] no element or url", { hasEl: !!el, url: ayahData?.audioUrl });
+                return;
+              }
+              if (el.paused) {
+                const p = el.play();
+                if (p && typeof p.catch === "function") {
+                  p.catch((err) => {
+                    console.error("[audio] play failed", err, "src:", el.currentSrc || el.src);
+                    setAudioPlaying(false);
+                  });
+                }
+              } else {
+                el.pause();
+              }
             }}
           />
           <IconPill
@@ -246,12 +259,18 @@ function AyahDetail() {
         </div>
         {ayahData?.audioUrl && (
           <audio
+            key={ayahData.audioUrl}
             ref={audioRef}
             src={ayahData.audioUrl}
-            preload="none"
+            preload="auto"
             onPlay={() => setAudioPlaying(true)}
             onPause={() => setAudioPlaying(false)}
             onEnded={() => setAudioPlaying(false)}
+            onError={(e) => {
+              const el = e.currentTarget;
+              console.error("[audio] element error", el.error?.code, el.error?.message, "src:", el.currentSrc);
+              setAudioPlaying(false);
+            }}
             className="hidden"
           />
         )}

@@ -155,7 +155,16 @@ export async function fetchAyah(
     const list = j.audio_files ?? j.audio_file ?? [];
     const first = Array.isArray(list) ? list[0] : list;
     const url = first?.url ?? first?.audio_url;
-    if (url) audioUrl = url.startsWith("http") ? url : `https://verses.quran.com/${url}`;
+    if (url) {
+      const s = String(url);
+      audioUrl = s.startsWith("http") ? s : `https://verses.quran.com/${s.replace(/^\/+/, "")}`;
+    } else {
+      console.warn("[fetchAyah] no audio url for reciter", reciterId, verseKey, "payload keys:", Object.keys(j ?? {}));
+    }
+  } else if (audioRes) {
+    console.warn("[fetchAyah] recitations non-ok", reciterId, verseKey, audioRes.status, await audioRes.text().catch(() => ""));
+  } else {
+    console.warn("[fetchAyah] recitations fetch failed", reciterId, verseKey);
   }
 
   let tafsir: AyahPayload["tafsir"] = null;
