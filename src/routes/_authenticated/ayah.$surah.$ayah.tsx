@@ -14,6 +14,7 @@ import { toggleBookmark, isBookmarked, recordRevisit } from "@/lib/library.funct
 import { setHighlight, getHighlight } from "@/lib/highlights.functions";
 import { saveReflection } from "@/lib/library.functions";
 import { nextAyahPos, prevAyahPos } from "@/lib/surah-meta";
+import { useImmersiveWhen } from "@/hooks/use-immersive";
 
 const search = z.object({
   from: z.enum(["home", "quran", "bookmarks", "highlights", "reflections", "collections", "search", "notification", "revisited", "my-ayahs"]).optional(),
@@ -62,6 +63,12 @@ function AyahDetail() {
   const [showBlocked, setShowBlocked] = useState(false);
   // Soft reflection prompt before advancing to next ayah
   const [advanceFlow, setAdvanceFlow] = useState(false);
+
+  // Hide the mobile bottom nav whenever a focused interaction is active
+  // (any sheet, confirmation, lived/carry/advance/reflection flow).
+  useImmersiveWhen(
+    Boolean(sheet) || Boolean(confirmation) || Boolean(livedFlow) || Boolean(carryFlow) || advanceFlow
+  );
 
   // 3-second delayed glow on Live icon
   useEffect(() => {
@@ -1047,7 +1054,7 @@ function BottomSheet({
           <span className="size-8" />
         </div>
         <div className="mx-auto mb-2 h-1 w-10 rounded-full bg-border/70" />
-        <div className="max-h-[70vh] overflow-y-auto px-5 pb-8">{children}</div>
+        <div className="max-h-[70vh] overflow-y-auto px-5 pb-[max(env(safe-area-inset-bottom),1.5rem)]">{children}</div>
       </div>
     </div>
   );

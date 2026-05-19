@@ -7,6 +7,7 @@ import { AppShell } from "@/components/app-shell";
 import { PrimaryButton } from "@/components/primary-button";
 import { createIntention, getActiveIntention } from "@/lib/intentions.functions";
 import { generateLiveSuggestion } from "@/lib/live-suggestion.functions";
+import { useImmersiveWhen } from "@/hooks/use-immersive";
 
 export const Route = createFileRoute("/_authenticated/live/$surah/$ayah")({
   head: ({ params }) => ({ meta: [{ title: `Live ${params.surah}:${params.ayah} — Wasl` }] }),
@@ -20,6 +21,8 @@ function LiveScreen() {
   const navigate = useNavigate();
   const createFn = useServerFn(createIntention);
   const activeFn = useServerFn(getActiveIntention);
+  // Focused full-screen intention flow — hide the mobile bottom nav.
+  useImmersiveWhen(true);
   const { data: active } = useQuery({ queryKey: ["active-intention"], queryFn: () => activeFn() });
 
   const suggestFn = useServerFn(generateLiveSuggestion);
