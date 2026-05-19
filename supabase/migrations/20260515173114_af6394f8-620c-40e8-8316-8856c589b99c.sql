@@ -1,1 +1,0 @@
-ALTER TABLE public.journey_state ADD COLUMN IF NOT EXISTS reading_marker jsonb;

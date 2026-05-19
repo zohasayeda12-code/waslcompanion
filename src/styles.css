@@ -1,28 +1,31 @@
 @import "tailwindcss" source(none);
 @source "../src";
 @import "tw-animate-css";
-@import url("https://fonts.googleapis.com/css2?family=Amiri+Quran&display=swap");
 
 @custom-variant dark (&:is(.dark *));
 
 /*
- * Wasl — calm but alive.
- * A cinematic night canvas with aurora warmth.
- * Inspired by premium companion/game apps (Finch, Alto's Odyssey, Apple Fitness)
- * but never gamified. Glow is slow. Color is restrained. Depth does the work.
+ * Design system definition.
+ *
+ * The @theme inline block maps CSS custom properties to Tailwind utility
+ * classes (e.g. --color-primary -> bg-primary, text-primary).
+ *
+ * The :root and .dark blocks define the actual color values using oklch.
+ * All colors MUST use oklch format.
+ *
+ * To add a new semantic color:
+ * 1. Add the variable to :root (light value) and .dark (dark value)
+ * 2. Register it in @theme inline as --color-<name>: var(--<name>)
  */
 
 @theme inline {
-  --font-display: "Fraunces", ui-serif, Georgia, serif;
-  --font-sans: "DM Sans", ui-sans-serif, system-ui, sans-serif;
-
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 6px);
-  --radius-2xl: calc(var(--radius) + 14px);
-  --radius-3xl: calc(var(--radius) + 22px);
-
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 12px);
+  --radius-4xl: calc(var(--radius) + 16px);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -42,159 +45,91 @@
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
-  --color-gold: var(--gold);
-  --color-emerald: var(--emerald);
-  --color-rose: var(--rose);
-  --color-violet: var(--violet);
-
-  /* Layered glass surfaces (used on top of the night canvas) */
-  --color-surface-1: var(--surface-1);
-  --color-surface-2: var(--surface-2);
-  --color-surface-3: var(--surface-3);
-
-  /* Easing tokens */
-  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
-  --ease-spring: cubic-bezier(0.22, 1.2, 0.36, 1);
+  --color-ring-offset-background: var(--background);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
 }
 
 :root {
-  --radius: 1rem;
-
-  /* === Cinematic night canvas === */
-  --background: oklch(0.18 0.035 270);
-  --foreground: oklch(0.97 0.012 95);
-
-  /* Layered glass surfaces — translucent over the canvas */
-  --surface-1: oklch(1 0 0 / 0.04);
-  --surface-2: oklch(1 0 0 / 0.07);
-  --surface-3: oklch(1 0 0 / 0.10);
-
-  --card: oklch(0.24 0.04 268);
-  --card-foreground: oklch(0.97 0.012 95);
-
-  --popover: oklch(0.22 0.04 268);
-  --popover-foreground: oklch(0.97 0.012 95);
-
-  /* Primary — luminous emerald */
-  --primary: oklch(0.62 0.13 168);
-  --primary-foreground: oklch(0.99 0.01 95);
-
-  --secondary: oklch(0.28 0.035 268);
-  --secondary-foreground: oklch(0.96 0.012 95);
-
-  --muted: oklch(0.26 0.03 268);
-  --muted-foreground: oklch(0.72 0.02 95);
-
-  --accent: oklch(0.32 0.06 90);
-  --accent-foreground: oklch(0.97 0.012 95);
-
-  /* Aurora accent palette */
-  --gold: oklch(0.82 0.14 82);
-  --emerald: oklch(0.74 0.14 168);
-  --rose: oklch(0.74 0.14 18);
-  --violet: oklch(0.70 0.16 295);
-
-  --destructive: oklch(0.62 0.20 22);
-  --destructive-foreground: oklch(0.98 0 0);
-
-  --border: oklch(1 0 0 / 0.08);
-  --input: oklch(1 0 0 / 0.10);
-  --ring: oklch(0.74 0.13 168 / 0.55);
-
-  /* === Gradients === */
-  --gradient-night-canvas:
-    radial-gradient(120% 80% at 15% 0%, oklch(0.30 0.08 295 / 0.55), transparent 60%),
-    radial-gradient(100% 70% at 90% 10%, oklch(0.32 0.10 168 / 0.45), transparent 55%),
-    radial-gradient(120% 90% at 50% 110%, oklch(0.32 0.10 18 / 0.35), transparent 60%),
-    linear-gradient(180deg, oklch(0.16 0.035 270) 0%, oklch(0.20 0.04 268) 100%);
-
-  --gradient-aurora:
-    linear-gradient(135deg,
-      oklch(0.70 0.16 295) 0%,
-      oklch(0.72 0.14 220) 35%,
-      oklch(0.74 0.14 168) 70%,
-      oklch(0.82 0.14 82) 100%);
-
-  --gradient-primary:
-    linear-gradient(135deg,
-      oklch(0.78 0.14 168) 0%,
-      oklch(0.62 0.13 195) 100%);
-
-  --gradient-gold-glow:
-    radial-gradient(60% 60% at 50% 40%,
-      oklch(0.85 0.16 82 / 0.55),
-      transparent 70%);
-
-  --gradient-emerald-deep:
-    linear-gradient(160deg,
-      oklch(0.34 0.08 168) 0%,
-      oklch(0.20 0.05 200) 100%);
-
-  --gradient-rose-quiet:
-    linear-gradient(160deg,
-      oklch(0.40 0.10 18) 0%,
-      oklch(0.22 0.05 290) 100%);
-
-  --gradient-glass:
-    linear-gradient(160deg,
-      oklch(1 0 0 / 0.10) 0%,
-      oklch(1 0 0 / 0.03) 100%);
-
-  /* === Shadows === */
-  --shadow-soft:
-    0 1px 1px oklch(0 0 0 / 0.25),
-    0 8px 24px oklch(0 0 0 / 0.30);
-
-  --shadow-elevated:
-    0 1px 1px oklch(0 0 0 / 0.30),
-    0 20px 60px oklch(0 0 0 / 0.45);
-
-  --shadow-floating:
-    0 2px 6px oklch(0 0 0 / 0.35),
-    0 30px 80px oklch(0 0 0 / 0.55);
-
-  --shadow-glow-primary:
-    0 0 0 1px oklch(0.74 0.13 168 / 0.30),
-    0 10px 40px oklch(0.74 0.13 168 / 0.35);
-
-  --shadow-glow-gold:
-    0 0 0 1px oklch(0.82 0.14 82 / 0.25),
-    0 10px 40px oklch(0.82 0.14 82 / 0.30);
-
-  --shadow-inner-soft:
-    inset 0 1px 0 oklch(1 0 0 / 0.08),
-    inset 0 -1px 0 oklch(0 0 0 / 0.20);
-
-  --blur-glass: 18px;
-
-  /* Subtle film grain overlay */
-  --noise-overlay: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.06 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  --radius: 0.625rem;
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.129 0.042 264.695);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.129 0.042 264.695);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.129 0.042 264.695);
+  --primary: oklch(0.208 0.042 265.755);
+  --primary-foreground: oklch(0.984 0.003 247.858);
+  --secondary: oklch(0.968 0.007 247.896);
+  --secondary-foreground: oklch(0.208 0.042 265.755);
+  --muted: oklch(0.968 0.007 247.896);
+  --muted-foreground: oklch(0.554 0.046 257.417);
+  --accent: oklch(0.968 0.007 247.896);
+  --accent-foreground: oklch(0.208 0.042 265.755);
+  --destructive: oklch(0.577 0.245 27.325);
+  --destructive-foreground: oklch(0.984 0.003 247.858);
+  --border: oklch(0.929 0.013 255.508);
+  --input: oklch(0.929 0.013 255.508);
+  --ring: oklch(0.704 0.04 256.788);
+  --chart-1: oklch(0.646 0.222 41.116);
+  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-5: oklch(0.769 0.188 70.08);
+  --sidebar: oklch(0.984 0.003 247.858);
+  --sidebar-foreground: oklch(0.129 0.042 264.695);
+  --sidebar-primary: oklch(0.208 0.042 265.755);
+  --sidebar-primary-foreground: oklch(0.984 0.003 247.858);
+  --sidebar-accent: oklch(0.968 0.007 247.896);
+  --sidebar-accent-foreground: oklch(0.208 0.042 265.755);
+  --sidebar-border: oklch(0.929 0.013 255.508);
+  --sidebar-ring: oklch(0.704 0.04 256.788);
 }
 
-/* Light variant kept as a secondary, refined warm cream */
-.light {
-  --background: oklch(0.98 0.012 95);
-  --foreground: oklch(0.20 0.025 270);
-  --surface-1: oklch(0 0 0 / 0.03);
-  --surface-2: oklch(0 0 0 / 0.05);
-  --surface-3: oklch(0 0 0 / 0.08);
-  --card: oklch(0.99 0.008 95);
-  --card-foreground: oklch(0.20 0.025 270);
-  --popover: oklch(0.99 0.008 95);
-  --popover-foreground: oklch(0.20 0.025 270);
-  --primary: oklch(0.42 0.08 170);
-  --primary-foreground: oklch(0.98 0.012 95);
-  --secondary: oklch(0.94 0.018 95);
-  --secondary-foreground: oklch(0.28 0.03 170);
-  --muted: oklch(0.94 0.014 95);
-  --muted-foreground: oklch(0.46 0.02 170);
-  --accent: oklch(0.93 0.03 90);
-  --accent-foreground: oklch(0.28 0.03 170);
-  --border: oklch(0 0 0 / 0.08);
-  --input: oklch(0 0 0 / 0.08);
-  --ring: oklch(0.42 0.08 170 / 0.45);
-  --gradient-night-canvas:
-    radial-gradient(120% 80% at 50% 0%, oklch(0.985 0.012 95) 0%, oklch(0.96 0.022 95) 100%);
+.dark {
+  --background: oklch(0.129 0.042 264.695);
+  --foreground: oklch(0.984 0.003 247.858);
+  --card: oklch(0.208 0.042 265.755);
+  --card-foreground: oklch(0.984 0.003 247.858);
+  --popover: oklch(0.208 0.042 265.755);
+  --popover-foreground: oklch(0.984 0.003 247.858);
+  --primary: oklch(0.929 0.013 255.508);
+  --primary-foreground: oklch(0.208 0.042 265.755);
+  --secondary: oklch(0.279 0.041 260.031);
+  --secondary-foreground: oklch(0.984 0.003 247.858);
+  --muted: oklch(0.279 0.041 260.031);
+  --muted-foreground: oklch(0.704 0.04 256.788);
+  --accent: oklch(0.279 0.041 260.031);
+  --accent-foreground: oklch(0.984 0.003 247.858);
+  --destructive: oklch(0.704 0.191 22.216);
+  --destructive-foreground: oklch(0.984 0.003 247.858);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.551 0.027 264.364);
+  --chart-1: oklch(0.488 0.243 264.376);
+  --chart-2: oklch(0.696 0.17 162.48);
+  --chart-3: oklch(0.769 0.188 70.08);
+  --chart-4: oklch(0.627 0.265 303.9);
+  --chart-5: oklch(0.645 0.246 16.439);
+  --sidebar: oklch(0.208 0.042 265.755);
+  --sidebar-foreground: oklch(0.984 0.003 247.858);
+  --sidebar-primary: oklch(0.488 0.243 264.376);
+  --sidebar-primary-foreground: oklch(0.984 0.003 247.858);
+  --sidebar-accent: oklch(0.279 0.041 260.031);
+  --sidebar-accent-foreground: oklch(0.984 0.003 247.858);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.551 0.027 264.364);
 }
 
 @layer base {
@@ -202,534 +137,8 @@
     border-color: var(--color-border);
   }
 
-  html, body {
-    height: 100%;
-  }
-
   body {
-    background: var(--gradient-night-canvas);
+    background-color: var(--color-background);
     color: var(--color-foreground);
-    font-family: var(--font-sans);
-    -webkit-font-smoothing: antialiased;
-    -webkit-tap-highlight-color: transparent;
-    text-rendering: optimizeLegibility;
   }
-
-  h1, h2, h3, h4 {
-    font-family: var(--font-display);
-    font-feature-settings: "ss01", "ss02";
-    letter-spacing: -0.015em;
-    font-weight: 500;
-  }
-
-  h1 { font-weight: 600; }
-}
-
-/* === Reusable utility classes === */
-@layer utilities {
-  .glass {
-    background: var(--gradient-glass);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 1px solid oklch(1 0 0 / 0.08);
-    box-shadow: var(--shadow-soft), var(--shadow-inner-soft);
-  }
-  .glass-strong {
-    background: linear-gradient(160deg, oklch(1 0 0 / 0.14), oklch(1 0 0 / 0.05));
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
-    border: 1px solid oklch(1 0 0 / 0.12);
-    box-shadow: var(--shadow-elevated), var(--shadow-inner-soft);
-  }
-  .text-aurora {
-    background: var(--gradient-aurora);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-  }
-  .ring-aurora { box-shadow: var(--shadow-glow-primary); }
-  .ring-gold { box-shadow: var(--shadow-glow-gold); }
-
-  /* === Interaction system ===
-   * Calm, tactile responsiveness. iOS-level acknowledgment.
-   * Use .interactive on any touch target (buttons, cards, chips, icon actions).
-   * Use .interactive-card on larger surfaces that should lift on hover.
-   */
-  .interactive {
-    cursor: pointer;
-    transition:
-      transform 120ms var(--ease-spring),
-      background-color 140ms ease,
-      border-color 140ms ease,
-      box-shadow 160ms ease,
-      filter 140ms ease,
-      color 140ms ease;
-    -webkit-tap-highlight-color: transparent;
-    touch-action: manipulation;
-  }
-  .interactive:hover {
-    filter: brightness(1.06);
-    background-color: oklch(1 0 0 / 0.06);
-  }
-  .interactive:active {
-    transform: scale(0.97);
-    transition-duration: 80ms;
-    filter: brightness(0.97);
-  }
-  .interactive:focus-visible {
-    outline: none;
-    box-shadow:
-      0 0 0 2px var(--background),
-      0 0 0 4px var(--ring);
-  }
-
-  .interactive-card {
-    cursor: pointer;
-    transition:
-      transform 160ms var(--ease-spring),
-      box-shadow 200ms ease,
-      border-color 160ms ease,
-      filter 160ms ease;
-    -webkit-tap-highlight-color: transparent;
-    touch-action: manipulation;
-  }
-  @media (hover: hover) {
-    .interactive-card:hover {
-      transform: translateY(-1px);
-      filter: brightness(1.04);
-      box-shadow: var(--shadow-elevated), var(--shadow-inner-soft);
-      border-color: oklch(1 0 0 / 0.14);
-    }
-  }
-  .interactive-card:active {
-    transform: scale(0.985);
-    transition-duration: 90ms;
-    filter: brightness(0.98);
-  }
-  .interactive-card:focus-visible {
-    outline: none;
-    box-shadow:
-      0 0 0 2px var(--background),
-      0 0 0 4px var(--ring),
-      var(--shadow-soft);
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .interactive, .interactive-card {
-      transition: none;
-    }
-    .interactive:active, .interactive-card:active { transform: none; }
-    .interactive-card:hover { transform: none; }
-  }
-}
-
-/* === Motion === */
-@keyframes pulseSlow {
-  0%, 100% { opacity: 0.45; transform: scale(1); }
-  50% { opacity: 0.85; transform: scale(1.04); }
-}
-.animate-pulse-slow { animation: pulseSlow 5.5s ease-in-out infinite; }
-
-@keyframes auroraDrift {
-  0%   { transform: translate3d(0, 0, 0) rotate(0deg); }
-  50%  { transform: translate3d(2%, -1%, 0) rotate(8deg); }
-  100% { transform: translate3d(0, 0, 0) rotate(0deg); }
-}
-.animate-aurora { animation: auroraDrift 28s ease-in-out infinite; }
-
-@keyframes shimmerIn {
-  0%   { opacity: 0; transform: translateY(6px); filter: blur(4px); }
-  100% { opacity: 1; transform: translateY(0); filter: blur(0); }
-}
-.animate-shimmer-in { animation: shimmerIn 0.6s var(--ease-out-expo) both; }
-
-@media (prefers-reduced-motion: reduce) {
-  .animate-pulse-slow,
-  .animate-aurora,
-  .animate-shimmer-in { animation: none !important; }
-}
-
-/* === Mushaf (Quran View) === */
-:root {
-  --hl-gold: oklch(0.82 0.14 82);
-  --hl-blue: oklch(0.74 0.12 230);
-  --hl-green: oklch(0.74 0.14 168);
-  --hl-purple: oklch(0.70 0.16 295);
-  --hl-rose: oklch(0.74 0.14 18);
-
-  --mushaf-paper: oklch(0.96 0.012 85);
-  --mushaf-ink: oklch(0.18 0.02 270);
-}
-.dark, :root {
-  --mushaf-paper: oklch(0.22 0.025 268);
-  --mushaf-ink: oklch(0.96 0.012 95);
-}
-
-@import url("https://fonts.googleapis.com/css2?family=Amiri+Quran&family=Scheherazade+New:wght@400;700&display=swap");
-
-.font-mushaf {
-  font-family: "Amiri Quran", "KFGQPC HAFS Uthmanic Script", "Scheherazade New", serif;
-  font-feature-settings: "liga", "calt", "ss01";
-  font-variant-ligatures: common-ligatures contextual;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-}
-
-.mushaf-page {
-  background: var(--mushaf-paper);
-  color: var(--mushaf-ink);
-  border: 1px solid oklch(0 0 0 / 0.08);
-  border-radius: 0.75rem;
-  box-shadow: var(--shadow-soft);
-  position: relative;
-}
-.mushaf-page::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background-image: var(--noise-overlay);
-  opacity: 0.04;
-  pointer-events: none;
-  border-radius: inherit;
-  mix-blend-mode: overlay;
-}
-
-/* Mushaf body — dense, justified composition like a real Madani page */
-.mushaf-body {
-  text-align: justify;
-  text-align-last: center;
-  text-justify: inter-word;
-  word-spacing: 0.02em;
-  hanging-punctuation: first last;
-}
-
-.ayah-span {
-  display: inline;
-  border-radius: 0.2rem;
-  padding: 0;
-  cursor: pointer;
-  transition: background-color 140ms ease;
-}
-.ayah-span:hover { background-color: oklch(0 0 0 / 0.04); }
-.dark .ayah-span:hover { background-color: oklch(1 0 0 / 0.05); }
-
-/* Ayah-end marker: small rosette-style circle with the number inside */
-.ayah-end {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 1.25em;
-  height: 1.25em;
-  margin: 0 0.18em;
-  font-family: "Scheherazade New", serif;
-  font-size: 0.55em;
-  line-height: 1;
-  color: color-mix(in oklab, var(--gold) 55%, var(--mushaf-ink));
-  border: 1.25px solid color-mix(in oklab, var(--gold) 55%, transparent);
-  border-radius: 9999px;
-  background: radial-gradient(circle, color-mix(in oklab, var(--gold) 12%, transparent) 0%, transparent 70%);
-  font-feature-settings: normal;
-  vertical-align: middle;
-  user-select: none;
-}
-
-/* Surah header band inside the page (centered cartouche above the first ayah) */
-.surah-header {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.35rem;
-  margin: 0.6rem auto 0.5rem;
-  padding: 0.5rem 1rem;
-  border-top: 1px solid color-mix(in oklab, var(--gold) 35%, transparent);
-  border-bottom: 1px solid color-mix(in oklab, var(--gold) 35%, transparent);
-  text-align: center;
-  direction: rtl;
-}
-.surah-header-name {
-  font-family: "Amiri Quran", "Scheherazade New", serif;
-  font-size: 1.05em;
-  letter-spacing: 0.02em;
-  color: color-mix(in oklab, var(--gold) 50%, var(--mushaf-ink));
-}
-.bismillah {
-  font-family: "Amiri Quran", "Scheherazade New", serif;
-  font-size: 1.1em;
-  text-align: center;
-  margin: 0.15rem 0 0.45rem;
-  color: var(--mushaf-ink);
-  direction: rtl;
-}
-
-.hl-gold   { background-color: color-mix(in oklab, var(--hl-gold)   38%, transparent); color: var(--mushaf-ink); }
-.hl-blue   { background-color: color-mix(in oklab, var(--hl-blue)   38%, transparent); color: var(--mushaf-ink); }
-.hl-green  { background-color: color-mix(in oklab, var(--hl-green)  38%, transparent); color: var(--mushaf-ink); }
-.hl-purple { background-color: color-mix(in oklab, var(--hl-purple) 38%, transparent); color: var(--mushaf-ink); }
-.hl-rose   { background-color: color-mix(in oklab, var(--hl-rose)   38%, transparent); color: var(--mushaf-ink); }
-
-/* Mushaf header — matches the page surface so they read as one element */
-.mushaf-header {
-  background: var(--mushaf-paper);
-  color: var(--mushaf-ink);
-  border: 1px solid oklch(0 0 0 / 0.08);
-}
-.mushaf-header button,
-.mushaf-header a { color: color-mix(in oklab, var(--mushaf-ink) 75%, transparent); }
-.mushaf-header button:hover,
-.mushaf-header a:hover { color: var(--mushaf-ink); background-color: color-mix(in oklab, var(--mushaf-ink) 8%, transparent); }
-.mushaf-header .bg-white\/\[0\.04\] { background-color: color-mix(in oklab, var(--mushaf-ink) 6%, transparent) !important; }
-.mushaf-header .bg-white\/\[0\.04\]:hover { background-color: color-mix(in oklab, var(--mushaf-ink) 12%, transparent) !important; }
-.mushaf-header .bg-white\/10,
-.mushaf-header [class*="bg-white/10"] { background-color: color-mix(in oklab, var(--mushaf-ink) 15%, transparent) !important; }
-
-/* Merged header + page — one continuous surface */
-.mushaf-header--joined {
-  border-bottom: 0;
-  border-bottom-left-radius: 0;
-  border-bottom-right-radius: 0;
-  box-shadow: 0 -1px 0 0 oklch(0 0 0 / 0.04) inset;
-  position: relative;
-}
-.mushaf-header--joined::after {
-  content: "";
-  position: absolute;
-  left: 1rem;
-  right: 1rem;
-  bottom: 0;
-  height: 1px;
-  background: linear-gradient(to right, transparent, color-mix(in oklab, var(--mushaf-ink) 14%, transparent), transparent);
-}
-.mushaf-page--joined {
-  border-top: 0;
-  border-top-left-radius: 0;
-  border-top-right-radius: 0;
-}
-
-/* Pure Quran Mode — strip personal state, keep only mushaf */
-body.pure-mode .ayah-span { background-color: transparent !important; cursor: default; }
-body.pure-mode .ayah-span:hover { background-color: transparent !important; }
-body.pure-mode .mushaf-bookmark-dot,
-body.pure-mode .mushaf-active-glow { display: none !important; }
-
-
-/* Reading marker — single-instance ribbon/thread placed where the user paused */
-.mushaf-marker-ribbon {
-  display: inline-block;
-  width: 0.3em;
-  height: 0.9em;
-  margin-inline: 0.14em;
-  vertical-align: -0.05em;
-  border-radius: 0 0 2px 2px;
-  background: linear-gradient(
-    180deg,
-    color-mix(in oklab, var(--gold) 90%, transparent) 0%,
-    color-mix(in oklab, var(--gold) 60%, transparent) 60%,
-    color-mix(in oklab, var(--gold) 0%, transparent) 100%
-  );
-  box-shadow: 0 0 8px color-mix(in oklab, var(--gold) 35%, transparent);
-  position: relative;
-}
-.mushaf-marker-ribbon::after {
-  content: "";
-  position: absolute;
-  left: 50%;
-  bottom: -0.18em;
-  transform: translateX(-50%);
-  width: 0;
-  height: 0;
-  border-left: 0.17em solid transparent;
-  border-right: 0.17em solid transparent;
-  border-top: 0.18em solid color-mix(in oklab, var(--gold) 55%, transparent);
-}
-.ayah-marked {
-  background-color: color-mix(in oklab, var(--gold) 8%, transparent);
-  border-radius: 999px;
-  padding-inline: 0.18em;
-}
-
-/* "You were here" — resume ripple. Soft golden pulse with a fine cyan border, 3 slow blinks. */
-@keyframes ayah-resume-glow {
-  0%, 100% {
-    background-color: color-mix(in oklab, var(--resume-gold) 5%, transparent);
-    outline-color: color-mix(in oklab, var(--resume-cyan) 20%, transparent);
-    box-shadow:
-      0 0 0 0 color-mix(in oklab, var(--resume-gold) 0%, transparent),
-      0 0 5px 1px color-mix(in oklab, var(--resume-gold) 10%, transparent);
-    color: inherit;
-  }
-  50% {
-    background-color: color-mix(in oklab, var(--resume-gold) 18%, transparent);
-    outline-color: color-mix(in oklab, var(--resume-cyan) 48%, transparent);
-    box-shadow:
-      0 0 13px 4px color-mix(in oklab, var(--resume-gold) 26%, transparent),
-      0 0 26px 10px color-mix(in oklab, var(--resume-gold) 13%, transparent);
-    color: color-mix(in oklab, var(--resume-gold) 18%, var(--mushaf-ink, currentColor));
-  }
-}
-:root {
-  --resume-cyan: oklch(0.86 0.17 215);
-  --resume-gold: oklch(0.82 0.14 82);
-}
-.ayah-resume {
-  position: relative;
-  z-index: 2;
-  animation: ayah-resume-glow 2.8s cubic-bezier(0.4, 0, 0.6, 1) 0.15s 3 both;
-  border-radius: 999px;
-  outline: 1px solid color-mix(in oklab, var(--resume-cyan) 26%, transparent);
-  outline-offset: 0.08em;
-  padding-inline: 0.22em;
-}
-
-/* Spotlight: dim + blur the rest of the page while the resume ayah pulses,
- * then fade away. Matches 3 × 2.8s = 8.4s total. */
-@keyframes ayah-resume-spotlight {
-  0%   { opacity: 0; backdrop-filter: blur(0px); -webkit-backdrop-filter: blur(0px); }
-  8%   { opacity: 1; backdrop-filter: blur(2.5px); -webkit-backdrop-filter: blur(2.5px); }
-  88%  { opacity: 1; backdrop-filter: blur(2.5px); -webkit-backdrop-filter: blur(2.5px); }
-  100% { opacity: 0; backdrop-filter: blur(0px); -webkit-backdrop-filter: blur(0px); }
-}
-.mushaf-page:has(.ayah-resume)::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  background: oklch(0 0 0 / 0.42);
-  pointer-events: none;
-  z-index: 1;
-  animation: ayah-resume-spotlight 8.55s ease-in-out 0.15s 1 forwards;
-}
-body.mushaf-day .mushaf-page:has(.ayah-resume)::after {
-  background: oklch(0 0 0 / 0.22);
-}
-
-body.pure-mode .mushaf-marker-ribbon { display: none !important; }
-
-/* === Mushaf Day Mode ===
- * Warm parchment paper, ink-brown text, muted olive-gold rosettes.
- * Scoped: only mushaf surfaces flip; the rest of the night canvas stays.
- */
-body.mushaf-day {
-  --mushaf-paper: oklch(0.955 0.022 82);   /* warm parchment */
-  --mushaf-ink:   oklch(0.30 0.035 55);    /* deep ink-brown */
-  --mushaf-rule:  oklch(0.55 0.06 70);     /* muted olive-gold for borders */
-}
-body.mushaf-day .mushaf-page {
-  background:
-    radial-gradient(120% 80% at 50% 0%, oklch(0.97 0.018 85) 0%, transparent 60%),
-    var(--mushaf-paper);
-  border: 1px solid color-mix(in oklab, var(--mushaf-ink) 12%, transparent);
-  box-shadow:
-    0 1px 0 oklch(1 0 0 / 0.6) inset,
-    0 2px 6px oklch(0.2 0.04 60 / 0.18),
-    0 24px 50px -24px oklch(0.2 0.04 60 / 0.35);
-}
-body.mushaf-day .mushaf-page::before { opacity: 0.07; mix-blend-mode: multiply; }
-body.mushaf-day .ayah-span:hover { background-color: oklch(0.30 0.05 60 / 0.06); }
-body.mushaf-day .ayah-end {
-  color: color-mix(in oklab, oklch(0.55 0.10 70) 80%, var(--mushaf-ink));
-  border-color: color-mix(in oklab, oklch(0.55 0.10 70) 55%, transparent);
-  background: radial-gradient(circle, color-mix(in oklab, oklch(0.55 0.10 70) 14%, transparent) 0%, transparent 70%);
-}
-body.mushaf-day .surah-header {
-  border-color: color-mix(in oklab, oklch(0.55 0.10 70) 45%, transparent);
-}
-body.mushaf-day .surah-header-name { color: oklch(0.45 0.08 65); }
-body.mushaf-day .mushaf-marker-ribbon {
-  background: linear-gradient(180deg,
-    oklch(0.62 0.13 60) 0%,
-    oklch(0.55 0.10 60 / 0.7) 60%,
-    oklch(0.55 0.10 60 / 0) 100%);
-  box-shadow: 0 0 6px oklch(0.55 0.10 60 / 0.35);
-}
-body.mushaf-day .mushaf-marker-ribbon::after {
-  border-top-color: oklch(0.55 0.10 60 / 0.7);
-}
-
-/* === Immersive Mode ===
- * Triggered while contextual reading UI (toolbar/translation/reflection/live)
- * is open. Fades the bottom nav out so the page becomes the focus.
- */
-.immersive-fade {
-  transition: opacity 220ms var(--ease-out-expo),
-              transform 280ms var(--ease-out-expo),
-              filter 220ms ease;
-}
-body.immersive .immersive-fade {
-  opacity: 0;
-  transform: translateY(120%);
-  pointer-events: none;
-  filter: blur(2px);
-}
-
-/* Desktop side rail: soften (don't disappear) during contextual reading. */
-.immersive-soften {
-  transition: opacity 240ms var(--ease-out-expo), filter 240ms ease;
-}
-body.immersive .immersive-soften {
-  opacity: 0.28;
-  filter: blur(1px) saturate(0.85);
-}
-body.immersive .immersive-soften:hover {
-  opacity: 0.9;
-  filter: none;
-}
-
-/* === Contextual overlay surface ===
- * Used by the floating toolbar and ayah overlays so they sit visibly
- * ABOVE the mushaf page instead of blending into it.
- */
-.mushaf-overlay {
-  background: linear-gradient(160deg,
-    oklch(0.28 0.04 268 / 0.92),
-    oklch(0.22 0.035 268 / 0.88));
-  border: 1px solid oklch(0.82 0.14 82 / 0.22);
-  box-shadow:
-    0 0 0 1px oklch(0 0 0 / 0.30),
-    0 24px 60px -16px oklch(0 0 0 / 0.55),
-    0 0 24px -6px oklch(0.82 0.14 82 / 0.18);
-  backdrop-filter: blur(22px) saturate(1.15);
-  -webkit-backdrop-filter: blur(22px) saturate(1.15);
-  color: oklch(0.97 0.012 95);
-}
-.mushaf-overlay.mushaf-overlay-solid {
-  background: oklch(0.20 0.03 268);
-  backdrop-filter: none;
-  -webkit-backdrop-filter: none;
-}
-body.mushaf-day .mushaf-overlay.mushaf-overlay-solid {
-  background: oklch(0.98 0.018 85);
-}
-body.mushaf-day .mushaf-overlay {
-  background: linear-gradient(160deg,
-    oklch(0.99 0.015 85 / 0.96),
-    oklch(0.94 0.022 80 / 0.92));
-  border: 1px solid oklch(0.55 0.10 70 / 0.28);
-  box-shadow:
-    0 0 0 1px oklch(0.30 0.04 60 / 0.08),
-    0 22px 50px -16px oklch(0.30 0.04 60 / 0.30),
-    0 0 18px -4px oklch(0.55 0.10 70 / 0.20);
-  /* Re-scope semantic tokens so Tailwind classes (text-foreground,
-   * text-muted-foreground, border-border, bg-secondary, bg-primary)
-   * automatically gain ink-on-parchment contrast inside the overlay. */
-  --foreground: oklch(0.26 0.035 55);
-  --muted-foreground: oklch(0.42 0.03 55);
-  --border: oklch(0.55 0.10 70 / 0.30);
-  --secondary: oklch(0.55 0.10 70 / 0.14);
-  --secondary-foreground: oklch(0.26 0.035 55);
-  --primary: oklch(0.45 0.09 70);
-  --primary-foreground: oklch(0.97 0.015 85);
-  --card: oklch(0.97 0.018 85);
-  color: var(--foreground);
-}
-/* Toolbar button hover uses hardcoded white tint that vanishes on parchment. */
-body.mushaf-day .mushaf-overlay button:hover {
-  background-color: oklch(0.30 0.04 60 / 0.08);
-}
-/* Bookmarked icon: gold-on-parchment is invisible — deepen it in day mode. */
-body.mushaf-day .mushaf-overlay .text-\[color\:var\(--gold\)\] {
-  color: oklch(0.50 0.13 70);
-}
-/* Live-ayah accent: light rose washes out on parchment — saturate it. */
-body.mushaf-day .mushaf-overlay .text-\[color\:var\(--rose\)\] {
-  color: oklch(0.52 0.16 18);
 }

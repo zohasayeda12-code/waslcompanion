@@ -1,1 +1,0 @@
-ALTER TABLE public.journey_state ADD COLUMN IF NOT EXISTS last_mushaf_page integer NOT NULL DEFAULT 1;

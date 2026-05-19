@@ -1,1 +1,0 @@
-DELETE FROM public.push_subscriptions;
