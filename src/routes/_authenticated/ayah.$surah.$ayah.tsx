@@ -13,7 +13,7 @@ import { getJourneyState, advanceJourney } from "@/lib/journey.functions";
 import { toggleBookmark, isBookmarked, recordRevisit } from "@/lib/library.functions";
 import { setHighlight, getHighlight } from "@/lib/highlights.functions";
 import { saveReflection } from "@/lib/library.functions";
-import { nextAyahPos } from "@/lib/surah-meta";
+import { nextAyahPos, prevAyahPos } from "@/lib/surah-meta";
 
 const search = z.object({
   from: z.enum(["home", "quran", "bookmarks", "highlights", "reflections", "collections", "search", "notification", "revisited", "my-ayahs"]).optional(),
@@ -410,6 +410,28 @@ function AyahDetail() {
           )}
         </div>
       )}
+
+      {(() => {
+        const prev = prevAyahPos(s, a);
+        if (!prev) return null;
+        return (
+          <div className="mt-3">
+            <button
+              onClick={() =>
+                navigate({
+                  to: "/ayah/$surah/$ayah",
+                  params: { surah: String(prev.surah), ayah: String(prev.ayah) },
+                  search: { from },
+                })
+              }
+              className="interactive flex w-full items-center justify-center gap-2 rounded-2xl border border-border/60 bg-secondary/40 py-3 text-sm font-medium text-muted-foreground hover:text-foreground"
+              aria-label={`Go to previous ayah ${prev.surah}:${prev.ayah}`}
+            >
+              ← Previous Ayah
+            </button>
+          </div>
+        );
+      })()}
 
       {advanceFlow && (
         <ReflectBeforeNextSheet
