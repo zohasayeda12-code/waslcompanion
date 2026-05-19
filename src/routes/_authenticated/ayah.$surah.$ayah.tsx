@@ -259,12 +259,19 @@ function AyahDetail() {
         </div>
         {ayahData?.audioUrl && (
           <audio
+            key={ayahData.audioUrl}
             ref={audioRef}
             src={ayahData.audioUrl}
-            preload="none"
+            preload="auto"
+            crossOrigin="anonymous"
             onPlay={() => setAudioPlaying(true)}
             onPause={() => setAudioPlaying(false)}
             onEnded={() => setAudioPlaying(false)}
+            onError={(e) => {
+              const el = e.currentTarget;
+              console.error("[audio] element error", el.error?.code, el.error?.message, "src:", el.currentSrc);
+              setAudioPlaying(false);
+            }}
             className="hidden"
           />
         )}
