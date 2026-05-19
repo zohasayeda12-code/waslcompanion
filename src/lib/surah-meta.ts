@@ -21,3 +21,15 @@ export function nextAyahPos(surah: number, ayah: number): { surah: number; ayah:
   if (surah < 114) return { surah: surah + 1, ayah: 1 };
   return { surah, ayah }; // end of Quran
 }
+
+export function prevAyahPos(
+  surah: number,
+  ayah: number,
+): { surah: number; ayah: number } | null {
+  if (ayah > 1) return { surah, ayah: ayah - 1 };
+  if (surah > 1) {
+    const prevSurah = surah - 1;
+    return { surah: prevSurah, ayah: SURAH_AYAH_COUNTS[prevSurah] ?? 1 };
+  }
+  return null; // already at 1:1
+}
