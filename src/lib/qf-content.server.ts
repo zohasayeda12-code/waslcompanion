@@ -113,7 +113,13 @@ export async function fetchAyah(
       console.warn("verses.by_key failed", verseKey, String(e));
       return null;
     }),
-    qfFetch(`/recitations/${reciterId}/by_ayah/${verseKey}`).catch(() => null),
+    // Use public quran.com API for audio — QF prelive only has reciter id 7.
+    fetch(`https://api.quran.com/api/v4/recitations/${reciterId}/by_ayah/${verseKey}`, {
+      headers: { Accept: "application/json" },
+    }).catch((e) => {
+      console.warn("[fetchAyah] quran.com audio fetch failed", reciterId, verseKey, String(e));
+      return null;
+    }),
     opts?.includeTafsir
       ? qfFetch(`/tafsirs/${tafsirId}/by_ayah/${verseKey}`).catch(() => null)
       : Promise.resolve(null),
