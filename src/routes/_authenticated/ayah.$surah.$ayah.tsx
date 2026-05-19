@@ -64,6 +64,12 @@ function AyahDetail() {
   // Soft reflection prompt before advancing to next ayah
   const [advanceFlow, setAdvanceFlow] = useState(false);
 
+  // Hide the mobile bottom nav whenever a focused interaction is active
+  // (any sheet, confirmation, lived/carry/advance/reflection flow).
+  useImmersiveWhen(
+    Boolean(sheet) || Boolean(confirmation) || Boolean(livedFlow) || Boolean(carryFlow) || advanceFlow
+  );
+
   // 3-second delayed glow on Live icon
   useEffect(() => {
     const t = setTimeout(() => setGlowLive(true), 3000);
