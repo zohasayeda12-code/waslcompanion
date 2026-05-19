@@ -547,25 +547,54 @@ body.pure-mode .mushaf-active-glow { display: none !important; }
   padding-inline: 0.18em;
 }
 
-/* "You were here" — resume ripple. Strong, glowy breathing pulse. */
+/* "You were here" — resume ripple. Bright cyan spotlight pulse, 3 slow blinks. */
 @keyframes ayah-resume-glow {
   0%, 100% {
-    background-color: color-mix(in oklab, var(--gold) 4%, transparent);
+    background-color: color-mix(in oklab, var(--resume-cyan) 6%, transparent);
     box-shadow:
-      0 0 0 0 color-mix(in oklab, var(--gold) 0%, transparent),
-      0 0 4px 1px color-mix(in oklab, var(--gold) 8%, transparent);
+      0 0 0 0 color-mix(in oklab, var(--resume-cyan) 0%, transparent),
+      0 0 6px 1px color-mix(in oklab, var(--resume-cyan) 14%, transparent);
+    color: inherit;
   }
   50% {
-    background-color: color-mix(in oklab, var(--gold) 13%, transparent);
+    background-color: color-mix(in oklab, var(--resume-cyan) 28%, transparent);
     box-shadow:
-      0 0 12px 4px color-mix(in oklab, var(--gold) 17%, transparent),
-      0 0 22px 8px color-mix(in oklab, var(--gold) 9%, transparent);
+      0 0 18px 6px color-mix(in oklab, var(--resume-cyan) 38%, transparent),
+      0 0 36px 14px color-mix(in oklab, var(--resume-cyan) 22%, transparent);
+    color: color-mix(in oklab, var(--resume-cyan) 35%, var(--mushaf-ink, currentColor));
   }
 }
+:root {
+  --resume-cyan: oklch(0.86 0.17 215);
+}
 .ayah-resume {
-  animation: ayah-resume-glow 2.4s cubic-bezier(0.4, 0, 0.6, 1) 0.2s 2 both;
+  position: relative;
+  z-index: 2;
+  animation: ayah-resume-glow 2.8s cubic-bezier(0.4, 0, 0.6, 1) 0.15s 3 both;
   border-radius: 999px;
   padding-inline: 0.22em;
+}
+
+/* Spotlight: dim + blur the rest of the page while the resume ayah pulses,
+ * then fade away. Matches 3 × 2.8s = 8.4s total. */
+@keyframes ayah-resume-spotlight {
+  0%   { opacity: 0; backdrop-filter: blur(0px); -webkit-backdrop-filter: blur(0px); }
+  8%   { opacity: 1; backdrop-filter: blur(2.5px); -webkit-backdrop-filter: blur(2.5px); }
+  88%  { opacity: 1; backdrop-filter: blur(2.5px); -webkit-backdrop-filter: blur(2.5px); }
+  100% { opacity: 0; backdrop-filter: blur(0px); -webkit-backdrop-filter: blur(0px); }
+}
+.mushaf-page:has(.ayah-resume)::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: oklch(0 0 0 / 0.42);
+  pointer-events: none;
+  z-index: 1;
+  animation: ayah-resume-spotlight 8.55s ease-in-out 0.15s 1 forwards;
+}
+body.mushaf-day .mushaf-page:has(.ayah-resume)::after {
+  background: oklch(0 0 0 / 0.22);
 }
 
 body.pure-mode .mushaf-marker-ribbon { display: none !important; }
