@@ -61,7 +61,7 @@ export const getDisplayName = createServerFn({ method: "GET" }).handler(async ()
       },
     });
     const bodyText = await res.text();
-    console.log("[getDisplayName] userinfo", res.status, bodyText.slice(0, 500));
+    console.log("[getDisplayName] userinfo status", res.status);
     let data: Record<string, unknown> = {};
     try { data = JSON.parse(bodyText) as Record<string, unknown>; } catch {}
 
@@ -87,7 +87,6 @@ export const getDisplayName = createServerFn({ method: "GET" }).handler(async ()
             const payload = JSON.parse(
               Buffer.from(parts[1].replace(/-/g, "+").replace(/_/g, "/"), "base64").toString("utf8"),
             ) as Record<string, unknown>;
-            console.log("[getDisplayName] jwt claims keys:", Object.keys(payload));
             first = extractFirstName(payload);
           }
         }
@@ -96,7 +95,6 @@ export const getDisplayName = createServerFn({ method: "GET" }).handler(async ()
       }
     }
 
-    console.log("[getDisplayName] resolved:", first);
     return { name: first || null };
   } catch (e) {
     console.error("[getDisplayName] error", e);
