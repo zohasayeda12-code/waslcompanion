@@ -123,11 +123,6 @@ function MyAyahs() {
                   )}
                   <span className="inline-flex items-baseline gap-1.5">
                     {s.label}
-                    {counts[s.id] > 0 && (
-                      <span className={cn("text-[10px] tabular-nums", active ? "text-muted-foreground/70" : "text-muted-foreground/45")}>
-                        {counts[s.id]}
-                      </span>
-                    )}
                   </span>
                 </button>
               );
