@@ -28,8 +28,7 @@ function Search() {
   return (
     <AppShell>
       <header>
-        <Link to="/home" className="text-sm text-muted-foreground">← Home</Link>
-        <h1 className="mt-2 text-2xl font-medium tracking-tight">Search</h1>
+        <h1 className="text-2xl font-medium tracking-tight">Search</h1>
       </header>
       <form
         onSubmit={(e) => {

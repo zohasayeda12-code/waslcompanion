@@ -3,8 +3,10 @@ import { useServerFn } from "@tanstack/react-start";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import { ChevronRight } from "lucide-react";
 import { AppShell } from "@/components/app-shell";
 import { cn } from "@/lib/utils";
+import { SURAH_NAMES_AR, SURAH_NAMES_EN } from "@/lib/quran-structure";
 import { listBookmarks, listReflections, listRevisited } from "@/lib/library.functions";
 import { listHighlights } from "@/lib/highlights.functions";
 import { listAllIntentions } from "@/lib/intentions.functions";
@@ -54,17 +56,13 @@ function MyAyahs() {
 
   const [segment, setSegment] = useState<Segment>("living");
 
-  const lived = useMemo(
+  const living = useMemo(
     () =>
-      allIntents
-        .filter((i: any) => i.status === "lived")
+      [...allIntents]
+        .filter((i: any) => i.status === "lived" || (i.carry_forward_count ?? 0) > 0)
         .sort((a: any, b: any) =>
           (b.lived_at ?? b.updated_at ?? "").localeCompare(a.lived_at ?? a.updated_at ?? ""),
         ),
-    [allIntents],
-  );
-  const carried = useMemo(
-    () => allIntents.filter((i: any) => (i.carry_forward_count ?? 0) > 0 && i.status !== "lived"),
     [allIntents],
   );
 
@@ -78,7 +76,7 @@ function MyAyahs() {
   }, [syncState?.syncing, qc]);
 
   const counts: Record<Segment, number> = {
-    living: lived.length,
+    living: living.length,
     reflections: reflections.length,
     highlights: highlights.length,
     bookmarks: bookmarks.length,
@@ -88,11 +86,8 @@ function MyAyahs() {
   return (
     <AppShell>
       <header>
-        <Link to="/home" className="text-xs uppercase tracking-[0.22em] text-muted-foreground/80">
-          ← Home
-        </Link>
         <h1
-          className="mt-3 text-[clamp(1.6rem,5.2vw,2.1rem)] font-medium tracking-tight text-foreground/90"
+          className="text-[clamp(1.6rem,5.2vw,2.1rem)] font-medium tracking-tight text-foreground/90"
           style={{ fontFamily: "var(--font-display)" }}
         >
           My Ayahs
@@ -145,7 +140,7 @@ function MyAyahs() {
       </div>
 
       {/* Content */}
-      <div className="mt-8">
+      <div className="mt-6">
         <AnimatePresence mode="wait" initial={false}>
           <motion.div
             key={segment}
@@ -153,12 +148,92 @@ function MyAyahs() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -4 }}
             transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
+            className="grid grid-cols-1 gap-2 md:grid-cols-2 md:gap-x-4 md:gap-y-2.5"
           >
-            {segment === "living" && <LivingPanel lived={lived} carried={carried} />}
-            {segment === "reflections" && <ReflectionsPanel reflections={reflections} />}
-            {segment === "highlights" && <HighlightsPanel highlights={highlights} />}
-            {segment === "bookmarks" && <BookmarksPanel bookmarks={bookmarks} />}
-            {segment === "revisited" && <RevisitedPanel revisited={revisited} />}
+            {segment === "living" &&
+              (living.length === 0 ? (
+                <EmptyNote>Ayahs you carry and live with will gather here.</EmptyNote>
+              ) : (
+                living.map((it: any) => {
+                  const isLived = it.status === "lived";
+                  const meta = isLived
+                    ? `Lived${it.lived_at ? ` · ${relativeDay(it.lived_at)}` : ""}`
+                    : `Carried${it.updated_at ? ` · ${relativeDay(it.updated_at)}` : ""}`;
+                  return (
+                    <AyahPill
+                      key={it.id}
+                      surah={Number(it.surah)}
+                      ayah={Number(it.ayah)}
+                      from="my-ayahs"
+                      meta={meta}
+                      body={it.text ?? it.intention ?? ""}
+                    />
+                  );
+                })
+              ))}
+
+            {segment === "reflections" &&
+              (reflections.length === 0 ? (
+                <EmptyNote>Your written reflections will gather quietly here.</EmptyNote>
+              ) : (
+                reflections.map((r: any) => (
+                  <AyahPill
+                    key={r.id ?? `${r.surah}-${r.ayah}`}
+                    surah={Number(r.surah)}
+                    ayah={Number(r.ayah)}
+                    from="reflections"
+                    meta={r.updated_at ? `Reflected · ${relativeDay(r.updated_at)}` : "Reflected"}
+                    body={r.body ?? ""}
+                  />
+                ))
+              ))}
+
+            {segment === "highlights" &&
+              (highlights.length === 0 ? (
+                <EmptyNote>Ayahs you mark will appear here.</EmptyNote>
+              ) : (
+                highlights.map((h: any, idx: number) => (
+                  <AyahPill
+                    key={`${h.surah}-${h.ayah}-${idx}`}
+                    surah={Number(h.surah)}
+                    ayah={Number(h.ayah)}
+                    from="highlights"
+                    meta={h.created_at ? `Marked · ${relativeDay(h.created_at)}` : "Marked"}
+                    accentDot={HIGHLIGHT_HEX[h.color]}
+                  />
+                ))
+              ))}
+
+            {segment === "bookmarks" &&
+              (bookmarks.length === 0 ? (
+                <EmptyNote>Bookmarked ayahs will rest here for quick return.</EmptyNote>
+              ) : (
+                bookmarks.map((b: any, idx: number) => (
+                  <AyahPill
+                    key={b.id ?? `${b.surah}-${b.ayah}-${idx}`}
+                    surah={Number(b.surah)}
+                    ayah={Number(b.ayah)}
+                    from="bookmarks"
+                    meta={b.created_at ? `Bookmarked · ${relativeDay(b.created_at)}` : "Bookmarked"}
+                  />
+                ))
+              ))}
+
+            {segment === "revisited" &&
+              (revisited.length === 0 ? (
+                <EmptyNote>Ayahs you return to will surface here gently.</EmptyNote>
+              ) : (
+                revisited.map((it: any, idx: number) => (
+                  <AyahPill
+                    key={it.id ?? `${it.surah}-${it.ayah}-${idx}`}
+                    surah={Number(it.surah)}
+                    ayah={Number(it.ayah)}
+                    from="revisited"
+                    meta={it.visited_at ? `Revisited · ${relativeDay(it.visited_at)}` : "Revisited"}
+                    body={it.label ?? ""}
+                  />
+                ))
+              ))}
           </motion.div>
         </AnimatePresence>
       </div>
@@ -168,219 +243,113 @@ function MyAyahs() {
   );
 }
 
-/* ---------- Panels ---------- */
+/* ---------- Unified pill ---------- */
 
-function LivingPanel({ lived, carried }: { lived: any[]; carried: any[] }) {
-  if (lived.length === 0 && carried.length === 0) {
-    return <EmptyNote>Ayahs you carry and live with will gather here.</EmptyNote>;
-  }
-  const featured = lived[0];
-  const restLived = lived.slice(1, 6);
+function AyahPill({
+  surah,
+  ayah,
+  from,
+  meta,
+  body,
+  accentDot,
+}: {
+  surah: number;
+  ayah: number;
+  from: string;
+  meta?: string;
+  body?: string;
+  accentDot?: string;
+}) {
+  const [open, setOpen] = useState(false);
+  const trimmed = (body ?? "").trim();
+  const hasBody = trimmed.length > 0;
+  const isLong = trimmed.length > 80;
+  const preview = isLong ? trimmed.slice(0, 80).trimEnd() + "…" : trimmed;
 
   return (
-    <div>
-      {featured && (
-        <Link
-          to="/ayah/$surah/$ayah"
-          params={{ surah: String(featured.surah), ayah: String(featured.ayah) }}
-          search={{ from: "my-ayahs" as any }}
-          className="group block"
-        >
-          <article
-            className="relative isolate overflow-hidden rounded-[2rem] border border-white/[0.06]"
-            style={{
-              background:
-                "linear-gradient(168deg, oklch(0.22 0.03 270 / 0.55), oklch(0.18 0.025 280 / 0.65))",
-            }}
-          >
-            <div
+    <Link
+      to="/ayah/$surah/$ayah"
+      params={{ surah: String(surah), ayah: String(ayah) }}
+      search={{ from } as any}
+      aria-label={`Open ${SURAH_NAMES_EN[surah]} · Ayah ${ayah}`}
+      className={cn(
+        "interactive group flex w-full items-start gap-3 rounded-2xl",
+        "border border-white/[0.06] bg-white/[0.025] px-3.5 py-3",
+        "transition-colors hover:border-white/[0.14] hover:bg-white/[0.05]",
+      )}
+    >
+      <div
+        className="mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-full bg-secondary/50 text-[12px] font-medium tabular-nums text-muted-foreground"
+        aria-hidden
+      >
+        {surah}
+      </div>
+
+      <div className="min-w-0 flex-1 text-left">
+        <div className="flex items-baseline gap-2">
+          {accentDot && (
+            <span
+              className="inline-block size-1.5 shrink-0 rounded-full"
+              style={{ background: accentDot }}
               aria-hidden
-              className="pointer-events-none absolute -top-20 left-1/2 -z-10 size-64 -translate-x-1/2 rounded-full opacity-[0.12] blur-3xl"
-              style={{ background: "var(--gradient-gold-glow)" }}
             />
-            <div className="px-[clamp(1.5rem,5vw,2.25rem)] py-[clamp(2rem,6vw,2.75rem)]">
-              <p className="text-[10px] uppercase tracking-[0.28em] text-[color:var(--gold)]/70">Lived</p>
-              <p
-                className="mt-5 text-[clamp(1.15rem,3.6vw,1.35rem)] leading-[1.7] text-foreground/90"
-                style={{ fontFamily: "var(--font-display)", fontWeight: 400 }}
-              >
-                “{featured.text}”
+          )}
+          <span className="truncate text-[14.5px] font-medium text-foreground">
+            {SURAH_NAMES_EN[surah]} · Ayah {ayah}
+          </span>
+        </div>
+
+        {meta && (
+          <div className="mt-0.5 truncate text-[11.5px] text-muted-foreground/80">{meta}</div>
+        )}
+
+        {hasBody && (
+          <>
+            {!open ? (
+              <p className="mt-1.5 line-clamp-1 text-[12.5px] leading-[1.55] text-foreground/75">
+                {preview}
               </p>
-              <p className="mt-6 text-[10px] uppercase tracking-[0.24em] text-muted-foreground/70">
-                Surah {featured.surah} · {featured.surah}:{featured.ayah}
-                {featured.lived_at && <> · {relativeDay(featured.lived_at)}</>}
-              </p>
-            </div>
-          </article>
-        </Link>
-      )}
-
-      {restLived.length > 0 && (
-        <ul className="mt-5 grid gap-1.5">
-          {restLived.map((it: any) => (
-            <li key={it.id}>
-              <Link
-                to="/ayah/$surah/$ayah"
-                params={{ surah: String(it.surah), ayah: String(it.ayah) }}
-                search={{ from: "my-ayahs" as any }}
-                className="flex items-baseline gap-3 rounded-xl px-3 py-2.5 text-sm text-foreground/75 transition-colors hover:bg-white/[0.03]"
-              >
-                <span className="font-mono text-[11px] tracking-tight text-muted-foreground/70">
-                  {it.surah}:{it.ayah}
-                </span>
-                <span className="line-clamp-1 flex-1 text-foreground/80">{it.text}</span>
-              </Link>
-            </li>
-          ))}
-        </ul>
-      )}
-
-      {carried.length > 0 && (
-        <section className="mt-12">
-          <h2 className="mb-4 text-[10px] uppercase tracking-[0.28em] text-muted-foreground/70">
-            Recently carried
-          </h2>
-          <ul className="grid gap-1.5">
-            {carried.slice(0, 6).map((it: any) => (
-              <li key={it.id}>
-                <Link
-                  to="/ayah/$surah/$ayah"
-                  params={{ surah: String(it.surah), ayah: String(it.ayah) }}
-                  search={{ from: "my-ayahs" as any }}
-                  className="flex items-baseline gap-3 rounded-xl px-3 py-2.5 text-sm transition-colors hover:bg-white/[0.03]"
-                >
-                  <span className="font-mono text-[11px] tracking-tight text-muted-foreground/70">
-                    {it.surah}:{it.ayah}
-                  </span>
-                  <span className="line-clamp-1 flex-1 text-foreground/75">{it.text}</span>
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </section>
-      )}
-    </div>
-  );
-}
-
-function ReflectionsPanel({ reflections }: { reflections: any[] }) {
-  if (reflections.length === 0) {
-    return <EmptyNote>Your written reflections will gather quietly here.</EmptyNote>;
-  }
-  return (
-    <ul className="grid gap-3">
-      {reflections.map((r: any) => (
-        <li key={r.id ?? `${r.surah}-${r.ayah}`}>
-          <Link
-            to="/ayah/$surah/$ayah"
-            params={{ surah: String(r.surah), ayah: String(r.ayah) }}
-            search={{ from: "reflections" as any }}
-            className="block rounded-2xl border border-white/[0.04] bg-white/[0.018] p-4 transition-colors hover:bg-white/[0.035]"
-          >
-            <p className="text-[10px] uppercase tracking-[0.22em] text-muted-foreground/70">
-              {r.surah}:{r.ayah}
-            </p>
-            <div className="relative mt-2 max-h-[3.2em] overflow-hidden">
-              <p className="text-[0.95rem] leading-[1.6] text-foreground/80 line-clamp-2">{r.body}</p>
-              {r.body && r.body.length > 110 && (
-                <span
-                  aria-hidden
-                  className="pointer-events-none absolute inset-x-0 bottom-0 h-6"
-                  style={{
-                    background: "linear-gradient(to bottom, transparent, oklch(0.18 0.025 280 / 0.85))",
-                  }}
-                />
-              )}
-            </div>
-            {r.body && r.body.length > 110 && (
-              <p className="mt-2 text-[11px] tracking-wide text-[color:var(--gold)]/70">
-                Continue reflection →
+            ) : (
+              <p className="mt-1.5 whitespace-pre-wrap text-[12.5px] leading-[1.6] text-foreground/85">
+                {trimmed}
               </p>
             )}
-          </Link>
-        </li>
-      ))}
-    </ul>
-  );
-}
+            {isLong && (
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setOpen((o) => !o);
+                }}
+                className="mt-1 text-[10px] uppercase tracking-[0.22em] text-[color:var(--gold)]/70 transition-colors hover:text-[color:var(--gold)]"
+              >
+                {open ? "Show less" : "See more"}
+              </button>
+            )}
+          </>
+        )}
+      </div>
 
-function HighlightsPanel({ highlights }: { highlights: any[] }) {
-  if (highlights.length === 0) {
-    return <EmptyNote>Ayahs you mark will appear here as soft chips.</EmptyNote>;
-  }
-  return (
-    <ul className="flex flex-wrap gap-2">
-      {highlights.map((h: any, idx: number) => (
-        <li key={`${h.surah}-${h.ayah}-${idx}`}>
-          <Link
-            to="/ayah/$surah/$ayah"
-            params={{ surah: String(h.surah), ayah: String(h.ayah) }}
-            search={{ from: "highlights" as any }}
-            className="inline-flex items-center gap-2 rounded-full px-2.5 py-1.5 text-xs font-mono tracking-tight text-foreground/70 transition-colors hover:bg-white/[0.04] hover:text-foreground"
-          >
-            <span
-              className="inline-block h-1.5 w-1.5 rounded-full"
-              style={{ background: HIGHLIGHT_HEX[h.color] ?? "var(--muted-foreground)" }}
-              aria-hidden
-            />
-            {h.surah}:{h.ayah}
-          </Link>
-        </li>
-      ))}
-    </ul>
-  );
-}
+      <span
+        dir="rtl"
+        className="mt-0.5 shrink-0 text-[1.05rem] font-medium text-foreground/85"
+        style={{ fontFamily: "var(--font-arabic, inherit)" }}
+      >
+        {SURAH_NAMES_AR[surah]}
+      </span>
 
-function BookmarksPanel({ bookmarks }: { bookmarks: any[] }) {
-  if (bookmarks.length === 0) {
-    return <EmptyNote>Bookmarked ayahs will rest here for quick return.</EmptyNote>;
-  }
-  return (
-    <ul className="flex flex-wrap gap-2">
-      {bookmarks.map((b: any, idx: number) => (
-        <li key={b.id ?? `${b.surah}-${b.ayah}-${idx}`}>
-          <Link
-            to="/ayah/$surah/$ayah"
-            params={{ surah: String(b.surah), ayah: String(b.ayah) }}
-            search={{ from: "bookmarks" as any }}
-            className="inline-flex items-center rounded-full border border-white/[0.05] bg-white/[0.02] px-3 py-1.5 text-xs font-mono tracking-tight text-foreground/75 transition-colors hover:bg-white/[0.05] hover:text-foreground"
-          >
-            {b.surah}:{b.ayah}
-          </Link>
-        </li>
-      ))}
-    </ul>
-  );
-}
-
-function RevisitedPanel({ revisited }: { revisited: any[] }) {
-  if (revisited.length === 0) {
-    return <EmptyNote>Ayahs you return to will surface here gently.</EmptyNote>;
-  }
-  return (
-    <ul className="grid gap-1.5">
-      {revisited.map((it: any, idx: number) => (
-        <li key={it.id ?? `${it.surah}-${it.ayah}-${idx}`}>
-          <Link
-            to="/ayah/$surah/$ayah"
-            params={{ surah: String(it.surah), ayah: String(it.ayah) }}
-            search={{ from: "revisited" as any }}
-            className="flex items-baseline gap-3 rounded-xl px-3 py-2 text-sm text-foreground/70 transition-colors hover:bg-white/[0.03]"
-          >
-            <span className="font-mono text-[11px] tracking-tight text-muted-foreground/60">
-              {it.surah}:{it.ayah}
-            </span>
-            {it.label && <span className="line-clamp-1 flex-1 text-muted-foreground">{it.label}</span>}
-          </Link>
-        </li>
-      ))}
-    </ul>
+      <ChevronRight
+        className="mt-2 size-4 shrink-0 text-muted-foreground/50 transition-transform group-hover:translate-x-0.5"
+        strokeWidth={1.7}
+      />
+    </Link>
   );
 }
 
 function EmptyNote({ children }: { children: React.ReactNode }) {
   return (
-    <p className="mt-10 text-center text-sm text-muted-foreground/70">{children}</p>
+    <p className="col-span-full mt-10 text-center text-sm text-muted-foreground/70">{children}</p>
   );
 }
 
