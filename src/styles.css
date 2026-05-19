@@ -629,8 +629,6 @@ body.pure-mode .mushaf-active-glow { display: none !important; }
   z-index: 2;
   animation: ayah-resume-glow 2.8s cubic-bezier(0.4, 0, 0.6, 1) 0.15s 3 both;
   border-radius: 0.25rem;
-  outline: 1px solid color-mix(in oklab, var(--resume-cyan) 22%, transparent);
-  outline-offset: -0.18em;
   -webkit-box-decoration-break: clone;
   box-decoration-break: clone;
 }
