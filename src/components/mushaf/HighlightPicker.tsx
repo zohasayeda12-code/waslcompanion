@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { setHighlight } from "@/lib/highlights.functions";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 type Color = "gold" | "blue" | "green" | "purple" | "rose";
 
