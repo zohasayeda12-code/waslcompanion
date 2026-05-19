@@ -79,34 +79,25 @@ export function HighlightPicker({ anchor, surah, ayah, onClose }: Props) {
             <motion.button
               key={s.color}
               aria-label={s.label}
+              title={s.label}
               onClick={() => apply.mutate(s.color)}
               initial={{ opacity: 0, y: -6 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.035, duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
-              className="group interactive relative size-5 rounded-full border border-white/15 shadow-[0_2px_6px_oklch(0_0_0_/_0.35)] hover:scale-110"
+              className="interactive size-5 rounded-full border border-white/15 shadow-[0_2px_6px_oklch(0_0_0_/_0.35)] hover:scale-110"
               style={{
                 background: `color-mix(in oklab, var(--hl-${s.color}) 75%, transparent)`,
               }}
-            >
-              <span
-                className="pointer-events-none absolute left-full top-1/2 ml-3 -translate-y-1/2 -translate-x-1 whitespace-nowrap text-[10.5px] tracking-[0.2em] uppercase text-foreground/70 opacity-0 transition-all duration-300 ease-out group-hover:opacity-100 group-hover:translate-x-0"
-              >
-                {s.label}
-              </span>
-            </motion.button>
+            />
           ))}
           <span className="my-0.5 h-px w-4 bg-border/60" />
           <button
             onClick={() => apply.mutate(null)}
             aria-label="Remove highlight"
-            className="group interactive relative flex size-5 items-center justify-center rounded-full text-muted-foreground hover:text-foreground"
+            title="Remove"
+            className="interactive flex size-5 items-center justify-center rounded-full text-muted-foreground hover:text-foreground"
           >
             <span className="block h-px w-3 bg-current" />
-            <span
-              className="pointer-events-none absolute left-full top-1/2 ml-3 -translate-y-1/2 -translate-x-1 whitespace-nowrap text-[10.5px] tracking-[0.2em] uppercase text-foreground/70 opacity-0 transition-all duration-300 ease-out group-hover:opacity-100 group-hover:translate-x-0"
-            >
-              Remove
-            </span>
           </button>
         </div>
       </motion.div>
