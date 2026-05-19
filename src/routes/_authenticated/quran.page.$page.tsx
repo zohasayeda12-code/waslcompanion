@@ -208,7 +208,7 @@ function MushafReader() {
       {/* Header — merged into the mushaf page surface as one continuous element */}
       <div className="sticky top-0 z-30 -mx-4 px-4 pt-2">
         <header
-          className="mushaf-header mushaf-header--joined mx-auto flex w-full max-w-[52rem] items-center justify-between gap-3 rounded-t-2xl px-4 py-2.5"
+          className="mushaf-header mushaf-header--joined mx-auto flex w-full max-w-[52rem] items-center justify-between gap-2 md:gap-3 rounded-t-2xl px-3 py-2.5 md:px-4"
         >
           <Link
             to="/quran"
@@ -217,21 +217,21 @@ function MushafReader() {
             <ChevronLeft className="size-[18px]" strokeWidth={1.6} />
             Quran
           </Link>
-          <div className="flex items-center gap-2 text-[12px]">
+          <div className="flex items-center gap-1 md:gap-2 text-[12px]">
             <button
               onClick={() => goTo(page - 1)}
               disabled={page <= 1}
               aria-label="Previous page"
-              className="interactive inline-flex size-9 items-center justify-center rounded-2xl disabled:opacity-40"
+              className="interactive inline-flex size-8 md:size-9 items-center justify-center rounded-2xl disabled:opacity-40"
             >
               <ChevronLeft className="size-[18px]" strokeWidth={1.6} />
             </button>
-            <span className="min-w-[3.6rem] text-center tabular-nums text-foreground/80">{page} / {TOTAL_PAGES}</span>
+            <span className="min-w-[3rem] md:min-w-[3.6rem] text-center tabular-nums text-foreground/80">{page} / {TOTAL_PAGES}</span>
             <button
               onClick={() => goTo(page + 1)}
               disabled={page >= TOTAL_PAGES}
               aria-label="Next page"
-              className="interactive inline-flex size-9 items-center justify-center rounded-2xl disabled:opacity-40"
+              className="interactive inline-flex size-8 md:size-9 items-center justify-center rounded-2xl disabled:opacity-40"
             >
               <ChevronRight className="size-[18px]" strokeWidth={1.6} />
             </button>
