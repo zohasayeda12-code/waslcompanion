@@ -616,16 +616,15 @@ body.pure-mode .mushaf-active-glow { display: none !important; }
 .ayah-resume {
   position: relative;
   z-index: 2;
-  background-image: linear-gradient(
-    180deg,
-    transparent 0%,
-    color-mix(in oklab, var(--resume-gold) 28%, transparent) 28%,
-    color-mix(in oklab, var(--resume-gold) 28%, transparent) 72%,
+  background-image: radial-gradient(
+    ellipse 50% 60% at 50% 50%,
+    color-mix(in oklab, var(--resume-gold) 38%, transparent) 0%,
+    color-mix(in oklab, var(--resume-gold) 26%, transparent) 55%,
     transparent 100%
   );
   background-repeat: no-repeat;
-  background-position: 0 65%;
-  background-size: 100% 0.95em;
+  background-position: 50% 65%;
+  background-size: 98% 1em;
   -webkit-box-decoration-break: clone;
   box-decoration-break: clone;
   animation: ayah-resume-glow 1.9s cubic-bezier(0.45, 0, 0.55, 1) 0.1s 3 both;
