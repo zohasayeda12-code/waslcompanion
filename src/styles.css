@@ -515,10 +515,10 @@ body.pure-mode .mushaf-active-glow { display: none !important; }
 /* Reading marker — single-instance ribbon/thread placed where the user paused */
 .mushaf-marker-ribbon {
   display: inline-block;
-  width: 0.34em;
-  height: 1.05em;
-  margin-inline: 0.18em;
-  vertical-align: -0.18em;
+  width: 0.3em;
+  height: 0.9em;
+  margin-inline: 0.14em;
+  vertical-align: -0.05em;
   border-radius: 0 0 2px 2px;
   background: linear-gradient(
     180deg,
