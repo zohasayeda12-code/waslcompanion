@@ -123,7 +123,6 @@ export function SideRail() {
               key={it.to}
               to={it.to}
               aria-current={isActive ? "page" : undefined}
-              title={it.label}
               className={cn(
                 "group relative flex items-center justify-center",
                 "size-11 rounded-2xl",
@@ -192,19 +191,28 @@ export function SideRail() {
           type="button"
           onClick={handleLogout}
           aria-label="Sign out"
-          title="Sign out"
           className={cn(
-            "group flex size-11 items-center justify-center rounded-2xl",
+            "group relative flex size-11 items-center justify-center rounded-2xl",
             "text-foreground/45 hover:text-foreground/90 hover:bg-white/[0.04]",
             "transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] active:scale-[0.96]",
           )}
         >
           <LogOut className="size-[18px] transition-transform group-hover:scale-110" strokeWidth={1.6} />
+          <span
+            className={cn(
+              "pointer-events-none absolute left-full ml-4 whitespace-nowrap",
+              "text-[10.5px] tracking-[0.2em] uppercase text-foreground/70",
+              "opacity-0 -translate-x-1",
+              "transition-all duration-300 ease-out",
+              "group-hover:opacity-100 group-hover:translate-x-0",
+            )}
+          >
+            Sign out
+          </span>
         </button>
 
         <div
           aria-label="Profile"
-          title="Profile"
           className={cn(
             "group relative flex size-9 items-center justify-center rounded-full",
             "border border-white/[0.08] bg-white/[0.03]",
