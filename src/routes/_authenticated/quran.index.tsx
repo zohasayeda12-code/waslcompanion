@@ -84,13 +84,6 @@ function QuranHub() {
             A gentle entry into your reading
           </p>
         </div>
-        <Link
-          to="/my-ayahs"
-          aria-label="My Ayahs"
-          className="interactive inline-flex size-9 items-center justify-center rounded-full bg-secondary/60 text-foreground/80"
-        >
-          <Bookmark className="size-[17px]" strokeWidth={1.6} />
-        </Link>
       </header>
 
       {/* Continue Reading — the "thread marker" */}
