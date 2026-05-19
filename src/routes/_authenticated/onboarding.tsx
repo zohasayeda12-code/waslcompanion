@@ -116,7 +116,7 @@ function Onboarding() {
           {step === "welcome" && (
             <>
               <h1 className="text-[clamp(2.25rem,9vw,3.25rem)] font-medium tracking-tight">
-                One ayah <span className="text-aurora">at a time.</span>
+                <span className="text-aurora">One ayah</span> at a time.
               </h1>
               <p className="mt-6 max-w-sm text-balance text-base text-muted-foreground">
                 Wasl is a companion that helps you build a deeper connection with the Quran.
