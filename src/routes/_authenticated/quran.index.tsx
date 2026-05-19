@@ -3,7 +3,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useCallback, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { BookOpen, Bookmark, ChevronRight } from "lucide-react";
+import { BookOpen, ChevronRight } from "lucide-react";
 
 import { AppShell } from "@/components/app-shell";
 import { GlassCard } from "@/components/glass-card";
@@ -77,20 +77,11 @@ function QuranHub() {
   return (
     <AppShell>
       {/* Header */}
-      <header className="mb-5 flex items-center justify-between">
-        <div>
-          <h1 className="text-[1.55rem] font-semibold tracking-tight">Quran</h1>
-          <p className="mt-0.5 text-xs text-muted-foreground">
-            A gentle entry into your reading
-          </p>
-        </div>
-        <Link
-          to="/my-ayahs"
-          aria-label="My Ayahs"
-          className="interactive inline-flex size-9 items-center justify-center rounded-full bg-secondary/60 text-foreground/80"
-        >
-          <Bookmark className="size-[17px]" strokeWidth={1.6} />
-        </Link>
+      <header className="mb-5">
+        <h1 className="text-[1.55rem] font-semibold tracking-tight">Quran</h1>
+        <p className="mt-0.5 text-xs text-muted-foreground">
+          A gentle entry into your reading
+        </p>
       </header>
 
       {/* Continue Reading — the "thread marker" */}
