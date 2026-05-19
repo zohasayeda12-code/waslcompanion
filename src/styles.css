@@ -661,13 +661,13 @@ body.pure-mode .mushaf-marker-ribbon { display: none !important; }
  * Scoped: only mushaf surfaces flip; the rest of the night canvas stays.
  */
 body.mushaf-day {
-  --mushaf-paper: oklch(0.955 0.022 82);   /* warm parchment */
+  --mushaf-paper: oklch(0.925 0.028 84);   /* warm off-white parchment */
   --mushaf-ink:   oklch(0.30 0.035 55);    /* deep ink-brown */
   --mushaf-rule:  oklch(0.55 0.06 70);     /* muted olive-gold for borders */
 }
 body.mushaf-day .mushaf-page {
   background:
-    radial-gradient(120% 80% at 50% 0%, oklch(0.97 0.018 85) 0%, transparent 60%),
+    radial-gradient(120% 80% at 50% 0%, oklch(0.945 0.024 86) 0%, transparent 60%),
     var(--mushaf-paper);
   border: 1px solid color-mix(in oklab, var(--mushaf-ink) 12%, transparent);
   box-shadow:
