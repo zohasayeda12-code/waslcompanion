@@ -655,7 +655,7 @@ function LiveSheet({
       <button
         onClick={() => submit.mutate()}
         disabled={!text.trim() || submit.isPending || !reminderLocal}
-        className="mt-5 inline-flex h-12 w-full items-center justify-center rounded-2xl bg-[var(--gradient-primary)] px-6 text-sm font-medium text-primary-foreground shadow-[var(--shadow-soft)] disabled:opacity-50"
+        className="interactive mt-5 inline-flex h-12 w-full items-center justify-center rounded-2xl bg-[var(--gradient-primary)] px-6 text-sm font-medium text-primary-foreground shadow-[var(--shadow-soft)] disabled:pointer-events-none disabled:opacity-50"
       >
         {submit.isPending ? <Loader2 className="size-4 animate-spin" /> : "Set Intention"}
       </button>
@@ -677,7 +677,7 @@ function ConfirmDialog({ when, onClose }: { when: string; onClose: () => void })
         </p>
         <button
           onClick={onClose}
-          className="mt-5 inline-flex h-10 w-full items-center justify-center rounded-2xl bg-secondary px-4 text-sm"
+          className="interactive mt-5 inline-flex h-10 w-full items-center justify-center rounded-2xl bg-secondary px-4 text-sm"
         >
           Close
         </button>
