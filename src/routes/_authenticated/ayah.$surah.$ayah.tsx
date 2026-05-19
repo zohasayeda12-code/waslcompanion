@@ -263,7 +263,6 @@ function AyahDetail() {
             ref={audioRef}
             src={ayahData.audioUrl}
             preload="auto"
-            crossOrigin="anonymous"
             onPlay={() => setAudioPlaying(true)}
             onPause={() => setAudioPlaying(false)}
             onEnded={() => setAudioPlaying(false)}
