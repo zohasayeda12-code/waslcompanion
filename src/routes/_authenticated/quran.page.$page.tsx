@@ -20,6 +20,7 @@ import { toggleBookmark, listBookmarks } from "@/lib/library.functions";
 import { usePureMode } from "@/hooks/use-pure-mode";
 import { useMushafTheme } from "@/hooks/use-mushaf-theme";
 import { useImmersiveWhen } from "@/hooks/use-immersive";
+import { mushafPageQueryOptions } from "@/lib/mushaf-query";
 
 const TOTAL_PAGES = 604;
 const PAGE_PARAM = z.coerce.number().int().min(1).max(TOTAL_PAGES);
@@ -34,6 +35,11 @@ export const Route = createFileRoute("/_authenticated/quran/page/$page")({
   parseParams: (p) => ({ page: PAGE_PARAM.parse(p.page) }),
   stringifyParams: (p) => ({ page: String(p.page) }),
   head: ({ params }) => ({ meta: [{ title: `Mushaf · Page ${params.page} — Wasl` }] }),
+  // Kick off the page fetch in parallel with the route transition so the
+  // mushaf data is often ready by the time the component mounts.
+  loader: ({ params, context }) => {
+    context.queryClient.prefetchQuery(mushafPageQueryOptions(params.page));
+  },
   component: MushafReader,
 });
 
