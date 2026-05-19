@@ -9,38 +9,276 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as OauthCallbackRouteImport } from './routes/oauth/callback'
+import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
+import { Route as AuthenticatedSearchRouteImport } from './routes/_authenticated/search'
+import { Route as AuthenticatedQuranRouteImport } from './routes/_authenticated/quran'
+import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated/onboarding'
+import { Route as AuthenticatedMyAyahsRouteImport } from './routes/_authenticated/my-ayahs'
+import { Route as AuthenticatedIntentionsRouteImport } from './routes/_authenticated/intentions'
+import { Route as AuthenticatedHomeRouteImport } from './routes/_authenticated/home'
+import { Route as AuthenticatedQuranIndexRouteImport } from './routes/_authenticated/quran.index'
+import { Route as ApiAuthLogoutRouteImport } from './routes/api/auth/logout'
+import { Route as ApiAuthLoginRouteImport } from './routes/api/auth/login'
+import { Route as ApiPublicCronRemindersRouteImport } from './routes/api/public/cron/reminders'
+import { Route as ApiPublicCronEnsureScheduleRouteImport } from './routes/api/public/cron/ensure-schedule'
+import { Route as AuthenticatedQuranPagePageRouteImport } from './routes/_authenticated/quran.page.$page'
+import { Route as AuthenticatedLiveSurahAyahRouteImport } from './routes/_authenticated/live.$surah.$ayah'
+import { Route as AuthenticatedAyahSurahAyahRouteImport } from './routes/_authenticated/ayah.$surah.$ayah'
 
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedRoute = AuthenticatedRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const OauthCallbackRoute = OauthCallbackRouteImport.update({
+  id: '/oauth/callback',
+  path: '/oauth/callback',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedSettingsRoute = AuthenticatedSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedSearchRoute = AuthenticatedSearchRouteImport.update({
+  id: '/search',
+  path: '/search',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedQuranRoute = AuthenticatedQuranRouteImport.update({
+  id: '/quran',
+  path: '/quran',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedOnboardingRoute = AuthenticatedOnboardingRouteImport.update({
+  id: '/onboarding',
+  path: '/onboarding',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedMyAyahsRoute = AuthenticatedMyAyahsRouteImport.update({
+  id: '/my-ayahs',
+  path: '/my-ayahs',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedIntentionsRoute = AuthenticatedIntentionsRouteImport.update({
+  id: '/intentions',
+  path: '/intentions',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedHomeRoute = AuthenticatedHomeRouteImport.update({
+  id: '/home',
+  path: '/home',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedQuranIndexRoute = AuthenticatedQuranIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AuthenticatedQuranRoute,
+} as any)
+const ApiAuthLogoutRoute = ApiAuthLogoutRouteImport.update({
+  id: '/api/auth/logout',
+  path: '/api/auth/logout',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAuthLoginRoute = ApiAuthLoginRouteImport.update({
+  id: '/api/auth/login',
+  path: '/api/auth/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicCronRemindersRoute = ApiPublicCronRemindersRouteImport.update({
+  id: '/api/public/cron/reminders',
+  path: '/api/public/cron/reminders',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicCronEnsureScheduleRoute =
+  ApiPublicCronEnsureScheduleRouteImport.update({
+    id: '/api/public/cron/ensure-schedule',
+    path: '/api/public/cron/ensure-schedule',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const AuthenticatedQuranPagePageRoute =
+  AuthenticatedQuranPagePageRouteImport.update({
+    id: '/page/$page',
+    path: '/page/$page',
+    getParentRoute: () => AuthenticatedQuranRoute,
+  } as any)
+const AuthenticatedLiveSurahAyahRoute =
+  AuthenticatedLiveSurahAyahRouteImport.update({
+    id: '/live/$surah/$ayah',
+    path: '/live/$surah/$ayah',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedAyahSurahAyahRoute =
+  AuthenticatedAyahSurahAyahRouteImport.update({
+    id: '/ayah/$surah/$ayah',
+    path: '/ayah/$surah/$ayah',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/login': typeof LoginRoute
+  '/home': typeof AuthenticatedHomeRoute
+  '/intentions': typeof AuthenticatedIntentionsRoute
+  '/my-ayahs': typeof AuthenticatedMyAyahsRoute
+  '/onboarding': typeof AuthenticatedOnboardingRoute
+  '/quran': typeof AuthenticatedQuranRouteWithChildren
+  '/search': typeof AuthenticatedSearchRoute
+  '/settings': typeof AuthenticatedSettingsRoute
+  '/oauth/callback': typeof OauthCallbackRoute
+  '/api/auth/login': typeof ApiAuthLoginRoute
+  '/api/auth/logout': typeof ApiAuthLogoutRoute
+  '/quran/': typeof AuthenticatedQuranIndexRoute
+  '/ayah/$surah/$ayah': typeof AuthenticatedAyahSurahAyahRoute
+  '/live/$surah/$ayah': typeof AuthenticatedLiveSurahAyahRoute
+  '/quran/page/$page': typeof AuthenticatedQuranPagePageRoute
+  '/api/public/cron/ensure-schedule': typeof ApiPublicCronEnsureScheduleRoute
+  '/api/public/cron/reminders': typeof ApiPublicCronRemindersRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/login': typeof LoginRoute
+  '/home': typeof AuthenticatedHomeRoute
+  '/intentions': typeof AuthenticatedIntentionsRoute
+  '/my-ayahs': typeof AuthenticatedMyAyahsRoute
+  '/onboarding': typeof AuthenticatedOnboardingRoute
+  '/search': typeof AuthenticatedSearchRoute
+  '/settings': typeof AuthenticatedSettingsRoute
+  '/oauth/callback': typeof OauthCallbackRoute
+  '/api/auth/login': typeof ApiAuthLoginRoute
+  '/api/auth/logout': typeof ApiAuthLogoutRoute
+  '/quran': typeof AuthenticatedQuranIndexRoute
+  '/ayah/$surah/$ayah': typeof AuthenticatedAyahSurahAyahRoute
+  '/live/$surah/$ayah': typeof AuthenticatedLiveSurahAyahRoute
+  '/quran/page/$page': typeof AuthenticatedQuranPagePageRoute
+  '/api/public/cron/ensure-schedule': typeof ApiPublicCronEnsureScheduleRoute
+  '/api/public/cron/reminders': typeof ApiPublicCronRemindersRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteWithChildren
+  '/login': typeof LoginRoute
+  '/_authenticated/home': typeof AuthenticatedHomeRoute
+  '/_authenticated/intentions': typeof AuthenticatedIntentionsRoute
+  '/_authenticated/my-ayahs': typeof AuthenticatedMyAyahsRoute
+  '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
+  '/_authenticated/quran': typeof AuthenticatedQuranRouteWithChildren
+  '/_authenticated/search': typeof AuthenticatedSearchRoute
+  '/_authenticated/settings': typeof AuthenticatedSettingsRoute
+  '/oauth/callback': typeof OauthCallbackRoute
+  '/api/auth/login': typeof ApiAuthLoginRoute
+  '/api/auth/logout': typeof ApiAuthLogoutRoute
+  '/_authenticated/quran/': typeof AuthenticatedQuranIndexRoute
+  '/_authenticated/ayah/$surah/$ayah': typeof AuthenticatedAyahSurahAyahRoute
+  '/_authenticated/live/$surah/$ayah': typeof AuthenticatedLiveSurahAyahRoute
+  '/_authenticated/quran/page/$page': typeof AuthenticatedQuranPagePageRoute
+  '/api/public/cron/ensure-schedule': typeof ApiPublicCronEnsureScheduleRoute
+  '/api/public/cron/reminders': typeof ApiPublicCronRemindersRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/login'
+    | '/home'
+    | '/intentions'
+    | '/my-ayahs'
+    | '/onboarding'
+    | '/quran'
+    | '/search'
+    | '/settings'
+    | '/oauth/callback'
+    | '/api/auth/login'
+    | '/api/auth/logout'
+    | '/quran/'
+    | '/ayah/$surah/$ayah'
+    | '/live/$surah/$ayah'
+    | '/quran/page/$page'
+    | '/api/public/cron/ensure-schedule'
+    | '/api/public/cron/reminders'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/login'
+    | '/home'
+    | '/intentions'
+    | '/my-ayahs'
+    | '/onboarding'
+    | '/search'
+    | '/settings'
+    | '/oauth/callback'
+    | '/api/auth/login'
+    | '/api/auth/logout'
+    | '/quran'
+    | '/ayah/$surah/$ayah'
+    | '/live/$surah/$ayah'
+    | '/quran/page/$page'
+    | '/api/public/cron/ensure-schedule'
+    | '/api/public/cron/reminders'
+  id:
+    | '__root__'
+    | '/'
+    | '/_authenticated'
+    | '/login'
+    | '/_authenticated/home'
+    | '/_authenticated/intentions'
+    | '/_authenticated/my-ayahs'
+    | '/_authenticated/onboarding'
+    | '/_authenticated/quran'
+    | '/_authenticated/search'
+    | '/_authenticated/settings'
+    | '/oauth/callback'
+    | '/api/auth/login'
+    | '/api/auth/logout'
+    | '/_authenticated/quran/'
+    | '/_authenticated/ayah/$surah/$ayah'
+    | '/_authenticated/live/$surah/$ayah'
+    | '/_authenticated/quran/page/$page'
+    | '/api/public/cron/ensure-schedule'
+    | '/api/public/cron/reminders'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
+  LoginRoute: typeof LoginRoute
+  OauthCallbackRoute: typeof OauthCallbackRoute
+  ApiAuthLoginRoute: typeof ApiAuthLoginRoute
+  ApiAuthLogoutRoute: typeof ApiAuthLogoutRoute
+  ApiPublicCronEnsureScheduleRoute: typeof ApiPublicCronEnsureScheduleRoute
+  ApiPublicCronRemindersRoute: typeof ApiPublicCronRemindersRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,22 +286,172 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/oauth/callback': {
+      id: '/oauth/callback'
+      path: '/oauth/callback'
+      fullPath: '/oauth/callback'
+      preLoaderRoute: typeof OauthCallbackRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/settings': {
+      id: '/_authenticated/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof AuthenticatedSettingsRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/search': {
+      id: '/_authenticated/search'
+      path: '/search'
+      fullPath: '/search'
+      preLoaderRoute: typeof AuthenticatedSearchRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/quran': {
+      id: '/_authenticated/quran'
+      path: '/quran'
+      fullPath: '/quran'
+      preLoaderRoute: typeof AuthenticatedQuranRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/onboarding': {
+      id: '/_authenticated/onboarding'
+      path: '/onboarding'
+      fullPath: '/onboarding'
+      preLoaderRoute: typeof AuthenticatedOnboardingRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/my-ayahs': {
+      id: '/_authenticated/my-ayahs'
+      path: '/my-ayahs'
+      fullPath: '/my-ayahs'
+      preLoaderRoute: typeof AuthenticatedMyAyahsRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/intentions': {
+      id: '/_authenticated/intentions'
+      path: '/intentions'
+      fullPath: '/intentions'
+      preLoaderRoute: typeof AuthenticatedIntentionsRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/home': {
+      id: '/_authenticated/home'
+      path: '/home'
+      fullPath: '/home'
+      preLoaderRoute: typeof AuthenticatedHomeRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/quran/': {
+      id: '/_authenticated/quran/'
+      path: '/'
+      fullPath: '/quran/'
+      preLoaderRoute: typeof AuthenticatedQuranIndexRouteImport
+      parentRoute: typeof AuthenticatedQuranRoute
+    }
+    '/api/auth/logout': {
+      id: '/api/auth/logout'
+      path: '/api/auth/logout'
+      fullPath: '/api/auth/logout'
+      preLoaderRoute: typeof ApiAuthLogoutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/auth/login': {
+      id: '/api/auth/login'
+      path: '/api/auth/login'
+      fullPath: '/api/auth/login'
+      preLoaderRoute: typeof ApiAuthLoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/cron/reminders': {
+      id: '/api/public/cron/reminders'
+      path: '/api/public/cron/reminders'
+      fullPath: '/api/public/cron/reminders'
+      preLoaderRoute: typeof ApiPublicCronRemindersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/cron/ensure-schedule': {
+      id: '/api/public/cron/ensure-schedule'
+      path: '/api/public/cron/ensure-schedule'
+      fullPath: '/api/public/cron/ensure-schedule'
+      preLoaderRoute: typeof ApiPublicCronEnsureScheduleRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/quran/page/$page': {
+      id: '/_authenticated/quran/page/$page'
+      path: '/page/$page'
+      fullPath: '/quran/page/$page'
+      preLoaderRoute: typeof AuthenticatedQuranPagePageRouteImport
+      parentRoute: typeof AuthenticatedQuranRoute
+    }
+    '/_authenticated/live/$surah/$ayah': {
+      id: '/_authenticated/live/$surah/$ayah'
+      path: '/live/$surah/$ayah'
+      fullPath: '/live/$surah/$ayah'
+      preLoaderRoute: typeof AuthenticatedLiveSurahAyahRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/ayah/$surah/$ayah': {
+      id: '/_authenticated/ayah/$surah/$ayah'
+      path: '/ayah/$surah/$ayah'
+      fullPath: '/ayah/$surah/$ayah'
+      preLoaderRoute: typeof AuthenticatedAyahSurahAyahRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
   }
 }
 
+interface AuthenticatedQuranRouteChildren {
+  AuthenticatedQuranIndexRoute: typeof AuthenticatedQuranIndexRoute
+  AuthenticatedQuranPagePageRoute: typeof AuthenticatedQuranPagePageRoute
+}
+
+const AuthenticatedQuranRouteChildren: AuthenticatedQuranRouteChildren = {
+  AuthenticatedQuranIndexRoute: AuthenticatedQuranIndexRoute,
+  AuthenticatedQuranPagePageRoute: AuthenticatedQuranPagePageRoute,
+}
+
+const AuthenticatedQuranRouteWithChildren =
+  AuthenticatedQuranRoute._addFileChildren(AuthenticatedQuranRouteChildren)
+
+interface AuthenticatedRouteChildren {
+  AuthenticatedHomeRoute: typeof AuthenticatedHomeRoute
+  AuthenticatedIntentionsRoute: typeof AuthenticatedIntentionsRoute
+  AuthenticatedMyAyahsRoute: typeof AuthenticatedMyAyahsRoute
+  AuthenticatedOnboardingRoute: typeof AuthenticatedOnboardingRoute
+  AuthenticatedQuranRoute: typeof AuthenticatedQuranRouteWithChildren
+  AuthenticatedSearchRoute: typeof AuthenticatedSearchRoute
+  AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
+  AuthenticatedAyahSurahAyahRoute: typeof AuthenticatedAyahSurahAyahRoute
+  AuthenticatedLiveSurahAyahRoute: typeof AuthenticatedLiveSurahAyahRoute
+}
+
+const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
+  AuthenticatedHomeRoute: AuthenticatedHomeRoute,
+  AuthenticatedIntentionsRoute: AuthenticatedIntentionsRoute,
+  AuthenticatedMyAyahsRoute: AuthenticatedMyAyahsRoute,
+  AuthenticatedOnboardingRoute: AuthenticatedOnboardingRoute,
+  AuthenticatedQuranRoute: AuthenticatedQuranRouteWithChildren,
+  AuthenticatedSearchRoute: AuthenticatedSearchRoute,
+  AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
+  AuthenticatedAyahSurahAyahRoute: AuthenticatedAyahSurahAyahRoute,
+  AuthenticatedLiveSurahAyahRoute: AuthenticatedLiveSurahAyahRoute,
+}
+
+const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
+  AuthenticatedRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRoute: AuthenticatedRouteWithChildren,
+  LoginRoute: LoginRoute,
+  OauthCallbackRoute: OauthCallbackRoute,
+  ApiAuthLoginRoute: ApiAuthLoginRoute,
+  ApiAuthLogoutRoute: ApiAuthLogoutRoute,
+  ApiPublicCronEnsureScheduleRoute: ApiPublicCronEnsureScheduleRoute,
+  ApiPublicCronRemindersRoute: ApiPublicCronRemindersRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
