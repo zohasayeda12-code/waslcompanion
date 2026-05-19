@@ -126,7 +126,7 @@ function Onboarding() {
           {step === "notifications" && (
             <>
               <h1 className="text-[clamp(2rem,8vw,3rem)] font-medium tracking-tight">
-                Gentle reminders?
+                Gentle <span className="text-aurora">reminders?</span>
               </h1>
               <p className="mt-6 max-w-sm text-balance text-base text-muted-foreground">
                 When an ayah matters to you, Wasl can softly remind you
