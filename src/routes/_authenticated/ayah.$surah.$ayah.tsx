@@ -239,7 +239,8 @@ function AyahDetail() {
         </div>
 
         <p
-          className="mt-6 text-center text-3xl leading-loose font-medium md:text-4xl"
+          key={`ar-${s}-${a}-${ayahData?.arabic ? "1" : "0"}`}
+          className="ayah-swap mt-6 text-center text-3xl leading-loose font-medium md:text-4xl"
           style={{ fontFamily: "var(--font-display)", direction: "rtl" }}
         >
           {ayahData?.arabic || "···"}
@@ -248,7 +249,10 @@ function AyahDetail() {
         <div className="mt-6 h-px w-full bg-border/60" />
 
         {ayahData?.translation ? (
-          <p className="mt-5 text-base italic leading-relaxed text-foreground/90">
+          <p
+            key={`tr-${s}-${a}`}
+            className="ayah-swap ayah-swap-delay-1 mt-5 text-base italic leading-relaxed text-foreground/90"
+          >
             “{ayahData.translation}”
           </p>
         ) : ayahData ? (
@@ -256,7 +260,10 @@ function AyahDetail() {
         ) : null}
 
         {ayahData?.transliteration && (
-          <p className="mt-3 text-sm leading-relaxed text-[color:var(--emerald)]/90">
+          <p
+            key={`tl-${s}-${a}`}
+            className="ayah-swap ayah-swap-delay-2 mt-3 text-sm leading-relaxed text-[color:var(--emerald)]/90"
+          >
             {ayahData.transliteration}
           </p>
         )}

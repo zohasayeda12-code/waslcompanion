@@ -788,3 +788,19 @@ body.mushaf-day .mushaf-overlay .text-\[color\:var\(--gold\)\] {
 body.mushaf-day .mushaf-overlay .text-\[color\:var\(--rose\)\] {
   color: oklch(0.52 0.16 18);
 }
+
+/* Ayah-detail soft swap — gentle fade + lift when a new ayah loads.
+ * Cheap GPU-friendly transforms only (no layout thrash, no blur). */
+@keyframes ayah-swap-in {
+  0%   { opacity: 0; transform: translateY(6px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+.ayah-swap {
+  animation: ayah-swap-in 320ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  will-change: opacity, transform;
+}
+.ayah-swap-delay-1 { animation-delay: 60ms; }
+.ayah-swap-delay-2 { animation-delay: 120ms; }
+@media (prefers-reduced-motion: reduce) {
+  .ayah-swap, .ayah-swap-delay-1, .ayah-swap-delay-2 { animation: none; }
+}
