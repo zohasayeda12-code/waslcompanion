@@ -28,6 +28,7 @@ type Mode = "surah" | "juz";
 
 function QuranHub() {
   const navigate = useNavigate();
+  const qc = useQueryClient();
   const [mode, setMode] = useState<Mode>("surah");
 
   const journeyFn = useServerFn(getJourneyState);
@@ -46,6 +47,15 @@ function QuranHub() {
   const lastAyah = marker?.ayah ?? journey?.current_ayah ?? 1;
   const hasMarker = !!marker;
 
+  // Warm the mushaf page cache on hover/focus/touch — by the time the user
+  // actually clicks, the data is usually already in memory.
+  const warmPage = useCallback(
+    (page: number) => {
+      qc.prefetchQuery(mushafPageQueryOptions(page));
+    },
+    [qc],
+  );
+
   const goToPage = (page: number) => {
     navigate({
       to: "/quran/page/$page",
@@ -55,6 +65,7 @@ function QuranHub() {
   };
 
   const continueReading = () => {
+    warmPage(lastPage);
     navigate({
       to: "/quran/page/$page",
       params: { page: String(lastPage) },
