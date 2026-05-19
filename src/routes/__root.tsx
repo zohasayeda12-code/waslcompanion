@@ -99,6 +99,17 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         rel: "stylesheet",
         href: "https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=DM+Sans:wght@400;500;600;700&display=swap",
       },
+      // Discover the Arabic Mushaf font at HTML parse so it streams in parallel
+      // with the app shell instead of waiting on styles.css @import resolution.
+      {
+        rel: "preload",
+        as: "style",
+        href: "https://fonts.googleapis.com/css2?family=Amiri+Quran&display=swap",
+      },
+      {
+        rel: "stylesheet",
+        href: "https://fonts.googleapis.com/css2?family=Amiri+Quran&display=swap",
+      },
     ],
   }),
   shellComponent: RootShell,
