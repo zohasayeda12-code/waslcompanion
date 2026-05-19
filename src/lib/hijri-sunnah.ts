@@ -92,11 +92,54 @@ const HIJRI_CALENDARS = [
   "islamic",
 ] as const;
 
+// Browser-independent fallback generated from the same Umm al-Qura calendar
+// used above. Some mobile engines do not ship Hijri Intl data at all; in that
+// case we still render the same date instead of the generic "Hijri · today".
+const UMM_AL_QURA_MONTH_STARTS = [
+  { start: "2025-12-21", month: "Rajab", year: "1447" },
+  { start: "2026-01-20", month: "Shaʿban", year: "1447" },
+  { start: "2026-02-18", month: "Ramadan", year: "1447" },
+  { start: "2026-03-20", month: "Shawwal", year: "1447" },
+  { start: "2026-04-18", month: "Dhul Qaʿdah", year: "1447" },
+  { start: "2026-05-18", month: "Dhul Hijjah", year: "1447" },
+  { start: "2026-06-16", month: "Muharram", year: "1448" },
+  { start: "2026-07-15", month: "Safar", year: "1448" },
+  { start: "2026-08-14", month: "Rabiʿ I", year: "1448" },
+  { start: "2026-09-12", month: "Rabiʿ II", year: "1448" },
+  { start: "2026-10-12", month: "Jumada I", year: "1448" },
+  { start: "2026-11-11", month: "Jumada II", year: "1448" },
+  { start: "2026-12-10", month: "Rajab", year: "1448" },
+] as const;
+
 function isHijriMonth(name: string): boolean {
   if (!name) return false;
   if (HIJRI_NAME_MAP[name]) return true;
   // Accept any month name we already know as a Hijri month value.
   return Object.values(HIJRI_NAME_MAP).includes(name);
+}
+
+function getFallbackHijriToday(now: Date): HijriToday {
+  const localDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  let current: (typeof UMM_AL_QURA_MONTH_STARTS)[number] = UMM_AL_QURA_MONTH_STARTS[0];
+
+  for (const row of UMM_AL_QURA_MONTH_STARTS) {
+    const [year, month, day] = row.start.split("-").map(Number);
+    const startsOn = new Date(year, month - 1, day);
+    if (startsOn <= localDay) current = row;
+    else break;
+  }
+
+  const [year, month, day] = current.start.split("-").map(Number);
+  const startsOn = new Date(year, month - 1, day);
+  const hijriDay = Math.floor((localDay.getTime() - startsOn.getTime()) / 86_400_000) + 1;
+
+  return {
+    month: current.month,
+    day: Math.max(1, hijriDay),
+    year: current.year,
+    weekday: now.getDay(),
+    hour: now.getHours(),
+  };
 }
 
 export function getHijriToday(now = new Date()): HijriToday {
@@ -125,7 +168,7 @@ export function getHijriToday(now = new Date()): HijriToday {
       // try next calendar
     }
   }
-  return { month: "", day: 0, year: "", weekday: now.getDay(), hour: now.getHours() };
+  return getFallbackHijriToday(now);
 }
 
 export function computeDailySunnah(today: HijriToday): DailySunnah {
