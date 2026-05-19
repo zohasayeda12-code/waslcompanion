@@ -550,7 +550,14 @@
 }
 
 /* Pure Quran Mode — strip personal state, keep only mushaf */
-body.pure-mode .ayah-span { background-color: transparent !important; cursor: default; }
+body.pure-mode .ayah-span,
+body.pure-mode .ayah-span[class*="hl-"],
+body.pure-mode .ayah-marked {
+  background-color: transparent !important;
+  background-image: none !important;
+  box-shadow: none !important;
+  cursor: default;
+}
 body.pure-mode .ayah-span:hover { background-color: transparent !important; }
 body.pure-mode .mushaf-bookmark-dot,
 body.pure-mode .mushaf-active-glow { display: none !important; }
