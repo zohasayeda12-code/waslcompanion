@@ -467,6 +467,38 @@
 .hl-purple { background-color: color-mix(in oklab, var(--hl-purple) 38%, transparent); color: var(--mushaf-ink); }
 .hl-rose   { background-color: color-mix(in oklab, var(--hl-rose)   38%, transparent); color: var(--mushaf-ink); }
 
+/* Mushaf-shaped loading skeleton — soft, atmospheric ink strokes that mimic
+   the justified composition of the real page. No gray rectangles. */
+.mushaf-skeleton { padding: 0.25rem 0.5rem; }
+.mushaf-skel-line,
+.mushaf-skel-header {
+  background: linear-gradient(
+    90deg,
+    color-mix(in oklab, var(--mushaf-ink) 7%, transparent) 0%,
+    color-mix(in oklab, var(--mushaf-ink) 14%, transparent) 50%,
+    color-mix(in oklab, var(--mushaf-ink) 7%, transparent) 100%
+  );
+  background-size: 220% 100%;
+  animation: mushaf-skel-shimmer 2.2s ease-in-out infinite;
+  opacity: 0.85;
+}
+.mushaf-skel-header {
+  background: linear-gradient(
+    90deg,
+    color-mix(in oklab, var(--gold) 10%, transparent) 0%,
+    color-mix(in oklab, var(--gold) 22%, transparent) 50%,
+    color-mix(in oklab, var(--gold) 10%, transparent) 100%
+  );
+  background-size: 220% 100%;
+}
+@keyframes mushaf-skel-shimmer {
+  0%   { background-position: 100% 0; }
+  100% { background-position: -100% 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .mushaf-skel-line, .mushaf-skel-header { animation: none; }
+}
+
 /* Mushaf header — matches the page surface so they read as one element */
 .mushaf-header {
   background: var(--mushaf-paper);
