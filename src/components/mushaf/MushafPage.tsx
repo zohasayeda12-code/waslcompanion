@@ -85,7 +85,7 @@ export function MushafPage({ pageNumber, onAyahClick, onAyahLongPress, onAyahDou
     const ro = new ResizeObserver(fit);
     ro.observe(frameRef.current);
     return () => ro.disconnect();
-  }, [page, pageNumber]);
+  }, [page, pageNumber, marker?.surah, marker?.ayah, resumeKey?.surah, resumeKey?.ayah]);
 
   // Group consecutive verses by surah so we can drop a header + bismillah at boundaries.
   type V = NonNullable<typeof page>["verses"][number];
