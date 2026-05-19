@@ -81,27 +81,51 @@ export type HijriToday = {
   hour: number; // 0-23, local
 };
 
+// Try multiple Hijri calendar identifiers — some mobile browsers (older
+// Safari, certain Android WebViews) don't support `islamic-umalqura` and
+// silently fall back to the Gregorian calendar (which is why mobile was
+// showing "December" instead of a Hijri month).
+const HIJRI_CALENDARS = [
+  "islamic-umalqura",
+  "islamic-civil",
+  "islamic-tbla",
+  "islamic",
+] as const;
+
+function isHijriMonth(name: string): boolean {
+  if (!name) return false;
+  if (HIJRI_NAME_MAP[name]) return true;
+  // Accept any month name we already know as a Hijri month value.
+  return Object.values(HIJRI_NAME_MAP).includes(name);
+}
+
 export function getHijriToday(now = new Date()): HijriToday {
-  try {
-    const fmt = new Intl.DateTimeFormat("en-u-ca-islamic-umalqura", {
-      day: "numeric",
-      month: "long",
-      year: "numeric",
-    });
-    const parts = fmt.formatToParts(now);
-    const rawMonth = parts.find((p) => p.type === "month")?.value ?? "";
-    const dayStr = parts.find((p) => p.type === "day")?.value ?? "";
-    const year = parts.find((p) => p.type === "year")?.value ?? "";
-    return {
-      month: HIJRI_NAME_MAP[rawMonth] ?? rawMonth,
-      day: parseInt(dayStr, 10) || 0,
-      year,
-      weekday: now.getDay(),
-      hour: now.getHours(),
-    };
-  } catch {
-    return { month: "", day: 0, year: "", weekday: now.getDay(), hour: now.getHours() };
+  for (const cal of HIJRI_CALENDARS) {
+    try {
+      const fmt = new Intl.DateTimeFormat(`en-u-ca-${cal}`, {
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+      });
+      const parts = fmt.formatToParts(now);
+      const rawMonth = parts.find((p) => p.type === "month")?.value ?? "";
+      const dayStr = parts.find((p) => p.type === "day")?.value ?? "";
+      const year = parts.find((p) => p.type === "year")?.value ?? "";
+      // If the engine fell back to Gregorian, the month won't match a Hijri
+      // name — try the next calendar identifier.
+      if (!isHijriMonth(rawMonth)) continue;
+      return {
+        month: HIJRI_NAME_MAP[rawMonth] ?? rawMonth,
+        day: parseInt(dayStr, 10) || 0,
+        year,
+        weekday: now.getDay(),
+        hour: now.getHours(),
+      };
+    } catch {
+      // try next calendar
+    }
   }
+  return { month: "", day: 0, year: "", weekday: now.getDay(), hour: now.getHours() };
 }
 
 export function computeDailySunnah(today: HijriToday): DailySunnah {
