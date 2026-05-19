@@ -1,13 +1,14 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { useQuery } from "@tanstack/react-query";
-import { useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useCallback, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { BookOpen, Bookmark, ChevronRight } from "lucide-react";
 
 import { AppShell } from "@/components/app-shell";
 import { GlassCard } from "@/components/glass-card";
 import { getJourneyState } from "@/lib/journey.functions";
+import { mushafPageQueryOptions } from "@/lib/mushaf-query";
 import {
   SURAH_NAMES_AR,
   SURAH_NAMES_EN,
@@ -27,6 +28,7 @@ type Mode = "surah" | "juz";
 
 function QuranHub() {
   const navigate = useNavigate();
+  const qc = useQueryClient();
   const [mode, setMode] = useState<Mode>("surah");
 
   const journeyFn = useServerFn(getJourneyState);
@@ -45,6 +47,15 @@ function QuranHub() {
   const lastAyah = marker?.ayah ?? journey?.current_ayah ?? 1;
   const hasMarker = !!marker;
 
+  // Warm the mushaf page cache on hover/focus/touch — by the time the user
+  // actually clicks, the data is usually already in memory.
+  const warmPage = useCallback(
+    (page: number) => {
+      qc.prefetchQuery(mushafPageQueryOptions(page));
+    },
+    [qc],
+  );
+
   const goToPage = (page: number) => {
     navigate({
       to: "/quran/page/$page",
@@ -54,6 +65,7 @@ function QuranHub() {
   };
 
   const continueReading = () => {
+    warmPage(lastPage);
     navigate({
       to: "/quran/page/$page",
       params: { page: String(lastPage) },
@@ -83,6 +95,9 @@ function QuranHub() {
       {/* Continue Reading — the "thread marker" */}
       <button
         onClick={continueReading}
+        onMouseEnter={() => warmPage(lastPage)}
+        onFocus={() => warmPage(lastPage)}
+        onTouchStart={() => warmPage(lastPage)}
         className="block w-full text-left"
         aria-label={`Continue reading from page ${lastPage}, ayah ${lastSurah}:${lastAyah}`}
       >
@@ -167,7 +182,11 @@ function QuranHub() {
             transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}
             className="grid grid-cols-1 gap-2 md:grid-cols-2 md:gap-x-4 md:gap-y-2.5"
           >
-            {mode === "surah" ? <SurahList onOpen={goToPage} /> : <JuzList onOpen={goToPage} />}
+            {mode === "surah" ? (
+              <SurahList onOpen={goToPage} onWarm={warmPage} />
+            ) : (
+              <JuzList onOpen={goToPage} onWarm={warmPage} />
+            )}
           </motion.div>
         </AnimatePresence>
       </div>
@@ -181,16 +200,21 @@ function Row({
   primary,
   secondary,
   onClick,
+  onWarm,
 }: {
   index: number | string;
   arabic?: string;
   primary: string;
   secondary: string;
   onClick: () => void;
+  onWarm?: () => void;
 }) {
   return (
     <button
       onClick={onClick}
+      onMouseEnter={onWarm}
+      onFocus={onWarm}
+      onTouchStart={onWarm}
       className={cn(
         "interactive group flex w-full items-center gap-3 rounded-2xl",
         "border border-white/[0.06] bg-white/[0.025] px-3.5 py-3 md:py-2.5",
@@ -230,24 +254,40 @@ function Row({
   );
 }
 
-function SurahList({ onOpen }: { onOpen: (page: number) => void }) {
+function SurahList({
+  onOpen,
+  onWarm,
+}: {
+  onOpen: (page: number) => void;
+  onWarm: (page: number) => void;
+}) {
   return (
     <>
-      {Array.from({ length: 114 }, (_, i) => i + 1).map((s) => (
-        <Row
-          key={s}
-          index={s}
-          arabic={SURAH_NAMES_AR[s]}
-          primary={SURAH_NAMES_EN[s]}
-          secondary={`${SURAH_AYAH_COUNTS[s]} verses`}
-          onClick={() => onOpen(SURAH_START_PAGE[s])}
-        />
-      ))}
+      {Array.from({ length: 114 }, (_, i) => i + 1).map((s) => {
+        const page = SURAH_START_PAGE[s];
+        return (
+          <Row
+            key={s}
+            index={s}
+            arabic={SURAH_NAMES_AR[s]}
+            primary={SURAH_NAMES_EN[s]}
+            secondary={`${SURAH_AYAH_COUNTS[s]} verses`}
+            onClick={() => onOpen(page)}
+            onWarm={() => onWarm(page)}
+          />
+        );
+      })}
     </>
   );
 }
 
-function JuzList({ onOpen }: { onOpen: (page: number) => void }) {
+function JuzList({
+  onOpen,
+  onWarm,
+}: {
+  onOpen: (page: number) => void;
+  onWarm: (page: number) => void;
+}) {
   return (
     <>
       {JUZ_INFO.map((j) => (
@@ -257,6 +297,7 @@ function JuzList({ onOpen }: { onOpen: (page: number) => void }) {
           primary={j.name}
           secondary={`Begins ${j.startSurah}:${j.startAyah} · ${juzAyahCount(j.number)} verses`}
           onClick={() => onOpen(j.startPage)}
+          onWarm={() => onWarm(j.startPage)}
         />
       ))}
     </>
