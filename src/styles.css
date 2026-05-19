@@ -467,8 +467,8 @@
  * band reads as a soft glow with no hard corners. */
 .ayah-span[class*="hl-"] {
   background-repeat: no-repeat;
-  background-position: 0 50%;
-  background-size: 100% 1.15em;
+  background-position: 0 65%;
+  background-size: 100% 0.95em;
   -webkit-box-decoration-break: clone;
   box-decoration-break: clone;
   color: var(--mushaf-ink);
