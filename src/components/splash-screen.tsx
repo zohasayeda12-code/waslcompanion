@@ -1,5 +1,6 @@
 import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useMemo, useState } from "react";
+import waslLogo from "@/assets/wasl-logo.png";
 
 /**
  * SplashScreen — premium launch splash.
