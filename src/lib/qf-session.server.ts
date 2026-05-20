@@ -13,6 +13,8 @@ export type WaslSession = {
   expiresAt?: number;
   /** Stable internal user id (profiles.id). Created lazily on first authenticated server call. */
   userId?: string;
+  /** Stable QF account identifier (id_token `sub`). Used to link the same QF user across devices. */
+  qfSub?: string;
 };
 
 export function getWaslSession() {
