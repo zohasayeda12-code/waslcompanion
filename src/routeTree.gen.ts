@@ -21,7 +21,6 @@ import { Route as AuthenticatedMyAyahsRouteImport } from './routes/_authenticate
 import { Route as AuthenticatedIntentionsRouteImport } from './routes/_authenticated/intentions'
 import { Route as AuthenticatedHomeRouteImport } from './routes/_authenticated/home'
 import { Route as AuthenticatedQuranIndexRouteImport } from './routes/_authenticated/quran.index'
-import { Route as ApiPublicDbHealthRouteImport } from './routes/api/public/db-health'
 import { Route as ApiAuthLogoutRouteImport } from './routes/api/auth/logout'
 import { Route as ApiAuthLoginRouteImport } from './routes/api/auth/login'
 import { Route as ApiPublicCronRemindersRouteImport } from './routes/api/public/cron/reminders'
@@ -89,11 +88,6 @@ const AuthenticatedQuranIndexRoute = AuthenticatedQuranIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AuthenticatedQuranRoute,
 } as any)
-const ApiPublicDbHealthRoute = ApiPublicDbHealthRouteImport.update({
-  id: '/api/public/db-health',
-  path: '/api/public/db-health',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const ApiAuthLogoutRoute = ApiAuthLogoutRouteImport.update({
   id: '/api/auth/logout',
   path: '/api/auth/logout',
@@ -147,7 +141,6 @@ export interface FileRoutesByFullPath {
   '/oauth/callback': typeof OauthCallbackRoute
   '/api/auth/login': typeof ApiAuthLoginRoute
   '/api/auth/logout': typeof ApiAuthLogoutRoute
-  '/api/public/db-health': typeof ApiPublicDbHealthRoute
   '/quran/': typeof AuthenticatedQuranIndexRoute
   '/ayah/$surah/$ayah': typeof AuthenticatedAyahSurahAyahRoute
   '/live/$surah/$ayah': typeof AuthenticatedLiveSurahAyahRoute
@@ -167,7 +160,6 @@ export interface FileRoutesByTo {
   '/oauth/callback': typeof OauthCallbackRoute
   '/api/auth/login': typeof ApiAuthLoginRoute
   '/api/auth/logout': typeof ApiAuthLogoutRoute
-  '/api/public/db-health': typeof ApiPublicDbHealthRoute
   '/quran': typeof AuthenticatedQuranIndexRoute
   '/ayah/$surah/$ayah': typeof AuthenticatedAyahSurahAyahRoute
   '/live/$surah/$ayah': typeof AuthenticatedLiveSurahAyahRoute
@@ -190,7 +182,6 @@ export interface FileRoutesById {
   '/oauth/callback': typeof OauthCallbackRoute
   '/api/auth/login': typeof ApiAuthLoginRoute
   '/api/auth/logout': typeof ApiAuthLogoutRoute
-  '/api/public/db-health': typeof ApiPublicDbHealthRoute
   '/_authenticated/quran/': typeof AuthenticatedQuranIndexRoute
   '/_authenticated/ayah/$surah/$ayah': typeof AuthenticatedAyahSurahAyahRoute
   '/_authenticated/live/$surah/$ayah': typeof AuthenticatedLiveSurahAyahRoute
@@ -213,7 +204,6 @@ export interface FileRouteTypes {
     | '/oauth/callback'
     | '/api/auth/login'
     | '/api/auth/logout'
-    | '/api/public/db-health'
     | '/quran/'
     | '/ayah/$surah/$ayah'
     | '/live/$surah/$ayah'
@@ -233,7 +223,6 @@ export interface FileRouteTypes {
     | '/oauth/callback'
     | '/api/auth/login'
     | '/api/auth/logout'
-    | '/api/public/db-health'
     | '/quran'
     | '/ayah/$surah/$ayah'
     | '/live/$surah/$ayah'
@@ -255,7 +244,6 @@ export interface FileRouteTypes {
     | '/oauth/callback'
     | '/api/auth/login'
     | '/api/auth/logout'
-    | '/api/public/db-health'
     | '/_authenticated/quran/'
     | '/_authenticated/ayah/$surah/$ayah'
     | '/_authenticated/live/$surah/$ayah'
@@ -271,7 +259,6 @@ export interface RootRouteChildren {
   OauthCallbackRoute: typeof OauthCallbackRoute
   ApiAuthLoginRoute: typeof ApiAuthLoginRoute
   ApiAuthLogoutRoute: typeof ApiAuthLogoutRoute
-  ApiPublicDbHealthRoute: typeof ApiPublicDbHealthRoute
   ApiPublicCronEnsureScheduleRoute: typeof ApiPublicCronEnsureScheduleRoute
   ApiPublicCronRemindersRoute: typeof ApiPublicCronRemindersRoute
 }
@@ -361,13 +348,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/quran/'
       preLoaderRoute: typeof AuthenticatedQuranIndexRouteImport
       parentRoute: typeof AuthenticatedQuranRoute
-    }
-    '/api/public/db-health': {
-      id: '/api/public/db-health'
-      path: '/api/public/db-health'
-      fullPath: '/api/public/db-health'
-      preLoaderRoute: typeof ApiPublicDbHealthRouteImport
-      parentRoute: typeof rootRouteImport
     }
     '/api/auth/logout': {
       id: '/api/auth/logout'
@@ -469,10 +449,19 @@ const rootRouteChildren: RootRouteChildren = {
   OauthCallbackRoute: OauthCallbackRoute,
   ApiAuthLoginRoute: ApiAuthLoginRoute,
   ApiAuthLogoutRoute: ApiAuthLogoutRoute,
-  ApiPublicDbHealthRoute: ApiPublicDbHealthRoute,
   ApiPublicCronEnsureScheduleRoute: ApiPublicCronEnsureScheduleRoute,
   ApiPublicCronRemindersRoute: ApiPublicCronRemindersRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
