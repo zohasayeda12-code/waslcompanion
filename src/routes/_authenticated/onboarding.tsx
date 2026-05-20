@@ -57,6 +57,7 @@ function Onboarding() {
   const [step, setStep] = useState<Step>("welcome");
   const [notificationPref, setNotificationPref] =
     useState<"allow" | "maybe_later">("maybe_later");
+  const [transitioning, setTransitioning] = useState(false);
   const navigate = useNavigate();
   const complete = useServerFn(completeOnboarding);
 
@@ -67,14 +68,25 @@ function Onboarding() {
   };
 
   const finish = async (pref: "allow" | "maybe_later" = notificationPref) => {
-    await complete({ data: { notificationPref: pref } });
-    navigate({ to: "/home" });
+    setTransitioning(true);
+    try {
+      await complete({ data: { notificationPref: pref } });
+    } finally {
+      navigate({ to: "/home" });
+    }
   };
 
   const skip = () => finish("maybe_later");
 
   return (
-    <AppShell framed={false} className="justify-between">
+    <>
+    <AppShell
+      framed={false}
+      className={cn(
+        "justify-between transition-[filter,opacity] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]",
+        transitioning && "pointer-events-none scale-[0.995] opacity-70 blur-[6px]"
+      )}
+    >
       <header className="flex items-center justify-between">
         <span className="text-[11px] font-medium tracking-[0.32em] text-muted-foreground/60 uppercase">
           Wasl
@@ -185,5 +197,53 @@ function Onboarding() {
         </div>
       </footer>
     </AppShell>
+    <AnimatePresence>
+      {transitioning && (
+        <motion.div
+          key="onboarding-transition"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+          className="pointer-events-none fixed inset-0 z-50 flex items-center justify-center"
+          style={{
+            background:
+              "radial-gradient(ellipse at center, oklch(0.08 0.02 250 / 0.55), oklch(0.04 0.01 250 / 0.85))",
+            backdropFilter: "blur(8px)",
+            WebkitBackdropFilter: "blur(8px)",
+          }}
+        >
+          <motion.div
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
+            className="flex items-baseline gap-1 text-[15px] font-light tracking-[0.18em] text-foreground/80"
+          >
+            <span>Preparing your journey</span>
+            <span aria-hidden className="inline-flex w-4 justify-start">
+              <motion.span
+                animate={{ opacity: [0.2, 0.9, 0.2] }}
+                transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
+              >
+                .
+              </motion.span>
+              <motion.span
+                animate={{ opacity: [0.2, 0.9, 0.2] }}
+                transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut", delay: 0.25 }}
+              >
+                .
+              </motion.span>
+              <motion.span
+                animate={{ opacity: [0.2, 0.9, 0.2] }}
+                transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
+              >
+                .
+              </motion.span>
+            </span>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+    </>
   );
 }
