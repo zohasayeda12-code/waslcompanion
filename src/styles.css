@@ -812,3 +812,33 @@ body.mushaf-day .mushaf-overlay .text-\[color\:var\(--rose\)\] {
 @media (prefers-reduced-motion: reduce) {
   .route-fade { animation: none; }
 }
+
+/* Aurora shimmer — slow, calm light sweep across loading text.
+ * Wasl palette: teal, soft cyan, muted gold, subtle violet. */
+@keyframes aurora-shimmer {
+  0%   { background-position: 200% 50%; }
+  100% { background-position: -200% 50%; }
+}
+.aurora-text {
+  background-image: linear-gradient(
+    100deg,
+    oklch(0.88 0.02 220 / 0.78) 0%,
+    oklch(0.88 0.02 220 / 0.78) 38%,
+    oklch(0.78 0.10 195 / 0.95) 46%,
+    oklch(0.86 0.09 82 / 0.98) 52%,
+    oklch(0.74 0.10 295 / 0.95) 58%,
+    oklch(0.88 0.02 220 / 0.78) 66%,
+    oklch(0.88 0.02 220 / 0.78) 100%
+  );
+  background-size: 200% 100%;
+  background-repeat: no-repeat;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  animation: aurora-shimmer 7s linear infinite;
+  will-change: background-position;
+}
+@media (prefers-reduced-motion: reduce) {
+  .aurora-text { animation: none; }
+}

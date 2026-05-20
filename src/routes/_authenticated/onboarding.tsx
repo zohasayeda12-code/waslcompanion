@@ -219,7 +219,7 @@ function Onboarding() {
             transition={{ duration: 0.7, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
             className="flex items-baseline gap-1 text-[15px] font-light tracking-[0.18em] text-foreground/80"
           >
-            <span>Preparing your journey</span>
+            <span className="aurora-text">Preparing your journey</span>
             <span aria-hidden className="inline-flex w-4 justify-start">
               <motion.span
                 animate={{ opacity: [0.2, 0.9, 0.2] }}
