@@ -467,17 +467,23 @@
  * band reads as a soft glow with no hard corners. */
 .ayah-span[class*="hl-"] {
   background-repeat: no-repeat;
-  background-position: 50% 65%;
-  background-size: 98% 1em;
+  background-position: 50% 60%;
+  background-size: 100% 1.05em;
   -webkit-box-decoration-break: clone;
   box-decoration-break: clone;
   color: var(--mushaf-ink);
+  /* Soft horizontal taper at the very ends only — keeps the band reading as
+   * a full-width gentle wash instead of a centered pill. */
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 6%, #000 94%, transparent 100%);
+          mask-image: linear-gradient(to right, transparent 0%, #000 6%, #000 94%, transparent 100%);
 }
-.hl-gold   { background-image: radial-gradient(ellipse 50% 60% at 50% 50%, color-mix(in oklab, var(--hl-gold)   32%, transparent) 0%, color-mix(in oklab, var(--hl-gold)   22%, transparent) 55%, transparent 100%); }
-.hl-blue   { background-image: radial-gradient(ellipse 50% 60% at 50% 50%, color-mix(in oklab, var(--hl-blue)   32%, transparent) 0%, color-mix(in oklab, var(--hl-blue)   22%, transparent) 55%, transparent 100%); }
-.hl-green  { background-image: radial-gradient(ellipse 50% 60% at 50% 50%, color-mix(in oklab, var(--hl-green)  32%, transparent) 0%, color-mix(in oklab, var(--hl-green)  22%, transparent) 55%, transparent 100%); }
-.hl-purple { background-image: radial-gradient(ellipse 50% 60% at 50% 50%, color-mix(in oklab, var(--hl-purple) 32%, transparent) 0%, color-mix(in oklab, var(--hl-purple) 22%, transparent) 55%, transparent 100%); }
-.hl-rose   { background-image: radial-gradient(ellipse 50% 60% at 50% 50%, color-mix(in oklab, var(--hl-rose)   32%, transparent) 0%, color-mix(in oklab, var(--hl-rose)   22%, transparent) 55%, transparent 100%); }
+/* Vertical linear fade keeps adjacent highlighted lines from touching while
+ * the horizontal coverage stays even across the full ayah width. */
+.hl-gold   { background-image: linear-gradient(to bottom, transparent 0%, color-mix(in oklab, var(--hl-gold)   26%, transparent) 28%, color-mix(in oklab, var(--hl-gold)   26%, transparent) 72%, transparent 100%); }
+.hl-blue   { background-image: linear-gradient(to bottom, transparent 0%, color-mix(in oklab, var(--hl-blue)   26%, transparent) 28%, color-mix(in oklab, var(--hl-blue)   26%, transparent) 72%, transparent 100%); }
+.hl-green  { background-image: linear-gradient(to bottom, transparent 0%, color-mix(in oklab, var(--hl-green)  26%, transparent) 28%, color-mix(in oklab, var(--hl-green)  26%, transparent) 72%, transparent 100%); }
+.hl-purple { background-image: linear-gradient(to bottom, transparent 0%, color-mix(in oklab, var(--hl-purple) 26%, transparent) 28%, color-mix(in oklab, var(--hl-purple) 26%, transparent) 72%, transparent 100%); }
+.hl-rose   { background-image: linear-gradient(to bottom, transparent 0%, color-mix(in oklab, var(--hl-rose)   26%, transparent) 28%, color-mix(in oklab, var(--hl-rose)   26%, transparent) 72%, transparent 100%); }
 
 /* Mushaf-shaped loading skeleton — soft, atmospheric ink strokes that mimic
    the justified composition of the real page. No gray rectangles. */
