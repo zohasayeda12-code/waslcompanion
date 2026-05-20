@@ -140,6 +140,7 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       <SplashScreen />
       <Outlet />
+      <InstallPrompt />
     </QueryClientProvider>
   );
 }
