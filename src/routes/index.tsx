@@ -140,7 +140,7 @@ function OnboardingScreen() {
         >
           Read. Understand.
           <br />
-          <span className="italic text-primary">Live the Ayah.</span>
+          <span className="text-aurora">Live the Ayah.</span>
         </motion.h1>
 
         <motion.p
