@@ -126,8 +126,8 @@ export function InstallPrompt() {
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -24 }}
           transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-          className="pointer-events-none fixed inset-x-0 z-[60] flex justify-center px-4"
-          style={{ top: "calc(max(env(safe-area-inset-top), 1rem) + 3.5rem)" }}
+          className="pointer-events-none fixed inset-x-0 z-[200] flex justify-center px-4"
+          style={{ top: "max(env(safe-area-inset-top), 1rem)" }}
         >
           <div className="pointer-events-auto flex max-w-sm items-center gap-3 rounded-2xl border border-white/10 bg-black/60 px-4 py-3 backdrop-blur-xl shadow-[0_20px_60px_-20px_rgba(0,0,0,0.6)]">
             <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-emerald-400/30 to-amber-300/20 text-amber-100">
