@@ -308,6 +308,7 @@ export type Database = {
           onboarded_at: string | null
           qf_initial_sync_started_at: string | null
           qf_initial_synced_at: string | null
+          qf_user_id: string | null
           updated_at: string
         }
         Insert: {
@@ -317,6 +318,7 @@ export type Database = {
           onboarded_at?: string | null
           qf_initial_sync_started_at?: string | null
           qf_initial_synced_at?: string | null
+          qf_user_id?: string | null
           updated_at?: string
         }
         Update: {
@@ -326,6 +328,7 @@ export type Database = {
           onboarded_at?: string | null
           qf_initial_sync_started_at?: string | null
           qf_initial_synced_at?: string | null
+          qf_user_id?: string | null
           updated_at?: string
         }
         Relationships: []

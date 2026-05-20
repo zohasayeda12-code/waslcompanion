@@ -115,12 +115,29 @@ export const Route = createFileRoute("/oauth/callback")({
 
         const session = await getWaslSession();
 
+        // Decode id_token `sub` to identify the QF account across devices.
+        let qfSub: string | undefined;
+        if (tok.id_token) {
+          try {
+            const payload = tok.id_token.split(".")[1];
+            const json = Buffer.from(payload.replace(/-/g, "+").replace(/_/g, "/"), "base64").toString("utf8");
+            const claims = JSON.parse(json);
+            if (typeof claims?.sub === "string") qfSub = claims.sub;
+          } catch (e) {
+            console.warn("id_token decode failed", e);
+          }
+        }
+
         await session.update({
+          ...session.data,
           accessToken: tok.access_token,
           idToken: tok.id_token,
           refreshToken: tok.refresh_token,
           tokenType: tok.token_type ?? "Bearer",
           expiresAt: tok.expires_in ? Date.now() + tok.expires_in * 1000 : undefined,
+          qfSub: qfSub ?? session.data?.qfSub,
+          // Clear cached userId so requireUserId re-resolves via qfSub on next call.
+          userId: undefined,
         });
 
         console.log("STEP 9: session update success");

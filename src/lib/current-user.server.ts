@@ -3,7 +3,13 @@ import { getWaslSession } from "./qf-session.server";
 
 /**
  * Resolves the signed-in user's stable internal user_id (profiles.id).
- * Lazily creates a profile row on first call, then caches the id in the session.
+ *
+ * Resolution order:
+ *  1. Cached `session.userId` (fast path).
+ *  2. Lookup by `qfSub` (the QF id_token `sub`) — same QF account on any
+ *     device resolves to the same profile row, so progress is shared.
+ *  3. Create a new profile (linked to `qfSub` when available) and seed
+ *     journey_state at 1:1.
  *
  * Throws Response 401 if there's no QF access token.
  */
@@ -14,10 +20,29 @@ export async function requireUserId(): Promise<string> {
   }
   if (session.data.userId) return session.data.userId;
 
-  // First server call after login — create profile + journey_state.
+  const qfSub = session.data.qfSub;
+
+  // Try to find an existing profile for this QF account.
+  if (qfSub) {
+    const { data: existing, error: lookupErr } = await supabaseAdmin
+      .from("profiles")
+      .select("id")
+      .eq("qf_user_id", qfSub)
+      .maybeSingle();
+    if (lookupErr) {
+      console.error("profile lookup failed", lookupErr);
+      throw new Response("Profile lookup failed", { status: 500 });
+    }
+    if (existing?.id) {
+      await session.update({ ...session.data, userId: existing.id });
+      return existing.id;
+    }
+  }
+
+  // First server call for this QF account — create profile + journey_state.
   const { data, error } = await supabaseAdmin
     .from("profiles")
-    .insert({})
+    .insert({ qf_user_id: qfSub ?? null })
     .select("id")
     .single();
   if (error || !data) {
