@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { X, Download } from "lucide-react";
+import { X, Download, Share } from "lucide-react";
 
 type BIPEvent = Event & {
   prompt: () => Promise<void>;
@@ -10,15 +10,13 @@ type BIPEvent = Event & {
 const DISMISS_KEY = "wasl.install.dismissedAt";
 const DISMISS_COOLDOWN_MS = 1000 * 60 * 60 * 24 * 7; // 7 days
 
-function isPreviewOrIframe() {
+function isInIframe() {
   if (typeof window === "undefined") return true;
   try {
-    if (window.self !== window.top) return true;
+    return window.self !== window.top;
   } catch {
     return true;
   }
-  const h = window.location.hostname;
-  return h.includes("id-preview--") || h.includes("lovableproject.com");
 }
 
 function isStandalone() {
@@ -30,30 +28,56 @@ function isStandalone() {
   );
 }
 
+function isIOS() {
+  if (typeof navigator === "undefined") return false;
+  const ua = navigator.userAgent;
+  return /iPad|iPhone|iPod/.test(ua) && !("MSStream" in window);
+}
+
+function hasForceFlag() {
+  if (typeof window === "undefined") return false;
+  return new URLSearchParams(window.location.search).has("install");
+}
+
 export function InstallPrompt() {
   const [evt, setEvt] = useState<BIPEvent | null>(null);
   const [visible, setVisible] = useState(false);
+  const [iosHint, setIosHint] = useState(false);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
-    if (isPreviewOrIframe()) return;
+    // Iframes can never install — Chrome won't fire BIP there.
+    if (isInIframe()) return;
     if (isStandalone()) return;
 
-    // Eagerly register the service worker so Chrome's installability heuristics
-    // are met (manifest + SW with fetch handler over HTTPS).
+    const force = hasForceFlag();
+
+    // Register the SW so Chrome's installability checks pass.
     if ("serviceWorker" in navigator) {
       navigator.serviceWorker.register("/sw.js").catch(() => {});
     }
 
     const dismissedAt = Number(localStorage.getItem(DISMISS_KEY) || 0);
-    const onCooldown = dismissedAt && Date.now() - dismissedAt < DISMISS_COOLDOWN_MS;
+    const onCooldown =
+      !force && dismissedAt && Date.now() - dismissedAt < DISMISS_COOLDOWN_MS;
+
+    // iOS Safari fallback — no BIP event, show manual hint.
+    if (isIOS()) {
+      if (!onCooldown) {
+        const t = setTimeout(() => {
+          setIosHint(true);
+          setVisible(true);
+        }, force ? 200 : 1500);
+        return () => clearTimeout(t);
+      }
+      return;
+    }
 
     const handler = (e: Event) => {
       e.preventDefault();
       setEvt(e as BIPEvent);
       if (!onCooldown) {
-        // Soft delay so it doesn't appear during first paint
-        setTimeout(() => setVisible(true), 4000);
+        setTimeout(() => setVisible(true), force ? 200 : 1500);
       }
     };
     const installed = () => {
@@ -63,9 +87,17 @@ export function InstallPrompt() {
 
     window.addEventListener("beforeinstallprompt", handler);
     window.addEventListener("appinstalled", installed);
+
+    // Force-show even without BIP (for testing on hosts where Chrome refuses).
+    let forceTimer: number | undefined;
+    if (force) {
+      forceTimer = window.setTimeout(() => setVisible(true), 300);
+    }
+
     return () => {
       window.removeEventListener("beforeinstallprompt", handler);
       window.removeEventListener("appinstalled", installed);
+      if (forceTimer) clearTimeout(forceTimer);
     };
   }, []);
 
@@ -84,9 +116,11 @@ export function InstallPrompt() {
     setEvt(null);
   };
 
+  const show = visible && (evt || iosHint);
+
   return (
     <AnimatePresence>
-      {visible && evt && (
+      {show && (
         <motion.div
           initial={{ opacity: 0, y: -24 }}
           animate={{ opacity: 1, y: 0 }}
@@ -97,18 +131,24 @@ export function InstallPrompt() {
         >
           <div className="pointer-events-auto flex max-w-sm items-center gap-3 rounded-2xl border border-white/10 bg-black/60 px-4 py-3 backdrop-blur-xl shadow-[0_20px_60px_-20px_rgba(0,0,0,0.6)]">
             <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-emerald-400/30 to-amber-300/20 text-amber-100">
-              <Download className="h-4 w-4" />
+              {iosHint ? <Share className="h-4 w-4" /> : <Download className="h-4 w-4" />}
             </div>
             <div className="flex-1 text-[13px] leading-tight text-white/90">
               <div className="font-medium">Install Wasl</div>
-              <div className="text-white/60">For gentler reminders, right on your device.</div>
+              <div className="text-white/60">
+                {iosHint
+                  ? "Tap Share, then “Add to Home Screen”."
+                  : "For gentler reminders, right on your device."}
+              </div>
             </div>
-            <button
-              onClick={install}
-              className="rounded-full bg-white/90 px-3 py-1.5 text-xs font-medium text-black transition hover:bg-white"
-            >
-              Install
-            </button>
+            {!iosHint && evt && (
+              <button
+                onClick={install}
+                className="rounded-full bg-white/90 px-3 py-1.5 text-xs font-medium text-black transition hover:bg-white"
+              >
+                Install
+              </button>
+            )}
             <button
               onClick={dismiss}
               aria-label="Dismiss"
