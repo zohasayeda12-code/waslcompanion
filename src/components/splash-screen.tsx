@@ -89,25 +89,16 @@ export function SplashScreen() {
             transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
             className="relative flex size-32 items-center justify-center"
           >
-            {/* breathing halo */}
-            <motion.div
+            {/* moon-shaped breathing glow (drop-shadow traces the moon alpha) */}
+            <motion.img
               aria-hidden
-              animate={{ scale: [1, 1.18, 1], opacity: [0.55, 0.85, 0.55] }}
-              transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut" }}
-              className="absolute inset-0 rounded-full blur-2xl"
+              src={waslLogo}
+              animate={{ opacity: [0.35, 0.55, 0.35], scale: [1, 1.04, 1] }}
+              transition={{ duration: 2.6, repeat: Infinity, ease: "easeInOut" }}
+              className="absolute inset-0 size-32 object-contain"
               style={{
-                background:
-                  "radial-gradient(circle, oklch(0.88 0.12 82 / 0.55), transparent 70%)",
-              }}
-            />
-            <motion.div
-              aria-hidden
-              animate={{ scale: [1, 1.08, 1], opacity: [0.7, 1, 0.7] }}
-              transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut" }}
-              className="absolute inset-4 rounded-full blur-md"
-              style={{
-                background:
-                  "radial-gradient(circle, oklch(0.92 0.10 82 / 0.75), transparent 75%)",
+                filter:
+                  "blur(10px) drop-shadow(0 0 12px oklch(0.92 0.10 82 / 0.5))",
               }}
             />
             {/* moon body — Wasl logo */}
@@ -117,7 +108,7 @@ export function SplashScreen() {
               className="relative size-32 object-contain"
               style={{
                 filter:
-                  "drop-shadow(0 0 24px oklch(0.88 0.12 82 / 0.45)) drop-shadow(0 0 8px oklch(0.92 0.10 82 / 0.35))",
+                  "drop-shadow(0 0 6px oklch(0.92 0.10 82 / 0.35))",
               }}
             />
 
