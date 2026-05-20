@@ -84,12 +84,4 @@ The app requires the following environment variables (configured automatically b
 
 ---
 
-## Team & Submission
-
-Submitted to the **Quran Foundation Hackathon**.
-
-Built with the intention of making the Quran not just readable, but *livable* — one Ayah at a time.
-
----
-
 *Wasl (وَصْل) — "Connection" in Arabic. Connecting hearts to the Quran, and the Quran to daily life.*
