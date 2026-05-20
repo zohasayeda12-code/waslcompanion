@@ -89,13 +89,24 @@ export function SplashScreen() {
             transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
             className="relative flex size-32 items-center justify-center"
           >
-            {/* moon-shaped breathing glow (drop-shadow traces the moon alpha) */}
+            {/* Mobile: soft circular halo */}
+            <motion.div
+              aria-hidden
+              animate={{ scale: [1, 1.15, 1], opacity: [0.5, 0.8, 0.5] }}
+              transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut" }}
+              className="absolute inset-0 rounded-full blur-2xl md:hidden"
+              style={{
+                background:
+                  "radial-gradient(circle, oklch(0.90 0.11 82 / 0.55), transparent 70%)",
+              }}
+            />
+            {/* Desktop: moon-shaped breathing glow (drop-shadow traces the moon alpha) */}
             <motion.img
               aria-hidden
               src={waslLogo}
               animate={{ opacity: [0.35, 0.55, 0.35], scale: [1, 1.04, 1] }}
               transition={{ duration: 2.6, repeat: Infinity, ease: "easeInOut" }}
-              className="absolute inset-0 size-32 object-contain"
+              className="absolute inset-0 hidden size-32 object-contain md:block"
               style={{
                 filter:
                   "blur(10px) drop-shadow(0 0 12px oklch(0.92 0.10 82 / 0.5))",
