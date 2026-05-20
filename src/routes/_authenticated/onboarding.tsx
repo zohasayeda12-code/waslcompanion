@@ -57,6 +57,7 @@ function Onboarding() {
   const [step, setStep] = useState<Step>("welcome");
   const [notificationPref, setNotificationPref] =
     useState<"allow" | "maybe_later">("maybe_later");
+  const [transitioning, setTransitioning] = useState(false);
   const navigate = useNavigate();
   const complete = useServerFn(completeOnboarding);
 
@@ -67,8 +68,12 @@ function Onboarding() {
   };
 
   const finish = async (pref: "allow" | "maybe_later" = notificationPref) => {
-    await complete({ data: { notificationPref: pref } });
-    navigate({ to: "/home" });
+    setTransitioning(true);
+    try {
+      await complete({ data: { notificationPref: pref } });
+    } finally {
+      navigate({ to: "/home" });
+    }
   };
 
   const skip = () => finish("maybe_later");
