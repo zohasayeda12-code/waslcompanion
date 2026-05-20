@@ -79,7 +79,14 @@ function Onboarding() {
   const skip = () => finish("maybe_later");
 
   return (
-    <AppShell framed={false} className="justify-between">
+    <>
+    <AppShell
+      framed={false}
+      className={cn(
+        "justify-between transition-[filter,opacity] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]",
+        transitioning && "pointer-events-none scale-[0.995] opacity-70 blur-[6px]"
+      )}
+    >
       <header className="flex items-center justify-between">
         <span className="text-[11px] font-medium tracking-[0.32em] text-muted-foreground/60 uppercase">
           Wasl
