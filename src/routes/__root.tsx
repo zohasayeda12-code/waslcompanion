@@ -10,6 +10,7 @@ import {
 
 import appCss from "../styles.css?url";
 import { SplashScreen } from "@/components/splash-screen";
+import { InstallPrompt } from "@/components/install-prompt";
 
 function NotFoundComponent() {
   return (
@@ -139,6 +140,7 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       <SplashScreen />
       <Outlet />
+      <InstallPrompt />
     </QueryClientProvider>
   );
 }
