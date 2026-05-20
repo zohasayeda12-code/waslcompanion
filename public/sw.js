@@ -1,6 +1,10 @@
-// Wasl reminders service worker
+// Wasl service worker — reminders + minimal fetch passthrough for PWA installability
 self.addEventListener("install", (e) => self.skipWaiting());
 self.addEventListener("activate", (e) => e.waitUntil(self.clients.claim()));
+
+// Chrome requires a registered service worker with a fetch handler for the
+// `beforeinstallprompt` event to fire. Passthrough — no caching, no offline.
+self.addEventListener("fetch", () => { /* network only */ });
 
 self.addEventListener("push", (event) => {
   let data = {};
