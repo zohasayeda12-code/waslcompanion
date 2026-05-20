@@ -616,19 +616,27 @@ body.pure-mode .mushaf-active-glow { display: none !important; }
   --resume-cyan: oklch(0.86 0.17 215);
   --resume-gold: oklch(0.82 0.14 82);
 }
+@property --resume-a {
+  syntax: "<number>";
+  initial-value: 0.25;
+  inherits: false;
+}
 @keyframes ayah-resume-glow {
-  0%   { opacity: 0.25; }
-  50%  { opacity: 1;    }
-  100% { opacity: 0.25; }
+  0%   { --resume-a: 0.25; }
+  50%  { --resume-a: 1;    }
+  100% { --resume-a: 0.25; }
 }
 .ayah-resume {
   position: relative;
   z-index: 2;
+  /* Animate only the background tint via a custom property so the Arabic
+   * text itself stays at full opacity and remains crisp throughout the
+   * resume pulse. */
   background-image: linear-gradient(
     to bottom,
     transparent 0%,
-    color-mix(in oklab, var(--resume-gold) 32%, transparent) 28%,
-    color-mix(in oklab, var(--resume-gold) 32%, transparent) 72%,
+    color-mix(in oklab, var(--resume-gold) calc(32% * var(--resume-a)), transparent) 28%,
+    color-mix(in oklab, var(--resume-gold) calc(32% * var(--resume-a)), transparent) 72%,
     transparent 100%
   );
   background-repeat: no-repeat;
@@ -639,7 +647,7 @@ body.pure-mode .mushaf-active-glow { display: none !important; }
   -webkit-box-decoration-break: clone;
   box-decoration-break: clone;
   animation: ayah-resume-glow 1.9s cubic-bezier(0.45, 0, 0.55, 1) 0.1s 3 both;
-  will-change: opacity;
+  will-change: --resume-a;
 }
 
 /* Spotlight removed — the blink alone is enough; no page-wide dim/blur. */
