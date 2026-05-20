@@ -1,5 +1,6 @@
 import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useMemo, useState } from "react";
+import waslLogo from "@/assets/wasl-logo.png";
 
 /**
  * SplashScreen — premium launch splash.
@@ -109,18 +110,17 @@ export function SplashScreen() {
                   "radial-gradient(circle, oklch(0.92 0.10 82 / 0.75), transparent 75%)",
               }}
             />
-            {/* moon body */}
-            <svg
-              viewBox="0 0 64 64"
-              className="relative size-16"
-              fill="none"
-              stroke="oklch(0.92 0.10 82)"
-              strokeWidth="2.2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M48 32a18 18 0 1 1-18-18 14 14 0 0 0 18 18z" />
-            </svg>
+            {/* moon body — Wasl logo */}
+            <img
+              src={waslLogo}
+              alt="Wasl"
+              className="relative size-32 object-contain"
+              style={{
+                filter:
+                  "drop-shadow(0 0 24px oklch(0.88 0.12 82 / 0.45)) drop-shadow(0 0 8px oklch(0.92 0.10 82 / 0.35))",
+              }}
+            />
+
           </motion.div>
 
           {/* wordmark */}
