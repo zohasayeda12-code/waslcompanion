@@ -474,8 +474,8 @@
   color: var(--mushaf-ink);
   /* Soft horizontal taper at the very ends only — keeps the band reading as
    * a full-width gentle wash instead of a centered pill. */
-  -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 6%, #000 94%, transparent 100%);
-          mask-image: linear-gradient(to right, transparent 0%, #000 6%, #000 94%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 3%, #000 97%, transparent 100%);
+          mask-image: linear-gradient(to right, transparent 0%, #000 3%, #000 97%, transparent 100%);
 }
 /* Vertical linear fade keeps adjacent highlighted lines from touching while
  * the horizontal coverage stays even across the full ayah width. */
